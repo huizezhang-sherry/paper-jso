@@ -4,7 +4,7 @@
 \PassOptionsToPackage{dvipsnames,svgnames,x11names}{xcolor}
 %
 \documentclass[
-  super,
+  number,
   preprint,
   3p]{elsarticle}
 
@@ -131,19 +131,19 @@
 \makeatother
 \makeatletter
 \makeatother
-\journal{Journal of Multivariate analysis}
+\journal{Journal of Multivariate Analysis}
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
 \usepackage[]{natbib}
-\bibliographystyle{elsarticle-num}
+\bibliographystyle{elsarticle-num-names}
 \IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Short Paper},
+  pdftitle={Performance of Jellyfish Optimiser on Projection Pursuit Problems},
   pdfauthor={Alice Anonymous; Bob Security; Cat Memes; Derek Zoolander},
-  pdfkeywords={projection pursuit, optimization},
+  pdfkeywords={projection pursuit, optimization, jellyfish optimiser},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -155,10 +155,11 @@
 \begin{document}
 
 \begin{frontmatter}
-\title{Short Paper \\\large{A Short Subtitle} }
+\title{Performance of Jellyfish Optimiser on Projection Pursuit
+Problems}
 \author[1]{Alice Anonymous%
 \corref{cor1}%
-\fnref{fn1}}
+}
  \ead{alice@example.com} 
 \author[2]{Bob Security%
 %
@@ -166,7 +167,7 @@
  \ead{bob@example.com} 
 \author[2]{Cat Memes%
 %
-\fnref{fn2}}
+}
  \ead{cat@example.com} 
 \author[]{Derek Zoolander%
 %
@@ -181,9 +182,9 @@ Name},addressline={Street Address},city={City},postcode={Postal
 Code},postcodesep={}}
 
 \cortext[cor1]{Corresponding author}
-\fntext[fn1]{This is the first author footnote.}
 
-\fntext[fn2]{Yet another author footnote.}
+
+
 
         
 \begin{abstract}
@@ -203,38 +204,72 @@ tempus elit.
 
 
 \begin{keyword}
-    projection pursuit \sep 
-    optimization
+    projection pursuit \sep optimization \sep 
+    jellyfish optimiser
 \end{keyword}
 \end{frontmatter}
-    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, interior hidden, frame hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, sharp corners, boxrule=0pt]}{\end{tcolorbox}}\fi
+    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, interior hidden, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, sharp corners, enhanced, breakable]}{\end{tcolorbox}}\fi
 
-\hypertarget{introduction}{%
-\section{Introduction}\label{introduction}}
+\emph{Let's use British English (``American or British usage is
+accepted, but not a mixture of these'')}
 
-The contributions of this paper are two folds. First, we provide proofs
-to demonstrate certain optimisers are for certain projection pursuit
-index functions. Second, we compare the performance of a collection of
-optimisers on a set of index function with different features and
-provide recommendations for analysts in practical problems.
+\hypertarget{introduction-nicolas-and-jessica}{%
+\section{Introduction {[}Nicolas and
+Jessica{]}}\label{introduction-nicolas-and-jessica}}
+
+The rest of the paper is organised as follows:
 Section~\ref{sec-background} introduces the projection pursuit method,
-including the indexes function and optimisation. Section
-Section~\ref{sec-theory} presents the proof on {[}\ldots{]}. Section
-Section~\ref{sec-simulation} presents the experimental results. Section
+including the indexes function and optimisation.
+Section~\ref{sec-theory} introduces the jellyfish optimiser and proposes
+mathematical expressions to measure the . Section~\ref{sec-simulation}
+applies the jellyfish optimiser through different projection pursuit
+problems with varying dimensions and index functions.
 Section~\ref{sec-conclusion} concludes the paper.
 
 \hypertarget{sec-background}{%
-\section{Projection pursuit, index functions and
-optimisation}\label{sec-background}}
+\section{Projection pursuit, index functions and optimisation {[}Di and
+Sherry{]}}\label{sec-background}}
 
 \hypertarget{sec-theory}{%
-\section{{[}Theoretical results{]}}\label{sec-theory}}
+\section{The jellyfish optimiser and property for good optimisers
+{[}Nicolas and Jessica{]}}\label{sec-theory}}
+
+The jellyfish optimiser \citep{chou_novel_2021} \ldots{}
+
+\citet{laa_using_2020} has proposed five criteria for assessing
+projection pursuit indexes (smoothness, squintability, flexibility,
+rotation invariance, and speed). Since not all the properties affects
+the optimisation, here we define the three relevant properties
+(smoothness, squintability, and speed) mathematically and show that the
+jellyfish optimiser \ldots{}
 
 \hypertarget{sec-simulation}{%
-\section{{[}Simulation study{]}}\label{sec-simulation}}
+\section{Application {[}Di and Sherry{]}}\label{sec-simulation}}
+
+The jellyfish optimiser has been implemented in the tourr package
+\citep{wickham_tourr_2011} and we will use the diagnostic plots proposed
+in the ferrn package \citep{RJ-2021-105} to visualise the optimisation
+process.
+
+\hypertarget{going-beyond-10d}{%
+\subsection{Going beyond 10D}\label{going-beyond-10d}}
+
+The pipe-finding problem is initially used to investigate indexes and
+optimisers in \citet{laa_using_2020}, and we extend it from a 6D problem
+to a 12D problem.
+
+Jellyfish optimiser, as a multi-start algorithm, is efficient in
+{[}\ldots{]} for high-dimensional problems
+
+\hypertarget{on-skewness-and-kurtosis-index}{%
+\subsection{On skewness and kurtosis
+index}\label{on-skewness-and-kurtosis-index}}
+
+\hypertarget{another-data-example}{%
+\subsection{Another data example}\label{another-data-example}}
 
 \hypertarget{sec-conclusion}{%
-\section{Conclusion}\label{sec-conclusion}}
+\section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}}
 
 
 \renewcommand\refname{References}

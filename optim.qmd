@@ -1,6 +1,5 @@
 ---
-title: Short Paper
-subtitle: A Short Subtitle
+title: Performance of Jellyfish Optimiser on Projection Pursuit Problems
 author:
   - name: Alice Anonymous
     email: alice@example.com
@@ -14,7 +13,6 @@ author:
           postal-code: Postal Code
     attributes:
         corresponding: true
-    note: This is the first author footnote.
   - name: Bob Security
     email: bob@example.com
     affiliations:
@@ -29,7 +27,6 @@ author:
     email: cat@example.com
     affiliations:
         - ref: another-u
-    note: Yet another author footnote.
   - name: Derek Zoolander
     email: derek@example.com
     affilations:
@@ -39,6 +36,7 @@ abstract: |
 keywords: 
   - projection pursuit
   - optimization
+  - jellyfish optimiser
 date: last-modified
 bibliography: bibliography.bib
 format:
@@ -48,20 +46,39 @@ format:
       name: Journal of Multivariate Analysis
       formatting: preprint
       model: 3p
-      cite-style: super
+      cite-style: numbername
 ---
 
-# Introduction
+*Let's use British English ("American or British usage is accepted, but not a mixture of these")*
 
-The contributions of this paper are two folds. First, we provide proofs to demonstrate certain optimisers are for certain projection pursuit index functions. Second, we compare the performance of a collection of optimisers on a set of index function with different features and provide recommendations for analysts in practical problems.  @sec-background introduces the projection pursuit method, including the indexes function and optimisation. Section @sec-theory presents the proof on [...]. Section @sec-simulation presents the experimental results. Section @sec-conclusion concludes the paper. 
+# Introduction [Nicolas and Jessica]
 
-# Projection pursuit, index functions and optimisation {#sec-background}
+The rest of the paper is organised as follows: @sec-background introduces the projection pursuit method, including the indexes function and optimisation. @sec-theory introduces the jellyfish optimiser and proposes mathematical expressions to measure the . @sec-simulation applies the jellyfish optimiser through different projection pursuit problems with varying dimensions and index functions. @sec-conclusion concludes the paper. 
 
-# [Theoretical results] {#sec-theory}
+# Projection pursuit, index functions and optimisation [Di and Sherry] {#sec-background} 
 
-# [Simulation study] {#sec-simulation}
+# The jellyfish optimiser and property for good optimisers [Nicolas and Jessica] {#sec-theory} 
 
-# Conclusion {#sec-conclusion}
+The jellyfish optimiser [@chou_novel_2021] ...
+
+@laa_using_2020 has proposed five criteria for assessing projection pursuit indexes (smoothness, squintability, flexibility, rotation invariance, and speed). Since not all the properties affects the optimisation, here we define the three relevant properties (smoothness, squintability, and speed) mathematically and show that the jellyfish optimiser ...
+
+# Application [Di and Sherry] {#sec-simulation}
+
+The jellyfish optimiser has been implemented in the tourr package [@wickham_tourr_2011] and we will use the diagnostic plots proposed in the ferrn package [@RJ-2021-105] to visualise the optimisation process.
+
+## Going beyond 10D 
+
+The pipe-finding problem is initially used to investigate indexes and optimisers in @laa_using_2020, and we extend it from a 6D problem to a 12D problem.
+
+Jellyfish optimiser, as a multi-start algorithm, is efficient in [...] for high-dimensional problems
+
+## On skewness and kurtosis index
+
+## Another data example
+
+# Conclusion [Di and Sherry] {#sec-conclusion}
+
 
 
 <!-- # Bibliography styles -->
