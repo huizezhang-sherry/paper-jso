@@ -208,7 +208,7 @@ tempus elit.
     jellyfish optimiser
 \end{keyword}
 \end{frontmatter}
-    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, frame hidden, boxrule=0pt, sharp corners, breakable, borderline west={3pt}{0pt}{shadecolor}, enhanced]}{\end{tcolorbox}}\fi
+    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, breakable, borderline west={3pt}{0pt}{shadecolor}, interior hidden, frame hidden, enhanced, sharp corners]}{\end{tcolorbox}}\fi
 
 \emph{Let's use British English (``American or British usage is
 accepted, but not a mixture of these'')}
@@ -220,9 +220,9 @@ Jessica{]}}\label{introduction-nicolas-and-jessica}}
 The artificial jellyfish search (JS) algorithm \citep{chou_novel_2021}
 is a swarm-based metaheuristic optimisation algorithm inspired by the
 search behaviour of jellyfish in the ocean. It is one of the newest
-swarm intelligence algorithms, which was shown to have stronger search
-ability and faster convergence with few algorithmic parameters compared
-to classic optimization methods
+swarm intelligence algorithms \citep{rajwar_exhaustive_2023}, which was
+shown to have stronger search ability and faster convergence with few
+algorithmic parameters compared to classic optimization methods
 \citep{chou_novel_2021}-\citep{chou_recent_2022}.
 
 The rest of the paper is organised as follows:

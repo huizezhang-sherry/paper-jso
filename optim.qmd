@@ -53,7 +53,7 @@ format:
 
 # Introduction [Nicolas and Jessica]
 
-The artificial jellyfish search (JS) algorithm [@chou_novel_2021] is a swarm-based metaheuristic optimisation algorithm inspired by the search behaviour of jellyfish in the ocean. It is one of the newest swarm intelligence algorithms, which was shown to have stronger search ability and faster convergence with few algorithmic parameters compared to classic optimization methods [@chou_novel_2021]-[@chou_recent_2022].
+The artificial jellyfish search (JS) algorithm [@chou_novel_2021] is a swarm-based metaheuristic optimisation algorithm inspired by the search behaviour of jellyfish in the ocean. It is one of the newest swarm intelligence algorithms [@rajwar_exhaustive_2023], which was shown to have stronger search ability and faster convergence with few algorithmic parameters compared to classic optimization methods [@chou_novel_2021]-[@chou_recent_2022].
 
 The rest of the paper is organised as follows: @sec-background introduces the projection pursuit method, including the indexes function and optimisation. @sec-theory introduces the jellyfish optimiser and proposes mathematical expressions to measure the . @sec-simulation applies the jellyfish optimiser through different projection pursuit problems with varying dimensions and index functions. @sec-conclusion concludes the paper. 
 
