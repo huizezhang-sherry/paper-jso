@@ -51,37 +51,116 @@ format:
 
 *Let's use British English ("American or British usage is accepted, but not a mixture of these")*
 
-# Introduction [Nicolas and Jessica]
+```{r setup, echo = FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(ggplot2)
+library(patchwork)
+```
+
+# Introduction \[Nicolas and Jessica\]
 
 The artificial jellyfish search (JS) algorithm [@chou_novel_2021] is a swarm-based metaheuristic optimisation algorithm inspired by the search behaviour of jellyfish in the ocean. It is one of the newest swarm intelligence algorithms [@rajwar_exhaustive_2023], which was shown to have stronger search ability and faster convergence with few algorithmic parameters compared to classic optimization methods [@chou_novel_2021]-[@chou_recent_2022].
 
-The rest of the paper is organised as follows: @sec-background introduces the projection pursuit method, including the indexes function and optimisation. @sec-theory introduces the jellyfish optimiser and proposes mathematical expressions to measure the . @sec-simulation applies the jellyfish optimiser through different projection pursuit problems with varying dimensions and index functions. @sec-conclusion concludes the paper. 
+The rest of the paper is organised as follows: @sec-background introduces the projection pursuit method, including the indexes function and optimisation. @sec-theory introduces the jellyfish optimiser and proposes mathematical expressions to measure the . @sec-simulation applies the jellyfish optimiser through different projection pursuit problems with varying dimensions and index functions. @sec-conclusion concludes the paper.
 
-# Projection pursuit, index functions and optimisation [Di and Sherry] {#sec-background} 
+# Projection pursuit, index functions and optimisation \[Di and Sherry\] {#sec-background}
 
-# The jellyfish optimiser and property for good optimisers [Nicolas and Jessica] {#sec-theory} 
+# The jellyfish optimiser and property for good optimisers \[Nicolas and Jessica\] {#sec-theory}
 
 The jellyfish optimiser [@chou_novel_2021] ...
 
 @laa_using_2020 has proposed five criteria for assessing projection pursuit indexes (smoothness, squintability, flexibility, rotation invariance, and speed). Since not all the properties affects the optimisation, here we define the three relevant properties (smoothness, squintability, and speed) mathematically and show that the jellyfish optimiser ...
 
-# Application [Di and Sherry] {#sec-simulation}
+# Application \[Di and Sherry\] {#sec-simulation}
 
 The jellyfish optimiser has been implemented in the tourr package [@wickham_tourr_2011] and we will use the diagnostic plots proposed in the ferrn package [@RJ-2021-105] to visualise the optimisation process.
 
-## Going beyond 10D 
+## Going beyond 10D
 
 The pipe-finding problem is initially used to investigate indexes and optimisers in @laa_using_2020, and we extend it from a 6D problem to a 12D problem.
 
-Jellyfish optimiser, as a multi-start algorithm, is efficient in [...] for high-dimensional problems
+Jellyfish optimiser, as a multi-start algorithm, is efficient in \[...\] for high-dimensional problems
+
+```{r echo = FALSE}
+load(here::here("data/pipe_better.rda"))
+load(here::here("data/pipe_jellyfish.rda"))
+```
+
+```{r}
+#| fig.width = 6,
+#| fig.height = 3,
+#| fig.align = "center",
+#| fig.cap = "sthis sdfaksdlf"
+pipe_better |>
+  bind_rows(pipe_jellyfish) |>
+  mutate(dim = as.factor(6 + (as.numeric(dim) - 1) * 2)) |>
+  ggplot(aes(x = dim, y = index_val, group = interaction(optimiser, dim), color = optimiser)) +
+  geom_violin(width = 2, adjust = 0.5, position = position_dodge(width = 0.4)) +
+  ggbeeswarm::geom_quasirandom(size = 0.1, width = 0.1, dodge.width = 0.4) +
+  theme_bw() +
+  scale_y_continuous(breaks = seq(0.85, 1, 0.01)) +
+  scale_color_brewer(palette = "Accent") + 
+  labs(y = "Index", x = "Dimension")
+
+```
+
+```{r}
+#| fig.width = 8,
+#| fig.height = 5,
+#| fig.align = "center",
+#| fig.cap = "sthis sdfaksdlf"
+get_proj <- function(data){
+  quantiles <- map(1:4, ~data |>
+                     filter(dim == .x) |>
+                     pull(index_val) |>
+                     quantile(seq(0, 1, 0.5), type = 3) |>
+                     rev() |>
+                     unname())
+
+  res <- map2_dfr(
+    unlist(quantiles),
+    rep(1:4, each = 3),
+    ~ data |>
+      filter(dim == .y, index_val == .x) |>
+      select(dim, proj, index_val),
+    .id = "id"
+    ) |>
+    unnest(proj) |>
+    mutate(index_val = sprintf("%.3f", index_val),
+           optimiser = "jellyfish",
+           id = (as.numeric(id) - 1) %%3 + 1,
+           dim = as.factor(6 + (as.numeric(dim) - 1) * 2)) |>
+    mutate(id = case_when(id == 1 ~ "best",
+                          id == 2 ~ "mean",
+                          id == 3 ~ "worst",
+                          TRUE ~ "0thers"))
+  return(res)
+}
+
+
+p1 <- get_proj(pipe_jellyfish)  |>
+  ggplot(aes(x = V1, y = V2)) +
+  geom_point(size = 0.1) +
+  geom_text(data = ~. |> distinct(id, dim, index_val),
+           aes(label = index_val), x =0, y = 3.7, size = 3) +
+  facet_grid(dim ~ id) +
+  xlim(-4, 4) + ylim(-4, 4) +
+  theme_bw() +
+  theme(aspect.ratio = 1, axis.ticks = element_blank(),
+        axis.text = element_blank(), axis.title = element_blank(),
+        panel.grid = element_blank())
+p2 <- p1 %+% get_proj(pipe_better)
+p1 + ggtitle("The Jellyfish Optimiser") | p2 + ggtitle("The Better Optimiser")
+
+
+```
 
 ## On skewness and kurtosis index
 
 ## Another data example
 
-# Conclusion [Di and Sherry] {#sec-conclusion}
-
-
+# Conclusion \[Di and Sherry\] {#sec-conclusion}
 
 <!-- # Bibliography styles -->
 
