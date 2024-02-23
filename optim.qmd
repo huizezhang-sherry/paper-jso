@@ -68,13 +68,49 @@ The rest of the paper is organised as follows: @sec-background introduces the pr
 
 # The jellyfish optimiser and property for good optimisers \[Nicolas and Jessica\] {#sec-theory}
 
-The jellyfish optimiser [@chou_novel_2021] ...
+The jellyfish optimiser (JSO) mimics the natural movements of jellyfish, which include passive and active motions driven by ocean currents and their swimming patterns, respectively. In the context of optimization, these movements are abstracted to explore the search space in a way that balances exploration (searching new areas) and exploitation (focusing on promising areas). The algorithm aims to find the optimal solution by adapting the jellyfish's behavior to navigate towards the best solution over iterations [@chou_novel_2021]. 
 
-@laa_using_2020 has proposed five criteria for assessing projection pursuit indexes (smoothness, squintability, flexibility, rotation invariance, and speed). Since not all the properties affects the optimisation, here we define the three relevant properties (smoothness, squintability, and speed) mathematically and show that the jellyfish optimiser ...
+Below is the pseudo-code for this visualisation application.
+
+[Put the code in, add specifics to this visualisation application]
+
+The JSO implementation involves several key parameters that control its search process in optimization problems. These parameters are designed to guide the exploration and exploitation phases of the algorithm. While the specific implementation details can vary depending on the version of the algorithm or its application, we focus on two main parameters that are most relevant to our application: the number of jellyfish and drift.
+
+@laa_using_2020 has proposed five criteria for assessing projection pursuit indexes (smoothness, squintability, flexibility, rotation invariance, and speed). Since not all the properties affects the execution of the optimisation, here we consider the three relevant properties (smoothness, squintability, and speed), and propose three metrics to evaluate these three properties.
+
+
+## Smoothness
+
+An intuitive way to measure smoothness would be to find how many continuous derivatives exist. We make use of Sobolev spaces:
+
+[def of sobolev space]
+
+Smoothness would then be the highest p such that the index function belongs to $W^{p,\infty}$. We can make it weaker by considering $W^{p,q}$ Sobolev spaces.
+
+[backup plan when things are not differentiable]
+
+## Squintability
+
+A large squint angle means the function is easy to optimize, because you don’t need to be very very close to the perfect view to see the structure. A small squint angle means that the derivative of the index function can still be very large values near the optimal point. 
+
+OR
+that the values taken by the index function can be clustered into two clear groups: one small group of high values near the optimum, and a large group of the remaining small values.
+OR
+the rate of change of gradient? Gradient changes very drastically when it’s near optimal?
+
+[backup plan when things are not differentiable]
+
+To the best of our knowledge, this is the first attempt to measure the notion of squintability.
+
+## Speed
+
+Computational complexity (in big O notation, with respect to the sample size) of computing the index function.
+
 
 # Application \[Di and Sherry\] {#sec-simulation}
 
 The jellyfish optimiser has been implemented in the tourr package [@wickham_tourr_2011] and we will use the diagnostic plots proposed in the ferrn package [@RJ-2021-105] to visualise the optimisation process.
+
 
 ## Going beyond 10D
 
