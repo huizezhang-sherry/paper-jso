@@ -72,7 +72,7 @@ The jellyfish optimiser (JSO) mimics the natural movements of jellyfish, which i
 
 Below is the pseudo-code for this visualisation application.
 
-[Put the code in, add specifics to this visualisation application]
+[Put the pseudo-code in, add specifics to this visualisation application]
 
 The JSO implementation involves several key parameters that control its search process in optimization problems. These parameters are designed to guide the exploration and exploitation phases of the algorithm. While the specific implementation details can vary depending on the version of the algorithm or its application, we focus on two main parameters that are most relevant to our application: the number of jellyfish and drift.
 
@@ -81,31 +81,34 @@ The JSO implementation involves several key parameters that control its search p
 
 ## Smoothness
 
-An intuitive way to measure smoothness would be to find how many continuous derivatives exist. We make use of Sobolev spaces:
+An intuitive way to measure smoothness of a function would be to count how many continuous derivatives exist. To help define smoothness in our context, we can make use of the Sobolev spaces: functions $f$ in the Sobolev space $W^{p,\infty}$ have all derivatives of order less than $p$ continuous. Smoothness would then be the highest $p$ such that the index function belongs to $W^{p,\infty}$. We can relax this and consider $W^{p,q}$ Sobolev spaces.
 
-[def of sobolev space]
 
-Smoothness would then be the highest p such that the index function belongs to $W^{p,\infty}$. We can make it weaker by considering $W^{p,q}$ Sobolev spaces.
+Consider the following definition of partial derivative. Let $U$ be an open subset of $\mathbf{R}^n$ and $f: U \rightarrow \mathbf{R}$. The partial derivative of function $f$ at the point $\mathbf{a} = (a_1, \ldots, a_n) \in U$ with respective to the $i$-th variable $x_i$ is defined as
 
-[backup plan when things are not differentiable]
+$$
+\frac{\delta}{\delta x_i} f(\mathbf{a}) =  \lim_{h \rightarrow 0} \frac{f(a_1, \ldots, a_{i-1}, a_i +h, a_{i+1}, \ldots, a_n) - f(a_1 , \ldots, a_i, \ldots, a_n)}{h} = \lim_{h\rightarrow 0} \frac{f(\mathbf{a} + h\mathbf{e_i}) - f(\mathbf{a})}{h}.
+$$
+where $\mathbf{e_i}$ is the unit vector of the $i$-th variable $x_i$.
+
+If the derivative is not well-defined, we propose to approximate the derivative using the following expression:
+
+$$\frac{1}{n_i}\sum_{i} \frac{\|f(\mathbf{a} + h_i\mathbf{e_i}) - f(\mathbf{a})\|^p}{h_i}$$
+
+where $p \in [0,1]$. The choice of $p$ reflects the penalty behaviour. For the application in this paper, we choose $p = 1$.
+
+- $h_i$ is an neighbourhood area around $a$. We can insert different values of $h$ to approximate the above quantity and observe how this quantity changes.
+
 
 ## Squintability
 
-A large squint angle means the function is easy to optimize, because you don’t need to be very very close to the perfect view to see the structure. A small squint angle means that the derivative of the index function can still be very large values near the optimal point. 
-
-OR
-that the values taken by the index function can be clustered into two clear groups: one small group of high values near the optimum, and a large group of the remaining small values.
-OR
-the rate of change of gradient? Gradient changes very drastically when it’s near optimal?
-
-[backup plan when things are not differentiable]
+From the literature, it is commonly understood that a large squint angle implies that the function is easy to optimize, because we do not need to be very close to the perfect view to see the structure. A small squint angle means that the derivative of the index function can still be very large values near the optimal point and will rapidly change as we get even closer to the optimum. As such we can observe the second order gradient, which is the rate of change of gradient, over the space we are searching. For some index functions, the second order gradient is not well-defined, we can approximate the second order gradient vector in similar fashion as the above section.
 
 To the best of our knowledge, this is the first attempt to measure the notion of squintability.
 
 ## Speed
 
-Computational complexity (in big O notation, with respect to the sample size) of computing the index function.
-
+The speed of optimizing an index function can be calculated/measured using the computational complexity (in big O notation, with respect to the sample size) of computing the index function.
 
 # Application \[Di and Sherry\] {#sec-simulation}
 
