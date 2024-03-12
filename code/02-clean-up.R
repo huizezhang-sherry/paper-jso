@@ -1,18 +1,23 @@
 library(tidyverse)
 load(file = "data/sim_pipe.rda")
 
-sim_data <- sim_sine_6d
+sim_data <- sim_sine_68d_TICMIC
 
 set.seed(123)
 seed <- sample(1000: 10000, size = 50)
-sim_setup <- crossing(n_jellies = c(20, 50, 100),
-                      max_tries = c(50, 100),
-                      d = c(6, 8, 10, 12),
-                      sim = 1:50) |>
-  mutate(seed = seed[sim], id = row_number())
+sim_setup <- crossing(idx_f = c("MIC", "TIC"),
+                      d = c(6, 8),
+                      n_jellies = c(20, 50, 100),
+                      max_tries = c(50, 100)) |>
+  filter(!(n_jellies == 100 & max_tries == 100))
 
 tour_level_best_basis <- sim_data |>
   group_by(id) |>
+  filter(index_val == max(index_val)) |>
+  filter(row_number() == 1)
+
+setup_level_best_basis <- sim_data |>
+  group_by(n_jellies, max_tries, d, idx_f) |>
   filter(index_val == max(index_val)) |>
   filter(row_number() == 1)
 
@@ -38,12 +43,15 @@ tour_level <- sim_data |>
 # P_J_hat:    proportion of trials found
 # I_max_max:  best index of each setup
 setup_level <- tour_level |>
-  group_by(n_jellies, max_tries, d) |>
-  reframe(P_J_hat = sum(abs(1 - I_max) <= 0.05)/n(), # TODO: use a better rule
-          I_max_max = max(I_max))
+  group_by(n_jellies, max_tries, d, idx_f) |>
+  reframe(
+    I_max_max = max(I_max),
+    P_J_hat = sum(abs(I_max_max - I_max) <= 0.05)/n() # TODO: use a better rule
+    )
 
 setup_level |>
   ggplot(aes( x= as.factor(n_jellies), y = as.factor(max_tries))) +
-  geom_tile(aes(fill = P_J_hat)) +
-  facet_wrap(vars(d)) +
+  geom_tile(aes(fill = I_max_max)) +
+  #facet_wrap(vars(d)) +
+  facet_grid(d ~ idx_f) +
   colorspace::scale_fill_continuous_sequential(palette = "Sunset")
