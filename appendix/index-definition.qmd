@@ -5,6 +5,8 @@ format: pdf
 
 For data $X_{n \times p}$, the projection basis $A_{p * d}$ gives the projected data, $y = XA$. Projection pursuit finds the projection direction $A$ that maximises the index function $f$: $$ \max f(XA) ~~ A^\prime A = 1.$$
 
+For 2D projections, we can also write $y_{n \times 2} = (y_1, y_2)$, where $y_1$ and $y_2$ are the two columns of the projected data.
+
 The following sections summarise the index functions used in the simulation:
 
 # hole index
@@ -14,6 +16,69 @@ The following sections summarise the index functions used in the simulation:
 -   reference:
     -   Cook and Swayne (2007) Interactive and Dynamic Graphics for Data Analysis page 30: [link](https://link.springer.com/chapter/10.1007/978-0-387-71762-3_2)
     -   code from the [tourr package](https://github.com/ggobi/tourr/blob/master/R/interesting-indices.r)
+
+# dcor2d_2 index
+
+-   smooth
+
+-   
+
+-   Reference:
+
+-   Note
+  
+  - From the function manual: "For bivariate data only, these are fast O(n log n) implementations of distance correlation and distance covariance statistics."
+
+# MIC/ TIC index
+
+-   smooth
+
+-   formula
+
+    -   Let $g(k, l)$ define a partition of the space $(y_1, y_2)$ into $k \times l$ rectangles, for example, $g(2, 3)$ means dividing the data space into 2 rectangles in the $y_2$ direction and 3 rectangles in the $y_1$ direction. Let $G$ denotes all the possible partition.
+    -   MIC finds the maximum mutual information over G where k and l is bounded by the grid size: $k \times l < B(n) = n^{\alpha}$ where alpha = 0.3 in our simulation
+
+    $$I_{MIC}(A) = \max_{g \in G} \frac{I(y_1, y_2 | g)}{\log(\min(k^*, l^*))}  = \max_{g \in G} \frac{\sum_{y1} \sum_{y2} P(y_1, y_2) \log \frac{P(y_1)}{P(y_1) P(y_2)}}{\log(\min(k^*, l^*))}$$
+
+    where $k^*$ and $l^*$ are the number of rectangles in the optimal partition $g$.
+
+    -   TIC calculates the sum of mutual information over G
+
+$$I_{TIC}(A) = \sum_{g \in G} \frac{I(y_1, y_2 | g)}{\log(\min(k^*, l^*))}  = \sum_{g \in G} \frac{\sum_{y1} \sum_{y2} P(y_1, y_2) \log \frac{P(y_1)}{P(y_1) P(y_2)}}{\log(\min(k^*, l^*))}$$
+
+-   Reference:
+
+    -   Reshef (2011) Detecting Novel Associations in Large Datasets: [link](https://pubmed.ncbi.nlm.nih.gov/22174245/) - Figure 1 is usually to understand the general idea
+
+    -   Reshef (2016) Measuring Dependence Powerfully and Equitably: [link](https://jmlr.csail.mit.edu/papers/volume17/15-308/15-308.pdf).
+
+-   Note:
+
+    -   The original Definition 1 on page 6 of Reshef (2016) uses supremum, here I just use the maximum.
+    -   There are different version of MIC and we use $MIC_e$ and $TIC_e$ (See Sec 4 in the paper in Reshef (2016)), which uses the equicharacteristic matrix rather than the original characteristic matrix in both MIC/ TIC calculation, see page 14 Figure 1 for there difference (equicharacteristic matrix parts the space equally hence faster).
+    -   Section 4.3/4.4 of Reshef (2016) talks about the time complexity
+
+# loess/ spline index
+
+-   smooth
+
+-   formula:
+
+    -   let $e^{\text{model}}_{y_1 \sim y_2}$ denote the residual from model $y_1 \sim y_2$
+
+    -   for the loess index, we fit a loess model to $y_1 \sim y_2$ (use $\alpha = 0.05$ for the smoothing parameter in the loess index)
+
+    $$I_{\text{loess}}(A) = \max \left(1 - \frac{var(e^{\text{loess}}_{y_1 \sim y_2})}{var(y_1)}, 1 - \frac{var(e^{\text{loess}}_{y_2 \sim y_1})}{var(y_2)}\right)$$
+
+    -   for the spline index, a spline model is fitted (use cubic regression spline with k = 15 for the diemnsion of the basis in the spline model).
+
+$$I_{\text{spline}}(A) = \max \left(1 - \frac{var(e^{\text{spline}}_{y_1 \sim y_2})}{var(y_1)}, 1 - \frac{var(e^{\text{spline}}_{y_2 \sim y_1})}{var(y_2)}\right)$$
+
+-   reference:
+    -   loess: (none) I create it myself, inspired by the spline index
+    -   spline:
+        -   Ursula and Di (2020) Using tours to visually investigate properties of new projection pursuit indexes with application to problems in physics, page 1176: [link](https://arxiv.org/abs/1902.00181)
+        -   code from the [cassowaryr page](https://github.com/numbats/cassowaryr/blob/HEAD/R/association.R)
 
 # Stringy
 
@@ -26,18 +91,3 @@ The following sections summarise the index functions used in the simulation:
     -   Wilkinson et al (2005) Graph-Theoretic Scagnostics: page 160: [link](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=1532142)
 
     -   code from the [cassowaryr page](https://github.com/numbats/cassowaryr/blob/HEAD/R/mst.R)
-
-# spline
-
--   smooth
--   formula:
-    -   $\hat{y}$ is derived from fitting a penalised spline model of y \~ x,
-    -   $\hat{y}^\prime$ is derived from fitting a penalised spline model of x \~ y,
-    -   the variance of the residuals is compared to the variance of the original data
-
-$$I_{spline}(A) = \max \left(1 - \frac{var(y - \hat{y})}{var(x)}, 1 - \frac{var(y - \hat{y}^\prime)}{var(y)}\right)$$
-
--   reference:
-
-    -   Ursula and Di (2020) Using tours to visually investigate properties of new projection pursuit indexes with application to problems in physics, page 1176: [link](https://arxiv.org/abs/1902.00181)
-    -   code from the [cassowaryr page](https://github.com/numbats/cassowaryr/blob/HEAD/R/association.R)
