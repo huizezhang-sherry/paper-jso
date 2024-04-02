@@ -232,7 +232,7 @@ norm equal to 1 and the product of columns need to sum to zero.
 
 \citet{cook1995grand} introduced the PP guided tour, which enabled
 interactive visualisation of the optimisation in order to visually
-explore high-dimensional data. It is implemented in the R {[}XXX REF{]}
+explore high-dimensional data. It is implemented in the R \citep{R}
 package \texttt{tourr} \citep{tourr}. The optimisation that is
 implemented is fairly basic, and potential problems were highlighted by
 \citet{RJ-2021-105}. Implementing better optimisation functionality is a
@@ -253,6 +253,61 @@ suggestions for future directions.
 
 \section{Projection pursuit, index functions and optimisation {[}Di and
 Sherry{]}}\label{sec-background}
+
+A tour on high-dimensional data is constructed by geodesically
+interpolating between pairs of planes. Any plane is described by an
+orthonormal basis, \(A_t\), where \(t\) represents time in the sequence.
+The term ``geodesic'' refers to maintaining the orthonormality
+constraint so that each view shown is correctly a projection of the
+data. The PP guided tour operates by geodesically interpolating to
+target planes (projections) which have high PP index values, as provided
+by the optimiser. The geodesic interpolation means that the viewer sees
+a continuous sequence of projections of the data, so they can watch
+patterns of interest forming as the function is optimised. There are
+five optimisation methods implemented in the \texttt{tourr} package:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{search\_geodesic()}: provides a pseudo-derivative
+  optimisation. It searches locally for the best direction, based on
+  differencing the index values for very close projections. Then it
+  follows the direction along the geodesic path between planes, stopping
+  when the next index value fails to increase.
+\item
+  \texttt{search\_better()}: is a brute-force optimisation searching
+  randomly for projections with higher index values.
+\item
+  \texttt{search\_better\_random()}: is essentially simulated annealing
+  \citep{Bertsimas93} where the search space is reduced as the
+  optimisation progresses.
+\item
+  \texttt{search\_posse()}: implements the algorithm described in
+  \citet{posse95}.
+\item
+  \texttt{search\_polish()}: is a very localised search, to take tiny
+  steps to get closer to the local maximum.
+\end{itemize}
+
+There are several PP index functions available: \texttt{holes()} and
+\texttt{cmass()} \citep{cook1993projection}; \texttt{lda\_pp()}
+\citep{lee2005projection}; \texttt{pda\_pp()} \citep{lee2010projection};
+\texttt{dcor2d()} and \texttt{splines2d()} \citep{Grimm2016};
+\texttt{norm\_bin()} and \texttt{norm\_kol()} \citep{huber85};
+\texttt{slice\_index()} \citep{Laa:2020wkm}. Most are relatively simply
+defined, for any projection dimension, and implemented because they are
+relatively easy to optimise. A goal is to be able to incorporate more
+complex PP indexes, for example based on scagnostics (\citet{scag},
+\citet{WW08}).
+
+An initial investigation of PP indexes, and the potential for
+scagnostics is described in \citet{laa_using_2020}. To be useful here an
+optimiser needs to be able to handle functions which are not very
+smooth. In addition, because data structures might be relatively fine,
+the optimiser needs to be able to find maxima that occur with a small
+squint angle, that can only be seen from very close by. One last aspect
+that is useful is for an optimiser to return local maxima in addition to
+global because data can contain many different and interesting features.
 
 \section{The jellyfish optimiser and properties of PP indexes {[}Nicolas
 and Jessica{]}}\label{sec-theory}

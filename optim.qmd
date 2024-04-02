@@ -68,7 +68,7 @@ Effective optimisation is an important aspect of many methods employed for visua
 
 These PPI are defined on projections ($XA$), which means that there is a constraint that needs to be considered when optimising. A projection of data is defined by a $p\times d$ orthonormal matrix $A$, and this imposes the constraint on the elements of $A$, that columns need have norm equal to 1 and the product of columns need to sum to zero.
 
-@cook1995grand introduced the PP guided tour, which enabled interactive visualisation of the optimisation in order to visually explore high-dimensional data. It is implemented in the R [XXX REF] package `tourr` [@tourr]. The optimisation that is implemented is fairly basic, and potential problems were highlighted by @RJ-2021-105. Implementing better optimisation functionality is a goal, but it needs to be kept in mind that the guided tour also has places importance on watching the projected data as the optimisation progresses. 
+@cook1995grand introduced the PP guided tour, which enabled interactive visualisation of the optimisation in order to visually explore high-dimensional data. It is implemented in the R [@R] package `tourr` [@tourr]. The optimisation that is implemented is fairly basic, and potential problems were highlighted by @RJ-2021-105. Implementing better optimisation functionality is a goal, but it needs to be kept in mind that the guided tour also has places importance on watching the projected data as the optimisation progresses. 
 
 Here we explore the potential for a jellyfish optimisation to be integrated with the guided tour. @sec-background explains the optimisation that is used in the current the projection pursuit guided tour. @sec-theory provides more details on the jellyfish optimiser and formalises several characteristics of projection pursuit indexes that are help to measure optimisaer performance. @sec-simulation describes a simulation study on performance of the jellyfish for several types of data and index functions. @sec-conclusion summarises the work and provides suggestions for future directions.
 
@@ -76,6 +76,17 @@ Here we explore the potential for a jellyfish optimisation to be integrated with
 
 <!-- Need to assume that the special issue will have the general introduction to PP, so the focus here will be on background needed for this paper, tours, guidance using PP, optimisation, visualisation, ... -->
 
+A tour on high-dimensional data is constructed by geodesically interpolating between pairs of planes. Any plane is described by an orthonormal basis, $A_t$, where $t$ represents time in the sequence. The term "geodesic" refers to maintaining the orthonormality constraint so that each view shown is correctly a projection of the data. The PP guided tour operates by geodesically interpolating to target planes (projections) which have high PP index values, as provided by the optimiser. The geodesic interpolation means that the viewer sees a continuous sequence of projections of the data, so they can watch patterns of interest forming as the function is optimised. There are five optimisation methods implemented in the `tourr` package:
+
+- `search_geodesic()`: provides a pseudo-derivative optimisation. It searches locally for the best direction, based on differencing the index values for very close projections. Then it follows the direction along the geodesic path between planes, stopping when the next index value fails to increase. 
+- `search_better()`: is a brute-force optimisation searching randomly for projections with higher index values. 
+- `search_better_random()`: is essentially simulated annealing [@Bertsimas93] where the search space is reduced as the optimisation progresses. 
+- `search_posse()`: implements the algorithm described in @posse95. 
+- `search_polish()`: is a very localised search, to take tiny steps to get closer to the local maximum.
+
+There are several PP index functions available: `holes()` and `cmass()` [@cook1993projection]; `lda_pp()` [@lee2005projection]; `pda_pp()` [@lee2010projection]; `dcor2d()` and `splines2d()` [@Grimm2016];  `norm_bin()` and `norm_kol()` [@huber85]; `slice_index()` [@Laa:2020wkm]. Most are relatively simply defined, for any projection dimension, and implemented because they are relatively easy to optimise. A goal is to be able to incorporate more complex PP indexes, for example based on scagnostics (@scag, @WW08). 
+
+An initial investigation of PP indexes, and the potential for scagnostics is described in @laa_using_2020. To be useful here an optimiser needs to be able to handle functions which are not very smooth. In addition, because data structures might be relatively fine, the optimiser needs to be able to find maxima that occur with a small squint angle, that can only be seen from very close by. One last aspect that is useful is for an optimiser to return local maxima in addition to global because data can contain many different and interesting features.
 
 # The jellyfish optimiser and properties of PP indexes \[Nicolas and Jessica\] {#sec-theory}
 
