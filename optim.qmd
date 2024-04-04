@@ -1,5 +1,8 @@
 ---
 title: Studying the Performance of the Jellyfish Optimiser for the Application of Projection Pursuit
+header-includes:
+   - \usepackage{algorithm}
+   - \usepackage{algpseudocode}
 author:
   - name: Alice Anonymous
     email: alice@example.com
@@ -49,9 +52,13 @@ format:
       formatting: preprint
       model: 3p
       cite-style: numbername
+editor: 
+  markdown: 
+    wrap: 72
 ---
 
-*Let's use British English ("American or British usage is accepted, but not a mixture of these")*
+*Let's use British English ("American or British usage is accepted, but
+not a mixture of these")*
 
 ```{r setup, echo = FALSE, message=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
@@ -62,81 +69,274 @@ library(patchwork)
 
 # Introduction \[Nicolas and Jessica\]
 
-The artificial jellyfish search (JS) algorithm [@chou_novel_2021] is a swarm-based metaheuristic optimisation algorithm inspired by the search behaviour of jellyfish in the ocean. It is one of the newest swarm intelligence algorithms [@rajwar_exhaustive_2023], which was shown to have stronger search ability and faster convergence with few algorithmic parameters compared to classic optimization methods [@chou_novel_2021]-[@chou_recent_2022].
+The artificial jellyfish search (JS) algorithm [@chou_novel_2021] is a
+swarm-based metaheuristic optimisation algorithm inspired by the search
+behaviour of jellyfish in the ocean. It is one of the newest swarm
+intelligence algorithms [@rajwar_exhaustive_2023], which was shown to
+have stronger search ability and faster convergence with few algorithmic
+parameters compared to classic optimization methods
+[@chou_novel_2021]-[@chou_recent_2022].
 
-Effective optimisation is an important aspect of many methods employed for visualising high-dimensional data ($X$). Here we are concerned about computing informative linear projections of high-dimensional ($p$) data using projection pursuit (PP) (@kr69, @FT74). This involves optimising a function  (e.g. @hall1989polynomial, @cook1993projection, @lee2010projection, @Loperfido2018, @Loperfido2020), called the projection pursuit index (PPI), that defines what is interesting or informative in a projection. 
+Effective optimisation is an important aspect of many methods employed
+for visualising high-dimensional data ($X$). Here we are concerned about
+computing informative linear projections of high-dimensional ($p$) data
+using projection pursuit (PP) (@kr69, @FT74). This involves optimising a
+function (e.g. @hall1989polynomial, @cook1993projection,
+@lee2010projection, @Loperfido2018, @Loperfido2020), called the
+projection pursuit index (PPI), that defines what is interesting or
+informative in a projection.
 
-These PPI are defined on projections ($XA$), which means that there is a constraint that needs to be considered when optimising. A projection of data is defined by a $p\times d$ orthonormal matrix $A$, and this imposes the constraint on the elements of $A$, that columns need have norm equal to 1 and the product of columns need to sum to zero.
+These PPI are defined on projections ($XA$), which means that there is a
+constraint that needs to be considered when optimising. A projection of
+data is defined by a $p\times d$ orthonormal matrix $A$, and this
+imposes the constraint on the elements of $A$, that columns need have
+norm equal to 1 and the product of columns need to sum to zero.
 
-@cook1995grand introduced the PP guided tour, which enabled interactive visualisation of the optimisation in order to visually explore high-dimensional data. It is implemented in the R [@R] package `tourr` [@tourr]. The optimisation that is implemented is fairly basic, and potential problems were highlighted by @RJ-2021-105. Implementing better optimisation functionality is a goal, but it needs to be kept in mind that the guided tour also has places importance on watching the projected data as the optimisation progresses. 
+@cook1995grand introduced the PP guided tour, which enabled interactive
+visualisation of the optimisation in order to visually explore
+high-dimensional data. It is implemented in the R [@R] package `tourr`
+[@tourr]. The optimisation that is implemented is fairly basic, and
+potential problems were highlighted by @RJ-2021-105. Implementing better
+optimisation functionality is a goal, but it needs to be kept in mind
+that the guided tour also has places importance on watching the
+projected data as the optimisation progresses.
 
-Here we explore the potential for a jellyfish optimisation to be integrated with the guided tour. @sec-background explains the optimisation that is used in the current the projection pursuit guided tour. @sec-theory provides more details on the jellyfish optimiser and formalises several characteristics of projection pursuit indexes that are help to measure optimisaer performance. @sec-simulation describes a simulation study on performance of the jellyfish for several types of data and index functions. @sec-conclusion summarises the work and provides suggestions for future directions.
+Here we explore the potential for a jellyfish optimisation to be
+integrated with the guided tour. @sec-background explains the
+optimisation that is used in the current the projection pursuit guided
+tour. @sec-theory provides more details on the jellyfish optimiser and
+formalises several characteristics of projection pursuit indexes that
+are help to measure optimisaer performance. @sec-simulation describes a
+simulation study on performance of the jellyfish for several types of
+data and index functions. @sec-conclusion summarises the work and
+provides suggestions for future directions.
 
 # Projection pursuit, index functions and optimisation \[Di and Sherry\] {#sec-background}
 
 <!-- Need to assume that the special issue will have the general introduction to PP, so the focus here will be on background needed for this paper, tours, guidance using PP, optimisation, visualisation, ... -->
 
-A tour on high-dimensional data is constructed by geodesically interpolating between pairs of planes. Any plane is described by an orthonormal basis, $A_t$, where $t$ represents time in the sequence. The term "geodesic" refers to maintaining the orthonormality constraint so that each view shown is correctly a projection of the data. The PP guided tour operates by geodesically interpolating to target planes (projections) which have high PP index values, as provided by the optimiser. The geodesic interpolation means that the viewer sees a continuous sequence of projections of the data, so they can watch patterns of interest forming as the function is optimised. There are five optimisation methods implemented in the `tourr` package:
+A tour on high-dimensional data is constructed by geodesically
+interpolating between pairs of planes. Any plane is described by an
+orthonormal basis, $A_t$, where $t$ represents time in the sequence. The
+term "geodesic" refers to maintaining the orthonormality constraint so
+that each view shown is correctly a projection of the data. The PP
+guided tour operates by geodesically interpolating to target planes
+(projections) which have high PP index values, as provided by the
+optimiser. The geodesic interpolation means that the viewer sees a
+continuous sequence of projections of the data, so they can watch
+patterns of interest forming as the function is optimised. There are
+five optimisation methods implemented in the `tourr` package:
 
-- `search_geodesic()`: provides a pseudo-derivative optimisation. It searches locally for the best direction, based on differencing the index values for very close projections. Then it follows the direction along the geodesic path between planes, stopping when the next index value fails to increase. 
-- `search_better()`: is a brute-force optimisation searching randomly for projections with higher index values. 
-- `search_better_random()`: is essentially simulated annealing [@Bertsimas93] where the search space is reduced as the optimisation progresses. 
-- `search_posse()`: implements the algorithm described in @posse95. 
-- `search_polish()`: is a very localised search, to take tiny steps to get closer to the local maximum.
+-   `search_geodesic()`: provides a pseudo-derivative optimisation. It
+    searches locally for the best direction, based on differencing the
+    index values for very close projections. Then it follows the
+    direction along the geodesic path between planes, stopping when the
+    next index value fails to increase.
+-   `search_better()`: is a brute-force optimisation searching randomly
+    for projections with higher index values.
+-   `search_better_random()`: is essentially simulated annealing
+    [@Bertsimas93] where the search space is reduced as the optimisation
+    progresses.
+-   `search_posse()`: implements the algorithm described in @posse95.
+-   `search_polish()`: is a very localised search, to take tiny steps to
+    get closer to the local maximum.
 
-There are several PP index functions available: `holes()` and `cmass()` [@cook1993projection]; `lda_pp()` [@lee2005projection]; `pda_pp()` [@lee2010projection]; `dcor2d()` and `splines2d()` [@Grimm2016];  `norm_bin()` and `norm_kol()` [@huber85]; `slice_index()` [@Laa:2020wkm]. Most are relatively simply defined, for any projection dimension, and implemented because they are relatively easy to optimise. A goal is to be able to incorporate more complex PP indexes, for example based on scagnostics (@scag, @WW08). 
+There are several PP index functions available: `holes()` and `cmass()`
+[@cook1993projection]; `lda_pp()` [@lee2005projection]; `pda_pp()`
+[@lee2010projection]; `dcor2d()` and `splines2d()` [@Grimm2016];
+`norm_bin()` and `norm_kol()` [@huber85]; `slice_index()`
+[@Laa:2020wkm]. Most are relatively simply defined, for any projection
+dimension, and implemented because they are relatively easy to optimise.
+A goal is to be able to incorporate more complex PP indexes, for example
+based on scagnostics (@scag, @WW08).
 
-An initial investigation of PP indexes, and the potential for scagnostics is described in @laa_using_2020. To be useful here an optimiser needs to be able to handle functions which are not very smooth. In addition, because data structures might be relatively fine, the optimiser needs to be able to find maxima that occur with a small squint angle, that can only be seen from very close by. One last aspect that is useful is for an optimiser to return local maxima in addition to global because data can contain many different and interesting features.
+An initial investigation of PP indexes, and the potential for
+scagnostics is described in @laa_using_2020. To be useful here an
+optimiser needs to be able to handle functions which are not very
+smooth. In addition, because data structures might be relatively fine,
+the optimiser needs to be able to find maxima that occur with a small
+squint angle, that can only be seen from very close by. One last aspect
+that is useful is for an optimiser to return local maxima in addition to
+global because data can contain many different and interesting features.
 
 # The jellyfish optimiser and properties of PP indexes \[Nicolas and Jessica\] {#sec-theory}
 
-The jellyfish optimiser (JSO) mimics the natural movements of jellyfish, which include passive and active motions driven by ocean currents and their swimming patterns, respectively. In the context of optimization, these movements are abstracted to explore the search space in a way that balances exploration (searching new areas) and exploitation (focusing on promising areas). The algorithm aims to find the optimal solution by adapting the jellyfish's behavior to navigate towards the best solution over iterations [@chou_novel_2021].
+The jellyfish optimiser (JSO) mimics the natural movements of jellyfish,
+which include passive and active motions driven by ocean currents and
+their swimming patterns, respectively. In the context of optimization,
+these movements are abstracted to explore the search space in a way that
+balances exploration (searching new areas) and exploitation (focusing on
+promising areas). The algorithm aims to find the optimal solution by
+adapting the jellyfish's behavior to navigate towards the best solution
+over iterations [@chou_novel_2021].
 
-Below is the pseudo-code for this visualisation application.
+To understand what the jellyfish optimizer is doing in the context of
+Projection Pursuit, we first start with a current projection (the
+starting point). Then we evaluate this projection using an index
+function, which tells us how good the current projection is. We then
+move the projection in a direction determined by the 'best jelly' and
+random factors, influenced by how far along we are in the optimization
+process (the trial $i$ and `max.tries`). Occasionally, we might explore
+completely new directions like a jellyfish might with ocean currents.
+Then, we compare new potential projections to our current one. If
+they're better, we adopt them; if not, we stick with our current
+projection. This process continues and iteratively improves the
+projection, until we reach the maximum number of trials.
 
-\[Put the pseudo-code in, add specifics to this visualisation application\]
+::: {.callout-note icon="false"}
 
-The JSO implementation involves several key parameters that control its search process in optimization problems. These parameters are designed to guide the exploration and exploitation phases of the algorithm. While the specific implementation details can vary depending on the version of the algorithm or its application, we focus on two main parameters that are most relevant to our application: the number of jellyfish and drift.
+## Algorithm: Jellyfish Optimizer Pseudo Code
 
-@laa_using_2020 has proposed five criteria for assessing projection pursuit indexes (smoothness, squintability, flexibility, rotation invariance, and speed). Since not all the properties affects the execution of the optimisation, here we consider the three relevant properties (smoothness, squintability, and speed), and propose three metrics to evaluate these three properties.
+**Input**: `current_projections`, `index_function`, `tries`, `max_tries`
+
+**Output**: `optimized_projection`
+
+
+**Initialize** `best_jelly` as the projection with the best index value from `current_projections`, and 
+`current_index` as the array of index values for each projection in `current_projections`
+
+>
+
+**for** each try in 1 to max_tries **do**
+
+> Calculate $c_t$ based on the current try and max_tries
+  
+> **if** $c_t$ is greater than or equal to $0.5$ **then**
+>    
+> > Define trend based on the best jelly and current projections
+>     
+> > Update each projection towards the trend using a random factor and orthonormalisation
+>       
+> **else**
+>     
+> > **if** a random number is greater than $1 - c_t$ **then**
+> >       
+> > > Slightly adjust each projection with a small random factor (Type A passive)
+> >         
+> > **else**
+> >       
+> > > For each projection, compare with a random jelly and adjust towards or away from it (Type B active)
+>         
+> Update the orientation of each projection to maintain consistency
+>     
+> Evaluate the new projections using the index function
+
+>
+    
+> **if** any new projection is worse than the current, revert to the `current_projection` for that case
+> 
+> > Determine the projection with the best index value as the new best_jelly
+
+>
+   
+> **if** the try is the last one, print the final best projection and **exit**
+    
+**return** the set of projections with the updated best_jelly as the optimized_projection
+
+:::
+
+<!-- Var names in the function and in the text needs to be consistent??? -->
+
+The JSO implementation involves several key parameters that control its
+search process in optimization problems. These parameters are designed
+to guide the exploration and exploitation phases of the algorithm. While
+the specific implementation details can vary depending on the version of
+the algorithm or its application, we focus on two main parameters that
+are most relevant to our application: the number of jellyfish and drift.
+
+@laa_using_2020 has proposed five criteria for assessing projection
+pursuit indexes (smoothness, squintability, flexibility, rotation
+invariance, and speed). Since not all the properties affects the
+execution of the optimisation, here we consider the three relevant
+properties (smoothness, squintability, and speed), and propose three
+metrics to evaluate these three properties.
 
 ## Smoothness
 
-An intuitive way to measure smoothness of a function would be to count how many continuous derivatives exist. To help define smoothness in our context, we can make use of the Sobolev spaces: functions $f$ in the Sobolev space $W^{p,\infty}$ have all derivatives of order less than $p$ continuous. Smoothness would then be the highest $p$ such that the index function belongs to $W^{p,\infty}$. We can relax this and consider $W^{p,q}$ Sobolev spaces.
 
-Consider the following definition of partial derivative. Let $U$ be an open subset of $\mathbf{R}^n$ and $f: U \rightarrow \mathbf{R}$. The partial derivative of function $f$ at the point $\mathbf{a} = (a_1, \ldots, a_n) \in U$ with respective to the $i$-th variable $x_i$ is defined as
+<!--
+An intuitive way to measure smoothness of a function would be to count
+how many continuous derivatives exist. 
+To help define smoothness in our
+context, we can make use of the Sobolev spaces: functions $f$ in the
+Sobolev space $W^{p,\infty}$ have all derivatives of order less than $p$
+continuous. Smoothness would then be the highest $p$ such that the index
+function belongs to $W^{p,\infty}$. We can relax this and consider
+$W^{p,q}$ Sobolev spaces.
+
+Consider the following definition of partial derivative. Let $U$ be an
+open subset of $\mathbf{R}^n$ and $f: U \rightarrow \mathbf{R}$. The
+partial derivative of function $f$ at the point
+$\mathbf{a} = (a_1, \ldots, a_n) \in U$ with respective to the $i$-th
+variable $x_i$ is defined as
 
 $$
 \frac{\delta}{\delta x_i} f(\mathbf{a}) =  \lim_{h \rightarrow 0} \frac{f(a_1, \ldots, a_{i-1}, a_i +h, a_{i+1}, \ldots, a_n) - f(a_1 , \ldots, a_i, \ldots, a_n)}{h} = \lim_{h\rightarrow 0} \frac{f(\mathbf{a} + h\mathbf{e_i}) - f(\mathbf{a})}{h}.
 $$ where $\mathbf{e_i}$ is the unit vector of the $i$-th variable $x_i$.
 
-If the derivative is not well-defined, we propose to approximate the derivative using the following expression:
+If the derivative is not well-defined, we propose to approximate the
+derivative using the following expression:
 
 $$\frac{1}{n_i}\sum_{i} \frac{\|f(\mathbf{a} + h_i\mathbf{e_i}) - f(\mathbf{a})\|^p}{h_i}$$
 
-where $p \in [0,1]$. The choice of $p$ reflects the penalty behaviour. For the application in this paper, we choose $p = 1$.
+where $p \in [0,1]$. The choice of $p$ reflects the penalty behaviour.
+For the application in this paper, we choose $p = 1$.
 
--   $h_i$ is an neighbourhood area around $a$. We can insert different values of $h$ to approximate the above quantity and observe how this quantity changes.
+-   $h_i$ is an neighbourhood area around $a$. We can insert different
+    values of $h$ to approximate the above quantity and observe how this
+    quantity changes.
+-->
+
+If we evaluate the index function at some random points (like the random initialization of the jellyfish optimizer), then we can interpret these random index values as a random field, indexed by a space parameter: the random projection angle. This analogy suggests to use this random training sample to fit a spatial model, a simple one being a (spatial) Gaussian process. There exist R packages to fit the hyperparameters of a Gaussian process, for example ExaGeoStatR (https://github.com/ecrc/exageostatR), which is an R wrapper for the ExaGeoStat library (https://arxiv.org/pdf/1708.02835.pdf).
+
+How can we define a measure of smoothness from this? A Gaussian process is fully defined by its mean function and covariance function. The way the covariance function is defined is where smoothness comes into play: if an index is very smooth, then two close projection angles should produce close index values (strong correlation); by contrast, if an index is not smooth, then two close projection angles might give very different index values (fast decay of correlations with respect to distance between angles).
+
+Luckily, the most popular class of covariance functions, known as Matérn covariance functions (see https://arxiv.org/pdf/1708.02835.pdf on page 3) has one parameter, Theta3, which controls the decay of the covariance function, which in turns controls the smoothness of the random field. The ExaGeoStat paper calls it smoothness parameter: the higher Theta3, the smoother the random field. In our context, the higher Theta3, the smoother the index function.
+
+This suggests the following approach:
+
+- Evaluate the index function at some random projection angle values (our initial jellies),
+- Use this sample to fit a Gaussian process with Matérn covariance using ExaGeoStatR,
+- Use the fitted Theta3 parameter value as our definition of smoothness of the index function: the higher Theta3, the smoother the index.
+
+
 
 ## Squintability
 
-From the literature, it is commonly understood that a large squint angle implies that the function is easy to optimize, because we do not need to be very close to the perfect view to see the structure. A small squint angle means that the derivative of the index function can still be very large values near the optimal point and will rapidly change as we get even closer to the optimum. As such we can observe the second order gradient, which is the rate of change of gradient, over the space we are searching. For some index functions, the second order gradient is not well-defined, we can approximate the second order gradient vector in similar fashion as the above section.
+From the literature, it is commonly understood that a large squint angle
+implies that the function is easy to optimize, because we do not need to
+be very close to the perfect view to see the structure. A small squint
+angle means that the derivative of the index function can still be very
+large values near the optimal point and will rapidly change as we get
+even closer to the optimum. As such we can observe the second order
+gradient, which is the rate of change of gradient, over the space we are
+searching. For some index functions, the second order gradient is not
+well-defined, we can approximate the second order gradient vector in
+similar fashion as the above section.
 
-To the best of our knowledge, this is the first attempt to measure the notion of squintability.
+To the best of our knowledge, this is the first attempt to measure the
+notion of squintability.
 
 ## Speed
 
-The speed of optimizing an index function can be calculated/measured using the computational complexity (in big O notation, with respect to the sample size) of computing the index function.
+The speed of optimizing an index function can be calculated/measured
+using the computational complexity (in big O notation, with respect to
+the sample size) of computing the index function.
 
 # Application \[Di and Sherry\] {#sec-simulation}
 
-The jellyfish optimiser has been implemented in the tourr package [@wickham_tourr_2011] and we will use the diagnostic plots proposed in the ferrn package [@RJ-2021-105] to visualise the optimisation process.
+The jellyfish optimiser has been implemented in the tourr package
+[@wickham_tourr_2011] and we will use the diagnostic plots proposed in
+the ferrn package [@RJ-2021-105] to visualise the optimisation process.
 
 ## Going beyond 10D
 
-The pipe-finding problem is initially used to investigate indexes and optimisers in @laa_using_2020, and we extend it from a 6D problem to a 12D problem.
+The pipe-finding problem is initially used to investigate indexes and
+optimisers in @laa_using_2020, and we extend it from a 6D problem to a
+12D problem.
 
-Jellyfish optimiser, as a multi-start algorithm, is efficient in \[...\] for high-dimensional problems
+Jellyfish optimiser, as a multi-start algorithm, is efficient in \[...\]
+for high-dimensional problems
 
 ```{r echo = FALSE}
 load(here::here("data/pipe_better.rda"))
