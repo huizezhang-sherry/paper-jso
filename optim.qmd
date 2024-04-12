@@ -167,12 +167,12 @@ their swimming patterns, respectively. In the context of optimization,
 these movements are abstracted to explore the search space in a way that
 balances exploration (searching new areas) and exploitation (focusing on
 promising areas). The algorithm aims to find the optimal solution by
-adapting the jellyfish's behavior to navigate towards the best solution
+adapting the jellyfish's behaviour to navigate towards the best solution
 over iterations [@chou_novel_2021].
 
 To understand what the jellyfish optimizer is doing in the context of
 Projection Pursuit, we first start with a current projection (the
-starting point). Then we evaluate this projection using an index
+starting point). Then, we evaluate this projection using an index
 function, which tells us how good the current projection is. We then
 move the projection in a direction determined by the 'best jelly' and
 random factors, influenced by how far along we are in the optimization
@@ -184,55 +184,54 @@ projection. This process continues and iteratively improves the
 projection, until we reach the maximum number of trials.
 
 ::: {.callout-note icon="false"}
-
 ## Algorithm: Jellyfish Optimizer Pseudo Code
 
 **Input**: `current_projections`, `index_function`, `tries`, `max_tries`
 
 **Output**: `optimized_projection`
 
-
-**Initialize** `best_jelly` as the projection with the best index value from `current_projections`, and 
-`current_index` as the array of index values for each projection in `current_projections`
-
->
+**Initialize** `best_jelly` as the projection with the best index value
+from `current_projections`, and `current_index` as the array of index
+values for each projection in `current_projections`
 
 **for** each try in 1 to max_tries **do**
 
 > Calculate $c_t$ based on the current try and max_tries
-  
+
 > **if** $c_t$ is greater than or equal to $0.5$ **then**
->    
+>
 > > Define trend based on the best jelly and current projections
->     
-> > Update each projection towards the trend using a random factor and orthonormalisation
->       
+>
+> > Update each projection towards the trend using a random factor and
+> > orthonormalisation
+>
 > **else**
->     
+>
 > > **if** a random number is greater than $1 - c_t$ **then**
-> >       
-> > > Slightly adjust each projection with a small random factor (Type A passive)
-> >         
+> >
+> > > Slightly adjust each projection with a small random factor (Type A
+> > > passive)
+> >
 > > **else**
-> >       
-> > > For each projection, compare with a random jelly and adjust towards or away from it (Type B active)
->         
+> >
+> > > For each projection, compare with a random jelly and adjust
+> > > towards or away from it (Type B active)
+>
 > Update the orientation of each projection to maintain consistency
->     
+>
 > Evaluate the new projections using the index function
 
+> **if** any new projection is worse than the current, revert to the
+> `current_projection` for that case
 >
-    
-> **if** any new projection is worse than the current, revert to the `current_projection` for that case
-> 
-> > Determine the projection with the best index value as the new best_jelly
+> > Determine the projection with the best index value as the new
+> > best_jelly
 
->
-   
-> **if** the try is the last one, print the final best projection and **exit**
-    
-**return** the set of projections with the updated best_jelly as the optimized_projection
+> **if** the try is the last one, print the final best projection and
+> **exit**
 
+**return** the set of projections with the updated best_jelly as the
+optimized_projection
 :::
 
 <!-- Var names in the function and in the text needs to be consistent??? -->
@@ -253,7 +252,7 @@ metrics to evaluate these three properties.
 
 ## Smoothness
 
-
+```{=html}
 <!--
 An intuitive way to measure smoothness of a function would be to count
 how many continuous derivatives exist. 
@@ -286,20 +285,56 @@ For the application in this paper, we choose $p = 1$.
     values of $h$ to approximate the above quantity and observe how this
     quantity changes.
 -->
+```
+If we evaluate the index function at some random points (like the random
+initialization of the jellyfish optimizer), then we can interpret these
+random index values as a random field, indexed by a space parameter: the
+random projection angle. This analogy suggests to use this random
+training sample to fit a spatial model, a simple one being a (spatial)
+Gaussian process.
 
-If we evaluate the index function at some random points (like the random initialization of the jellyfish optimizer), then we can interpret these random index values as a random field, indexed by a space parameter: the random projection angle. This analogy suggests to use this random training sample to fit a spatial model, a simple one being a (spatial) Gaussian process. There exist R packages to fit the hyperparameters of a Gaussian process, for example ExaGeoStatR (https://github.com/ecrc/exageostatR), which is an R wrapper for the ExaGeoStat library (https://arxiv.org/pdf/1708.02835.pdf).
+```{=html}
+<!--
+There exist R packages to fit the hyperparameters of a Gaussian process, for example ExaGeoStatR (https://github.com/ecrc/exageostatR), which is an R wrapper for the ExaGeoStat library (https://arxiv.org/pdf/1708.02835.pdf).
+-->
+```
 
-How can we define a measure of smoothness from this? A Gaussian process is fully defined by its mean function and covariance function. The way the covariance function is defined is where smoothness comes into play: if an index is very smooth, then two close projection angles should produce close index values (strong correlation); by contrast, if an index is not smooth, then two close projection angles might give very different index values (fast decay of correlations with respect to distance between angles).
+How can we define a measure of smoothness from this? The distribution of
+a Gaussian process is fully determined by its mean function and
+covariance function. The way the covariance function is defined is where
+smoothness comes into play: if an index is very smooth, then two close
+projection angles should produce close index values (strong
+correlation); by contrast, if an index is not smooth, then two close
+projection angles might give very different index values (fast decay of
+correlations with respect to distance between angles).
 
-Luckily, the most popular class of covariance functions, known as Matérn covariance functions (see https://arxiv.org/pdf/1708.02835.pdf on page 3) has one parameter, Theta3, which controls the decay of the covariance function, which in turns controls the smoothness of the random field. The ExaGeoStat paper calls it smoothness parameter: the higher Theta3, the smoother the random field. In our context, the higher Theta3, the smoother the index function.
+Popular covariance functions are parametric positive semi-definite
+functions, some of which have a parameter to capture the smoothness of
+the Gaussian field. In particular, consider the Matérn class of
+covariance functions, defined by
 
-This suggests the following approach:
+$$
+K(u):=\frac{(\sqrt{2\nu}u)^{\nu}}{\Gamma(\nu)2^{\nu-1}}\mathcal{K}_{\nu}(\sqrt{2\nu}u)
+$$
 
-- Evaluate the index function at some random projection angle values (our initial jellies),
-- Use this sample to fit a Gaussian process with Matérn covariance using ExaGeoStatR,
-- Use the fitted Theta3 parameter value as our definition of smoothness of the index function: the higher Theta3, the smoother the index.
+where $\nu>0$ is the smoothness parameter and where $\mathcal{K}_\nu$ is
+the modified Bessel function. The Matérn covariance function can be
+expressed analytically when $\nu$ is a half-integer, the most popular
+values in the literature being $1/2$, $3/2$ and $5/2$ . The parameter
+$\nu$, called smoothness parameter, controls the decay of the covariance
+function. As such, it is an appropriate measure of smoothness of a
+random field.
 
+In our context, we suggest to use this parameter as a measure of the
+smoothness of the index function by fitting a Gaussian process prior
+with Matérn covariance on a dataset generated by random evaluations of
+the index function, as in the initial stage of the jellyfish random
+search. There exist several R packages, such as GpGp or ExaGeoStatR, to
+fit the hyperparameters of a GP covariance function on data. In this
+project, we make use of the GpGp package.
 
+The fitted value $\nu>0$ can be interpreted as follows: the higher
+$\nu$, the smoother the index function.
 
 ## Squintability
 
