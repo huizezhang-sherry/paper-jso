@@ -97,10 +97,6 @@
 \definecolor{quarto-callout-caution-color-frame}{HTML}{fd7e14}
 \makeatother
 \makeatletter
-\makeatother
-\makeatletter
-\makeatother
-\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
 \ifdefined\contentsname
@@ -136,18 +132,10 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 \makeatletter
+\makeatother
+\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
-\makeatother
-\makeatletter
-\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
-\makeatother
-\makeatletter
-\@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
-\makeatother
-\makeatletter
-\makeatother
-\makeatletter
 \makeatother
 \journal{Journal of Multivariate Analysis}
 \ifLuaTeX
@@ -155,7 +143,8 @@
 \fi
 \usepackage[]{natbib}
 \bibliographystyle{elsarticle-num-names}
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\usepackage{bookmark}
+
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
@@ -228,14 +217,12 @@ optimiser \sep data visualisation \sep
     high-dimensional data
 \end{keyword}
 \end{frontmatter}
-    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, interior hidden, boxrule=0pt, frame hidden, enhanced, breakable, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
-
+    
 \emph{Let's use British English (``American or British usage is
 accepted, but not a mixture of these'')}
 
-\hypertarget{introduction-nicolas-and-jessica}{%
 \section{Introduction {[}Nicolas and
-Jessica{]}}\label{introduction-nicolas-and-jessica}}
+Jessica{]}}\label{introduction-nicolas-and-jessica}
 
 The artificial jellyfish search (JS) algorithm \citep{chou_novel_2021}
 is a swarm-based metaheuristic optimisation algorithm inspired by the
@@ -282,9 +269,8 @@ of the jellyfish for several types of data and index functions.
 Section~\ref{sec-conclusion} summarises the work and provides
 suggestions for future directions.
 
-\hypertarget{sec-background}{%
 \section{Projection pursuit, index functions and optimisation {[}Di and
-Sherry{]}}\label{sec-background}}
+Sherry{]}}\label{sec-background}
 
 A tour on high-dimensional data is constructed by geodesically
 interpolating between pairs of planes. Any plane is described by an
@@ -341,9 +327,8 @@ squint angle, that can only be seen from very close by. One last aspect
 that is useful is for an optimiser to return local maxima in addition to
 global because data can contain many different and interesting features.
 
-\hypertarget{sec-theory}{%
 \section{The jellyfish optimiser and properties of PP indexes {[}Nicolas
-and Jessica{]}}\label{sec-theory}}
+and Jessica{]}}\label{sec-theory}
 
 The jellyfish optimiser (JSO) mimics the natural movements of jellyfish,
 which include passive and active motions driven by ocean currents and
@@ -367,7 +352,7 @@ If they're better, we adopt them; if not, we stick with our current
 projection. This process continues and iteratively improves the
 projection, until we reach the maximum number of trials.
 
-\begin{tcolorbox}[enhanced jigsaw, coltitle=black, titlerule=0mm, opacitybacktitle=0.6, leftrule=.75mm, left=2mm, bottomtitle=1mm, bottomrule=.15mm, toprule=.15mm, colframe=quarto-callout-note-color-frame, breakable, colbacktitle=quarto-callout-note-color!10!white, colback=white, rightrule=.15mm, opacityback=0, toptitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm]
+\begin{tcolorbox}[enhanced jigsaw, coltitle=black, bottomtitle=1mm, titlerule=0mm, toprule=.15mm, breakable, colback=white, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, opacityback=0, toptitle=1mm, leftrule=.75mm, colbacktitle=quarto-callout-note-color!10!white, bottomrule=.15mm, arc=.35mm, rightrule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, left=2mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{tries}, \texttt{max\_tries}
@@ -463,8 +448,7 @@ the execution of the optimisation, here we consider the three relevant
 properties (smoothness, squintability, and speed), and propose three
 metrics to evaluate these three properties.
 
-\hypertarget{smoothness}{%
-\subsection{Smoothness}\label{smoothness}}
+\subsection{Smoothness}\label{smoothness}
 
 If we evaluate the index function at some random points (like the random
 initialization of the jellyfish optimizer), then we can interpret these
@@ -508,8 +492,7 @@ This suggests the following approach:
   of the index function: the higher Theta3, the smoother the index.
 \end{itemize}
 
-\hypertarget{squintability}{%
-\subsection{Squintability}\label{squintability}}
+\subsection{Squintability}\label{squintability}
 
 From the literature, it is commonly understood that a large squint angle
 implies that the function is easy to optimize, because we do not need to
@@ -525,23 +508,20 @@ similar fashion as the above section.
 To the best of our knowledge, this is the first attempt to measure the
 notion of squintability.
 
-\hypertarget{speed}{%
-\subsection{Speed}\label{speed}}
+\subsection{Speed}\label{speed}
 
 The speed of optimizing an index function can be calculated/measured
 using the computational complexity (in big O notation, with respect to
 the sample size) of computing the index function.
 
-\hypertarget{sec-simulation}{%
-\section{Application {[}Di and Sherry{]}}\label{sec-simulation}}
+\section{Application {[}Di and Sherry{]}}\label{sec-simulation}
 
 The jellyfish optimiser has been implemented in the tourr package
 \citep{wickham_tourr_2011} and we will use the diagnostic plots proposed
 in the ferrn package \citep{RJ-2021-105} to visualise the optimisation
 process.
 
-\hypertarget{going-beyond-10d}{%
-\subsection{Going beyond 10D}\label{going-beyond-10d}}
+\subsection{Going beyond 10D}\label{going-beyond-10d}
 
 The pipe-finding problem is initially used to investigate indexes and
 optimisers in \citet{laa_using_2020}, and we extend it from a 6D problem
@@ -550,35 +530,32 @@ to a 12D problem.
 Jellyfish optimiser, as a multi-start algorithm, is efficient in
 {[}\ldots{]} for high-dimensional problems
 
-\begin{figure}
+\begin{figure}[H]
 
-{\centering \includegraphics{optim_files/figure-pdf/unnamed-chunk-4-1.pdf}
-
-}
-
-\caption{sthis sdfaksdlf}
-
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics{optim_files/figure-pdf/unnamed-chunk-6-1.pdf}
+{\centering \includegraphics{optim_files/figure-pdf/unnamed-chunk-2-1.pdf}
 
 }
 
 \caption{sthis sdfaksdlf}
 
-\end{figure}
+\end{figure}%
 
-\hypertarget{on-skewness-and-kurtosis-index}{%
+\begin{figure}[H]
+
+{\centering \includegraphics{optim_files/figure-pdf/unnamed-chunk-3-1.pdf}
+
+}
+
+\caption{sthis sdfaksdlf}
+
+\end{figure}%
+
 \subsection{On skewness and kurtosis
-index}\label{on-skewness-and-kurtosis-index}}
+index}\label{on-skewness-and-kurtosis-index}
 
-\hypertarget{another-data-example}{%
-\subsection{Another data example}\label{another-data-example}}
+\subsection{Another data example}\label{another-data-example}
 
-\hypertarget{sec-conclusion}{%
-\section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}}
+\section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}
 
 
 \renewcommand\refname{References}
