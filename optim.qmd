@@ -298,7 +298,6 @@ Gaussian process.
 There exist R packages to fit the hyperparameters of a Gaussian process, for example ExaGeoStatR (https://github.com/ecrc/exageostatR), which is an R wrapper for the ExaGeoStat library (https://arxiv.org/pdf/1708.02835.pdf).
 -->
 ```
-
 How can we define a measure of smoothness from this? The distribution of
 a Gaussian process is fully determined by its mean function and
 covariance function. The way the covariance function is defined is where
@@ -357,6 +356,113 @@ notion of squintability.
 The speed of optimizing an index function can be calculated/measured
 using the computational complexity (in big O notation, with respect to
 the sample size) of computing the index function.
+
+# Visualisation of jellyfish optimiser
+
+Information of the jellyfish optimiser is available in a tabular format
+and below is an example data collected from finding the sine-wave
+structure in 6D data using a distance correlation index (`docr2d_2`):
+
+```{r}
+load(here::here("data/sim_sine_6d_dcor2d.rda"))
+```
+
+```{r}
+dplyr::glimpse(sim_sine_6d_dcor2d |> select(-id)) 
+```
+
+Information recorded can be categorised into the following categories:
+
+-   projection pursuit variables: the index function used (`idx_f`), the
+    data dimension (`d`)
+-   jellyfish optimiser parameters: the number of jellies (`n_jellies`),
+    the maximum number of tries (`max_tries`)
+-   simulation variables: the simulation number (`sim`), the seed used
+    (`seed`)
+-   optimisation variables: the projection basis in a matrix format
+    (`basis`), the index value (`index_val`), a description of the
+    status - one of "initiation", "current_best", and "jellyfish_update"
+    (`info`), current iteration ID (`tries`), current jelly ID (`loop`),
+    and the time taken to find the optimum (`time`).
+
+The basis column records every basis *visited* by the jellyfish
+optimiser prior to comparing with the current basis. In each iteration,
+if the index value of a visited basis is smaller than that of the
+current one, the jellyfish optimiser will retain the current basis for
+the next iteration, while still documenting the visited basis.
+
+Numerical information to compute:
+
+-   angular distance between the projection basis and the theoretical
+    best basis,
+-   the proportion of simulation that found the optimal basis,
+-   the proportion of jellies, within each simulation, that found the
+    optimal basis,
+
+Visualisation to inspect:
+
+-   inspect the basis visited by each jellyfish in the reduced PCA space,
+-   inspect the final 2D projections reached by each jellyfish,
+-   plot the index value against the angular distance between the
+    projection basis and the theoretical best basis
+
+Plotting the basis in the space and the projected data can help to
+understand 1) whether each simulation finds the same optimum or some
+simulations find local optima; and 2) whether the index function used
+can detect the structure in the data and the projection contains the
+structure of interest.
+
+The visualisations above can be faceted by the projection pursuit
+variables and jellyfish optimiser parameters to compare the performance
+of different indexes to detect the same structure and how the jellyfish
+optimiser parameters affect the optimisation process.
+
+[example plots]
+
+```{r}
+set.seed(123456)
+sin1000 <- spinebil::sinData(6, 1000) %>% scale() %>% as_tibble()
+colnames(sin1000) <- paste0("V", 1:6)
+
+sine_dcor2d_5050 <- sim_sine_6d_dcor2d |> 
+  filter(n_jellies == 50, max_tries == 50)
+best_sim <-  sine_dcor2d_5050|> 
+  group_by(sim) |> 
+  filter(index_val == max(index_val)) |> 
+  filter(row_number() == 1) 
+proj_dt <- map_dfr(best_sim |> pull(basis), 
+              ~as_tibble(as.matrix(sin1000) %*% .x), .id = "sim") 
+
+p1 <- proj_dt |>
+  ggplot(aes(x = V1, y = V2)) + 
+  geom_point(size = 0.1) + 
+  xlim(-4, 4) + ylim(-4, 4) +
+  facet_wrap(~as.numeric(sim), ncol = 10) + 
+  theme_bw() +
+  theme(aspect.ratio = 1, axis.ticks = element_blank(),
+        axis.text = element_blank(), axis.title = element_blank(),
+        panel.grid = element_blank())
+```
+
+```{r}
+#| fig.height: 5 
+#| fig.width: 10
+#| fig.cap: sdfjsflk
+p1 
+```
+
+```{r}
+theo_best <- matrix(c(rep(0, 8), 1, 0, 0, 1), nrow = 6, byrow = TRUE)
+angle_dcor2d <- sine_dcor2d_5050 |>
+    rowwise() |>
+    mutate(angle = tourr::proj_dist(theo_best, basis))
+
+p2 <- angle_dcor2d |>
+  ggplot(aes(x = angle, y = index_val)) +
+  geom_point(size = 0.1) +
+  theme(aspect.ratio = 1) 
+
+```
 
 # Application \[Di and Sherry\] {#sec-simulation}
 

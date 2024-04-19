@@ -97,10 +97,6 @@
 \definecolor{quarto-callout-caution-color-frame}{HTML}{fd7e14}
 \makeatother
 \makeatletter
-\makeatother
-\makeatletter
-\makeatother
-\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
 \ifdefined\contentsname
@@ -136,18 +132,10 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 \makeatletter
+\makeatother
+\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
-\makeatother
-\makeatletter
-\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
-\makeatother
-\makeatletter
-\@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
-\makeatother
-\makeatletter
-\makeatother
-\makeatletter
 \makeatother
 \journal{Journal of Multivariate Analysis}
 \ifLuaTeX
@@ -155,7 +143,8 @@
 \fi
 \usepackage[]{natbib}
 \bibliographystyle{elsarticle-num-names}
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\usepackage{bookmark}
+
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
@@ -228,8 +217,7 @@ optimiser \sep data visualisation \sep
     high-dimensional data
 \end{keyword}
 \end{frontmatter}
-    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, boxrule=0pt, interior hidden, enhanced, breakable]}{\end{tcolorbox}}\fi
-
+    
 \emph{Let's use British English (``American or British usage is
 accepted, but not a mixture of these'')}
 
@@ -241,9 +229,8 @@ Warning: package 'ggplot2' was built under R version 4.3.2
 Warning: package 'tidyr' was built under R version 4.3.2
 \end{verbatim}
 
-\hypertarget{introduction-nicolas-and-jessica}{%
 \section{Introduction {[}Nicolas and
-Jessica{]}}\label{introduction-nicolas-and-jessica}}
+Jessica{]}}\label{introduction-nicolas-and-jessica}
 
 The artificial jellyfish search (JS) algorithm \citep{chou_novel_2021}
 is a swarm-based metaheuristic optimisation algorithm inspired by the
@@ -290,9 +277,8 @@ of the jellyfish for several types of data and index functions.
 Section~\ref{sec-conclusion} summarises the work and provides
 suggestions for future directions.
 
-\hypertarget{sec-background}{%
 \section{Projection pursuit, index functions and optimisation {[}Di and
-Sherry{]}}\label{sec-background}}
+Sherry{]}}\label{sec-background}
 
 A tour on high-dimensional data is constructed by geodesically
 interpolating between pairs of planes. Any plane is described by an
@@ -349,9 +335,8 @@ squint angle, that can only be seen from very close by. One last aspect
 that is useful is for an optimiser to return local maxima in addition to
 global because data can contain many different and interesting features.
 
-\hypertarget{sec-theory}{%
 \section{The jellyfish optimiser and properties of PP indexes {[}Nicolas
-and Jessica{]}}\label{sec-theory}}
+and Jessica{]}}\label{sec-theory}
 
 The jellyfish optimiser (JSO) mimics the natural movements of jellyfish,
 which include passive and active motions driven by ocean currents and
@@ -375,7 +360,7 @@ If they're better, we adopt them; if not, we stick with our current
 projection. This process continues and iteratively improves the
 projection, until we reach the maximum number of trials.
 
-\begin{tcolorbox}[enhanced jigsaw, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomrule=.15mm, colframe=quarto-callout-note-color-frame, bottomtitle=1mm, titlerule=0mm, toprule=.15mm, colback=white, colbacktitle=quarto-callout-note-color!10!white, opacityback=0, opacitybacktitle=0.6, leftrule=.75mm, toptitle=1mm, coltitle=black, breakable, arc=.35mm, left=2mm, rightrule=.15mm]
+\begin{tcolorbox}[enhanced jigsaw, colback=white, title={Algorithm: Jellyfish Optimizer Pseudo Code}, leftrule=.75mm, breakable, titlerule=0mm, opacityback=0, bottomtitle=1mm, colframe=quarto-callout-note-color-frame, arc=.35mm, toprule=.15mm, opacitybacktitle=0.6, toptitle=1mm, colbacktitle=quarto-callout-note-color!10!white, rightrule=.15mm, bottomrule=.15mm, left=2mm, coltitle=black]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{tries}, \texttt{max\_tries}
@@ -462,8 +447,7 @@ the execution of the optimisation, here we consider the three relevant
 properties (smoothness, squintability, and speed), and propose three
 metrics to evaluate these three properties.
 
-\hypertarget{smoothness}{%
-\subsection{Smoothness}\label{smoothness}}
+\subsection{Smoothness}\label{smoothness}
 
 If we evaluate the index function at some random points (like the random
 initialization of the jellyfish optimizer), then we can interpret these
@@ -509,8 +493,7 @@ project, we make use of the GpGp package.
 The fitted value \(\nu>0\) can be interpreted as follows: the higher
 \(\nu\), the smoother the index function.
 
-\hypertarget{squintability}{%
-\subsection{Squintability}\label{squintability}}
+\subsection{Squintability}\label{squintability}
 
 From the literature, it is commonly understood that a large squint angle
 implies that the function is easy to optimize, because we do not need to
@@ -526,23 +509,125 @@ similar fashion as the above section.
 To the best of our knowledge, this is the first attempt to measure the
 notion of squintability.
 
-\hypertarget{speed}{%
-\subsection{Speed}\label{speed}}
+\subsection{Speed}\label{speed}
 
 The speed of optimizing an index function can be calculated/measured
 using the computational complexity (in big O notation, with respect to
 the sample size) of computing the index function.
 
-\hypertarget{sec-simulation}{%
-\section{Application {[}Di and Sherry{]}}\label{sec-simulation}}
+\section{Visualisation of jellyfish
+optimiser}\label{visualisation-of-jellyfish-optimiser}
+
+Information of the jellyfish optimiser is available in a tabular format
+and below is an example data collected from finding the sine-wave
+structure in 6D data using a distance correlation index
+(\texttt{docr2d\_2}):
+
+\begin{verbatim}
+Rows: 275,000
+Columns: 13
+$ idx_f     <chr> "dcor2d_2", "dcor2d_2", "dcor2d_2", "dcor2d_2", "dcor2d_2", ~
+$ d         <dbl> 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, ~
+$ n_jellies <dbl> 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, ~
+$ max_tries <dbl> 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, ~
+$ sim       <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ~
+$ seed      <int> 3462, 3462, 3462, 3462, 3462, 3462, 3462, 3462, 3462, 3462, ~
+$ basis     <list> <<matrix[6 x 2]>>, <<matrix[6 x 2]>>, <<matrix[6 x 2]>>, <<~
+$ index_val <dbl> 0.0247212373, 0.0033938502, 0.0463398915, 0.0486230801, -0.0~
+$ info      <chr> "initiation", "initiation", "initiation", "initiation", "ini~
+$ method    <chr> "search_jellyfish", "search_jellyfish", "search_jellyfish", ~
+$ tries     <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ~
+$ loop      <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 1~
+$ time      <drtn> 35.46031 secs, 35.46031 secs, 35.46031 secs, 35.46031 secs,~
+\end{verbatim}
+
+Information recorded can be categorised into the following categories:
+
+\begin{itemize}
+\tightlist
+\item
+  projection pursuit variables: the index function used
+  (\texttt{idx\_f}), the data dimension (\texttt{d})
+\item
+  jellyfish optimiser parameters: the number of jellies
+  (\texttt{n\_jellies}), the maximum number of tries
+  (\texttt{max\_tries})
+\item
+  simulation variables: the simulation number (\texttt{sim}), the seed
+  used (\texttt{seed})
+\item
+  optimisation variables: the projection basis in a matrix format
+  (\texttt{basis}), the index value (\texttt{index\_val}), a description
+  of the status - one of ``initiation'', ``current\_best'', and
+  ``jellyfish\_update'' (\texttt{info}), current iteration ID
+  (\texttt{tries}), current jelly ID (\texttt{loop}), and the time taken
+  to find the optimum (\texttt{time}).
+\end{itemize}
+
+The basis column records every basis \emph{visited} by the jellyfish
+optimiser prior to comparing with the current basis. In each iteration,
+if the index value of a visited basis is smaller than that of the
+current one, the jellyfish optimiser will retain the current basis for
+the next iteration, while still documenting the visited basis.
+
+Numerical information to compute:
+
+\begin{itemize}
+\tightlist
+\item
+  angular distance between the projection basis and the theoretical best
+  basis,
+\item
+  the proportion of simulation that found the optimal basis,
+\item
+  the proportion of jellies, within each simulation, that found the
+  optimal basis,
+\end{itemize}
+
+Visualisation to inspect:
+
+\begin{itemize}
+\tightlist
+\item
+  inspect the basis visited by each jellyfish in the reduced PCA space,
+\item
+  inspect the final 2D projections reached by each jellyfish,
+\item
+  plot the index value against the angular distance between the
+  projection basis and the theoretical best basis
+\end{itemize}
+
+Plotting the basis in the space and the projected data can help to
+understand 1) whether each simulation finds the same optimum or some
+simulations find local optima; and 2) whether the index function used
+can detect the structure in the data and the projection contains the
+structure of interest.
+
+The visualisations above can be faceted by the projection pursuit
+variables and jellyfish optimiser parameters to compare the performance
+of different indexes to detect the same structure and how the jellyfish
+optimiser parameters affect the optimisation process.
+
+{[}example plots{]}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{optim_files/figure-pdf/unnamed-chunk-4-1.pdf}
+
+}
+
+\caption{sdfjsflk}
+
+\end{figure}%
+
+\section{Application {[}Di and Sherry{]}}\label{sec-simulation}
 
 The jellyfish optimiser has been implemented in the tourr package
 \citep{wickham_tourr_2011} and we will use the diagnostic plots proposed
 in the ferrn package \citep{RJ-2021-105} to visualise the optimisation
 process.
 
-\hypertarget{going-beyond-10d}{%
-\subsection{Going beyond 10D}\label{going-beyond-10d}}
+\subsection{Going beyond 10D}\label{going-beyond-10d}
 
 The pipe-finding problem is initially used to investigate indexes and
 optimisers in \citet{laa_using_2020}, and we extend it from a 6D problem
@@ -551,35 +636,32 @@ to a 12D problem.
 Jellyfish optimiser, as a multi-start algorithm, is efficient in
 {[}\ldots{]} for high-dimensional problems
 
-\begin{figure}
+\begin{figure}[H]
 
-{\centering \includegraphics{optim_files/figure-pdf/unnamed-chunk-2-1.pdf}
-
-}
-
-\caption{sthis sdfaksdlf}
-
-\end{figure}
-
-\begin{figure}
-
-{\centering \includegraphics{optim_files/figure-pdf/unnamed-chunk-3-1.pdf}
+{\centering \includegraphics{optim_files/figure-pdf/unnamed-chunk-7-1.pdf}
 
 }
 
 \caption{sthis sdfaksdlf}
 
-\end{figure}
+\end{figure}%
 
-\hypertarget{on-skewness-and-kurtosis-index}{%
+\begin{figure}[H]
+
+{\centering \includegraphics{optim_files/figure-pdf/unnamed-chunk-8-1.pdf}
+
+}
+
+\caption{sthis sdfaksdlf}
+
+\end{figure}%
+
 \subsection{On skewness and kurtosis
-index}\label{on-skewness-and-kurtosis-index}}
+index}\label{on-skewness-and-kurtosis-index}
 
-\hypertarget{another-data-example}{%
-\subsection{Another data example}\label{another-data-example}}
+\subsection{Another data example}\label{another-data-example}
 
-\hypertarget{sec-conclusion}{%
-\section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}}
+\section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}
 
 
 \renewcommand\refname{References}
