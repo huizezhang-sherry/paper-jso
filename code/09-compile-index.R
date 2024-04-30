@@ -73,10 +73,43 @@ sim_full2 <- sim_full |> mutate(stringy = impute_stringy_vec)
 save(sim_full2, file = here::here("data/sim_full2.rda"))
 
 
+# t1 <- Sys.time()
+# map(impute_dcor2d$basis[1:10], ~stringy()(sine1000 %*% .x))
+# t2 <- Sys.time()
+# t2 - t1
+
+load(here::here("data/sim_sine_6d_spline.rda"))
+sim_spline <- sim_sine_6d_spline |>
+  mutate(row = row_number() + 500000) |>
+  rename(splines2d = index_val) |>
+  select(d, n_jellies, max_tries, sim, seed, id, basis, tries, loop, row, splines2d) |>
+  mutate(dcor2d = NA, loess2d = NA, MIC = NA, TIC = NA, stringy = NA)
+
+set.seed(123456)
+sine1000 <- spinebil::sinData(6, 1000) %>% scale()
+colnames(sine1000) <- paste0("V", 1:6)
+
+pb <- progress_bar$new(total = 125000)
+sim_spline1 <- sim_spline |> group_split(row) |> map_dfr(~add_idx_val(.x, "MIC"))
+pb <- progress_bar$new(total = 125000)
+sim_spline2 <- sim_spline1 |> group_split(row) |> map_dfr(~add_idx_val(.x, "TIC"))
+pb <- progress_bar$new(total = 125000)
+sim_spline3 <- sim_spline2 |> group_split(row) |> map_dfr(~add_idx_val(.x, "loess2d"))
+
+save(sim_spline3, file = here::here("data/sim_spline3.rda"))
+
+########### not yet
+# need parallel
 t1 <- Sys.time()
-map(impute_dcor2d$basis[1:10], ~stringy()(sine1000 %*% .x))
+pb <- progress_bar$new(total = 125000)
+sim_spline4 <- sim_spline3 |> group_split(row) |> map_dfr(~add_idx_val(.x, "stringy"))
 t2 <- Sys.time()
 t2 - t1
+
+pb <- progress_bar$new(total = 125000)
+sim_spline5 <- sim_spline4|> group_split(row) |> map_dfr(~add_idx_val(.x, "dcor2d_2"))
+
+
 
 ################################################################
 stringy <- function(){
