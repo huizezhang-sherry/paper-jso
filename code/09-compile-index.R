@@ -63,8 +63,18 @@ sim_full <- impute_dcor2d |>
          TIC = impute_TIC_vec)
 save(sim_full, file = here::here("data/sim_full.rda"))
 
+library(furrr)
+# about 2 hours
+impute_stringy <- sim_full |>
+  pull(basis) |>
+  future_map(function(x){stringy()(as.matrix(sine1000) %*% x)})
+impute_stringy_vec <- unlist(impute_stringy)
+sim_full2 <- sim_full |> mutate(stringy = impute_stringy_vec)
+save(sim_full2, file = here::here("data/sim_full2.rda"))
+
+
 t1 <- Sys.time()
-map(impute_dcor2d$basis[1:10], ~loess2d()(sine1000 %*% .x))
+map(impute_dcor2d$basis[1:10], ~stringy()(sine1000 %*% .x))
 t2 <- Sys.time()
 t2 - t1
 
