@@ -338,15 +338,19 @@ $\nu$, the smoother the index function.
 ## Squintability
 
 From the literature, it is commonly understood that a large squint angle
-implies that the function is easy to optimize, because we do not need to
-be very close to the perfect view to see the structure. A small squint
-angle means that the derivative of the index function can still be very
-large values near the optimal point and will rapidly change as we get
-even closer to the optimum. As such we can observe the second order
-gradient, which is the rate of change of gradient, over the space we are
-searching. For some index functions, the second order gradient is not
-well-defined, we can approximate the second order gradient vector in
-similar fashion as the above section.
+implies that the objective function value is close to optimal even when we are not very close to the perfect view to see the structure. A small squint angle means that index function value improves substantially only when we are very close to the perfect view. As such, low squintability implies rapid improvement in the index value when near the perfect view.
+
+In this study, we propose two metrics to capture the notion of squintability. 
+
+[We generate random points that is beyond 1.5 projection distance and interpolate. Then we fit a kernel or use nonlinear least squares.]
+
+First, parametric model.
+
+[Nicolas's pdf]
+
+Second, we consider the product of the largest absolute magnitude of rate of change of $f$ and the corresponding projection angle as a second measure of squintability. Since $f$ is decreasing, the rate of change of $f$ is negative and thus \[|\underset{x}{\min} f('x)|\] gives the absolute magnitude of the most negative rate of change.
+
+[Nicolas's pdf]
 
 To the best of our knowledge, this is the first attempt to measure the
 notion of squintability.
