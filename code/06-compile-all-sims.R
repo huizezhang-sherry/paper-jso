@@ -58,7 +58,6 @@ sim_data_sine <- bind_rows(sim_sine_6d_dcor2d,
                       sim_sine_68d_TICMIC,
                       sim_sine_6d_spline |> mutate(idx_f = "spline"))
 
-
 tour_level_best_basis <- sim_data_sine |>
   group_by(idx_f, id) |>
   filter(index_val == max(index_val)) |>
@@ -99,6 +98,20 @@ setup_level_sine <- tour_level_sine |>
 
 
 sim_summary <- setup_level_pipe |> mutate(idx_f = "holes") |> bind_rows(setup_level_sine)
+
+sim_pipe_speed <- sim_pipe|> select(n_jellies:id, time) |>
+  group_by(d, n_jellies, max_tries) |>
+  summarize(time = mean(time), .groups = "drop")
+
+sim_sine_speed <- sim_data_sine |> select(idx_f: id, time) |>
+  group_by(idx_f, d, n_jellies, max_tries) |>
+  summarize(time = mean(time), .groups = "drop")
+
+sim_speed <- sim_pipe_speed |> mutate(idx_f = "holes") |> bind_rows(sim_sine_speed)
+sim_summary <- sim_summary |>
+  left_join(sim_speed) |>
+  rename(index = idx_f) |>
+  mutate(index = ifelse(index == "spline", "splines2d", index))
 save(sim_summary, file = here::here("data/sim_summary.rda"))
 
 
