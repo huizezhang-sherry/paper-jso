@@ -91,3 +91,20 @@ sim_df <- sim_summary |>
   left_join(squintability |> select(index, n, theta3) |> rename(d = n, squintability = theta3)) |>
   select(index, d, I_max_max, P_J_hat, n_jellies, max_tries, smoothness, squintability, time)
 save(sim_df, file = here::here("data", "sim_df.rda"))
+
+
+
+
+############################################################################
+############################################################################
+sq_basis_dist_idx <- sq_basis_df |>
+  dplyr::select(basis_df, n) |>
+  unnest(basis_df) |>
+  pivot_longer(holes:stringy, names_to = "index", values_to = "idx",
+               values_drop_na = TRUE) |>
+  mutate(dist = ceiling(dist / 0.005) * 0.005,
+         index = factor(index, levels = c("holes", "MIC", "TIC", "dcor2d_2",
+                                          "loess2d", "splines2d", "stringy"))) |>
+  group_by(n, index, dist) |>
+  summarise(idx = mean(idx), .groups = "drop")
+save(sq_basis_dist_idx, file = here::here("data", "sq_basis_dist_idx.rda"))

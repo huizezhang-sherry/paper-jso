@@ -65,6 +65,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(tidyverse)
 library(ggplot2)
 library(patchwork)
+library(ggh4x)
 ```
 
 # Introduction \[Nicolas and Jessica\]
@@ -338,19 +339,29 @@ $\nu$, the smoother the index function.
 ## Squintability
 
 From the literature, it is commonly understood that a large squint angle
-implies that the objective function value is close to optimal even when we are not very close to the perfect view to see the structure. A small squint angle means that index function value improves substantially only when we are very close to the perfect view. As such, low squintability implies rapid improvement in the index value when near the perfect view.
+implies that the objective function value is close to optimal even when
+we are not very close to the perfect view to see the structure. A small
+squint angle means that index function value improves substantially only
+when we are very close to the perfect view. As such, low squintability
+implies rapid improvement in the index value when near the perfect view.
 
-In this study, we propose two metrics to capture the notion of squintability. 
+In this study, we propose two metrics to capture the notion of
+squintability.
 
-[We generate random points that is beyond 1.5 projection distance and interpolate. Then we fit a kernel or use nonlinear least squares.]
+\[We generate random points that is beyond 1.5 projection distance and
+interpolate. Then we fit a kernel or use nonlinear least squares.\]
 
 First, parametric model.
 
-[Nicolas's pdf]
+\[Nicolas's pdf\]
 
-Second, we consider the product of the largest absolute magnitude of rate of change of $f$ and the corresponding projection angle as a second measure of squintability. Since $f$ is decreasing, the rate of change of $f$ is negative and thus \[|\underset{x}{\min} f('x)|\] gives the absolute magnitude of the most negative rate of change.
+Second, we consider the product of the largest absolute magnitude of
+rate of change of $f$ and the corresponding projection angle as a second
+measure of squintability. Since $f$ is decreasing, the rate of change of
+$f$ is negative and thus $|\underset{x}{\min} f('x)|$ gives the absolute
+magnitude of the most negative rate of change.
 
-[Nicolas's pdf]
+\[Nicolas's pdf\]
 
 To the best of our knowledge, this is the first attempt to measure the
 notion of squintability.
@@ -405,7 +416,8 @@ Numerical information to compute:
 
 Visualisation to inspect:
 
--   inspect the basis visited by each jellyfish in the reduced PCA space,
+-   inspect the basis visited by each jellyfish in the reduced PCA
+    space,
 -   inspect the final 2D projections reached by each jellyfish,
 -   plot the index value against the angular distance between the
     projection basis and the theoretical best basis
@@ -421,7 +433,7 @@ variables and jellyfish optimiser parameters to compare the performance
 of different indexes to detect the same structure and how the jellyfish
 optimiser parameters affect the optimisation process.
 
-[example plots]
+\[example plots\]
 
 ```{r}
 set.seed(123456)
@@ -560,6 +572,40 @@ p1 + ggtitle("The Jellyfish Optimiser") | p2 + ggtitle("The Better Optimiser")
 ## On skewness and kurtosis index
 
 ## Another data example
+
+construct a relationship between jellyfish success and jellyfish
+parameters and the optimisation properties defined in @sec-theory.
+
+This can imform the choice of jellyfish parameters for a given
+optimisation problem.
+
+In addition to the pipe-finding problem, we also consider the problem of
+finding the sine wave structure in the 6D space and six indexes
+(`dcor2d_2`, `loess2d`, `MIC`, `TIC`, `spline`, and `stringy`) are
+considered. Combined with the jellyfish optimisers (`n_jellies` =
+20/50/100, `max_tries` = 50/100), we obtain additional 27 setups for
+this investigation.
+
+```{r}
+load(here::here("data/smoothness.rda"))
+smoothness |> select(index, n, variance:nugget) |> knitr::kable(digits = 3)
+load(here::here("data/squintability.rda"))
+squintability |> knitr::kable(digits = 3)
+```
+
+
+```{r}
+#| fig.width = 8,
+#| fig.height = 5,
+#| fig.cap = "sdkflskdfjl"
+load(here::here("data/sq_basis_dist_idx.rda"))
+sq_basis_dist_idx |>
+  ggplot(aes(x = dist, y = idx, group = index)) +
+  geom_line() +
+  facet_nested_wrap(~index + n, nrow = 3, labeller = label_both, scales = "free_y") + 
+  xlab("projection distance") + ylab("index value")
+
+```
 
 # Conclusion \[Di and Sherry\] {#sec-conclusion}
 

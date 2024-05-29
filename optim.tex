@@ -229,6 +229,10 @@ Warning: package 'ggplot2' was built under R version 4.3.2
 Warning: package 'tidyr' was built under R version 4.3.2
 \end{verbatim}
 
+\begin{verbatim}
+Warning: package 'ggh4x' was built under R version 4.3.2
+\end{verbatim}
+
 \section{Introduction {[}Nicolas and
 Jessica{]}}\label{introduction-nicolas-and-jessica}
 
@@ -360,7 +364,7 @@ If they're better, we adopt them; if not, we stick with our current
 projection. This process continues and iteratively improves the
 projection, until we reach the maximum number of trials.
 
-\begin{tcolorbox}[enhanced jigsaw, colback=white, title={Algorithm: Jellyfish Optimizer Pseudo Code}, leftrule=.75mm, breakable, titlerule=0mm, opacityback=0, bottomtitle=1mm, colframe=quarto-callout-note-color-frame, arc=.35mm, toprule=.15mm, opacitybacktitle=0.6, toptitle=1mm, colbacktitle=quarto-callout-note-color!10!white, rightrule=.15mm, bottomrule=.15mm, left=2mm, coltitle=black]
+\begin{tcolorbox}[enhanced jigsaw, rightrule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, toptitle=1mm, toprule=.15mm, colback=white, colframe=quarto-callout-note-color-frame, arc=.35mm, breakable, leftrule=.75mm, opacitybacktitle=0.6, bottomtitle=1mm, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, coltitle=black, bottomrule=.15mm, left=2mm, opacityback=0]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{tries}, \texttt{max\_tries}
@@ -496,15 +500,29 @@ The fitted value \(\nu>0\) can be interpreted as follows: the higher
 \subsection{Squintability}\label{squintability}
 
 From the literature, it is commonly understood that a large squint angle
-implies that the function is easy to optimize, because we do not need to
-be very close to the perfect view to see the structure. A small squint
-angle means that the derivative of the index function can still be very
-large values near the optimal point and will rapidly change as we get
-even closer to the optimum. As such we can observe the second order
-gradient, which is the rate of change of gradient, over the space we are
-searching. For some index functions, the second order gradient is not
-well-defined, we can approximate the second order gradient vector in
-similar fashion as the above section.
+implies that the objective function value is close to optimal even when
+we are not very close to the perfect view to see the structure. A small
+squint angle means that index function value improves substantially only
+when we are very close to the perfect view. As such, low squintability
+implies rapid improvement in the index value when near the perfect view.
+
+In this study, we propose two metrics to capture the notion of
+squintability.
+
+{[}We generate random points that is beyond 1.5 projection distance and
+interpolate. Then we fit a kernel or use nonlinear least squares.{]}
+
+First, parametric model.
+
+{[}Nicolas's pdf{]}
+
+Second, we consider the product of the largest absolute magnitude of
+rate of change of \(f\) and the corresponding projection angle as a
+second measure of squintability. Since \(f\) is decreasing, the rate of
+change of \(f\) is negative and thus \(|\underset{x}{\min} f('x)|\)
+gives the absolute magnitude of the most negative rate of change.
+
+{[}Nicolas's pdf{]}
 
 To the best of our knowledge, this is the first attempt to measure the
 notion of squintability.
@@ -660,6 +678,73 @@ Jellyfish optimiser, as a multi-start algorithm, is efficient in
 index}\label{on-skewness-and-kurtosis-index}
 
 \subsection{Another data example}\label{another-data-example}
+
+construct a relationship between jellyfish success and jellyfish
+parameters and the optimisation properties defined in
+Section~\ref{sec-theory}.
+
+This can imform the choice of jellyfish parameters for a given
+optimisation problem.
+
+In addition to the pipe-finding problem, we also consider the problem of
+finding the sine wave structure in the 6D space and six indexes
+(\texttt{dcor2d\_2}, \texttt{loess2d}, \texttt{MIC}, \texttt{TIC},
+\texttt{spline}, and \texttt{stringy}) are considered. Combined with the
+jellyfish optimisers (\texttt{n\_jellies} = 20/50/100,
+\texttt{max\_tries} = 50/100), we obtain additional 27 setups for this
+investigation.
+
+\begin{longtable}[]{@{}lrrrrr@{}}
+\toprule\noalign{}
+index & n & variance & range & smoothness & nugget \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+dcor2d\_2 & 6 & 0.034 & 0.167 & 2.663 & 0.114 \\
+loess2d & 6 & 0.083 & 0.307 & 2.194 & 0.292 \\
+MIC & 6 & 0.016 & 0.100 & 2.394 & 0.087 \\
+TIC & 6 & 0.124 & 0.104 & 2.471 & 0.086 \\
+stringy & 6 & 0.000 & 1173.035 & 1.031 & 17608.047 \\
+splines2d & 6 & 0.040 & 0.189 & 2.606 & 0.104 \\
+MIC & 8 & 0.016 & 0.100 & 2.394 & 0.087 \\
+TIC & 8 & 0.124 & 0.104 & 2.471 & 0.086 \\
+holes & 6 & 0.002 & 0.408 & 2.364 & 0.212 \\
+holes & 8 & 0.000 & 0.259 & 2.373 & 0.613 \\
+holes & 10 & 0.000 & 0.144 & 2.317 & 1.831 \\
+holes & 12 & 0.000 & 0.254 & 2.173 & 0.879 \\
+\end{longtable}
+
+\begin{longtable}[]{@{}lrrrrr@{}}
+\toprule\noalign{}
+index & n & theta1 & theta2 & theta3 & theta4 \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+holes & 6 & 1.001 & 0.860 & 3.368 & 0.823 \\
+holes & 8 & 1.001 & 0.869 & 3.264 & 0.811 \\
+holes & 10 & 1.000 & 0.885 & 3.151 & 0.806 \\
+holes & 12 & 1.000 & 0.878 & 3.345 & 0.806 \\
+MIC & 6 & 0.894 & 0.571 & 1.623 & -0.024 \\
+MIC & 8 & 0.932 & 0.328 & 1.314 & -0.030 \\
+TIC & 6 & 0.951 & 0.536 & 1.719 & -0.025 \\
+TIC & 8 & 0.945 & 0.564 & 1.723 & -0.027 \\
+dcor2d\_2 & 6 & 0.954 & 1.039 & 2.742 & -0.019 \\
+loess2d & 6 & 1.016 & 1.039 & 2.648 & 0.080 \\
+splines2d & 6 & 1.014 & 1.051 & 2.730 & -0.009 \\
+stringy & 6 & 1.011 & 0.011 & 254.734 & 0.727 \\
+\end{longtable}
+
+\begin{figure}[H]
+
+{\centering \includegraphics{optim_files/figure-pdf/unnamed-chunk-10-1.pdf}
+
+}
+
+\caption{sdkflskdfjl}
+
+\end{figure}%
 
 \section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}
 
