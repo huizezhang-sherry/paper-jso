@@ -70,7 +70,7 @@ save(sq_basis_df, file = here::here("data/sq_basis_df.rda"))
 
 start_prms1 <- c(theta1 = 1, theta2 = 1, theta3 = 3, theta4 = 0)
 start_prms2 <- c(theta1 = 1, theta2 = 0.01, theta3 = 50, theta4 = 0)
-sq_sines <- sq_basis_df |>
+squintability <- sq_basis_df |>
   dplyr::mutate(start = ifelse(index == "stringy", list(start_prms2),
                                list(start_prms1))) |>
   dplyr::rowwise() |>
@@ -79,13 +79,15 @@ sq_sines <- sq_basis_df |>
   tidyr::unnest_wider(res) |>
   mutate(index = factor(index, levels = c("holes", "MIC", "TIC", "dcor2d_2",
                                           "loess2d", "splines2d", "stringy"))) |>
-  arrange(index)
+  arrange(index) |>
+  select(index, n, theta1: theta4)
+save(squintability, file = here::here("data", "squintability.rda"))
 
 ############################################################################
 ############################################################################
 load(here::here("data", "sim_summary.rda"))
 sim_df <- sim_summary |>
   left_join(smoothness |> select(n, index, smoothness) |> rename(d = n)) |>
-  left_join(sq_sines |> select(index, n, theta3) |> rename(d = n, squintability = theta3)) |>
+  left_join(squintability |> select(index, n, theta3) |> rename(d = n, squintability = theta3)) |>
   select(index, d, I_max_max, P_J_hat, n_jellies, max_tries, smoothness, squintability, time)
 save(sim_df, file = here::here("data", "sim_df.rda"))
