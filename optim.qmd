@@ -379,11 +379,11 @@ and below is an example data collected from finding the sine-wave
 structure in 6D data using a distance correlation index (`docr2d_2`):
 
 ```{r}
-load(here::here("data/sim_sine_6d_dcor2d.rda"))
+load(here::here("data/sim_example.rda"))
 ```
 
 ```{r}
-dplyr::glimpse(sim_sine_6d_dcor2d |> select(-id)) 
+dplyr::glimpse(sim_example |> select(-id)) 
 ```
 
 Information recorded can be categorised into the following categories:
@@ -436,17 +436,13 @@ optimiser parameters affect the optimisation process.
 \[example plots\]
 
 ```{r}
+load(here::here("data/sine_dcor2d_best.rda"))
 set.seed(123456)
 sin1000 <- spinebil::sinData(6, 1000) %>% scale() %>% as_tibble()
 colnames(sin1000) <- paste0("V", 1:6)
 
-sine_dcor2d_5050 <- sim_sine_6d_dcor2d |> 
-  filter(n_jellies == 50, max_tries == 50)
-best_sim <-  sine_dcor2d_5050|> 
-  group_by(sim) |> 
-  filter(index_val == max(index_val)) |> 
-  filter(row_number() == 1) 
-proj_dt <- map_dfr(best_sim |> pull(basis), 
+
+proj_dt <- map_dfr(sine_dcor2d_best |> pull(basis), 
               ~as_tibble(as.matrix(sin1000) %*% .x), .id = "sim") 
 
 p1 <- proj_dt |>
@@ -467,7 +463,7 @@ p1 <- proj_dt |>
 p1 
 ```
 
-```{r}
+```{r eval = FALSE}
 theo_best <- matrix(c(rep(0, 8), 1, 0, 0, 1), nrow = 6, byrow = TRUE)
 angle_dcor2d <- sine_dcor2d_5050 |>
     rowwise() |>
@@ -588,7 +584,7 @@ this investigation.
 
 ```{r}
 load(here::here("data/smoothness.rda"))
-smoothness |> select(index, n, variance:nugget) |> knitr::kable(digits = 3)
+smoothness |> knitr::kable(digits = 3)
 load(here::here("data/squintability.rda"))
 squintability |> knitr::kable(digits = 3)
 ```

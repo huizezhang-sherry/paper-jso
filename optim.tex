@@ -364,7 +364,7 @@ If they're better, we adopt them; if not, we stick with our current
 projection. This process continues and iteratively improves the
 projection, until we reach the maximum number of trials.
 
-\begin{tcolorbox}[enhanced jigsaw, rightrule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, toptitle=1mm, toprule=.15mm, colback=white, colframe=quarto-callout-note-color-frame, arc=.35mm, breakable, leftrule=.75mm, opacitybacktitle=0.6, bottomtitle=1mm, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, coltitle=black, bottomrule=.15mm, left=2mm, opacityback=0]
+\begin{tcolorbox}[enhanced jigsaw, opacityback=0, breakable, colbacktitle=quarto-callout-note-color!10!white, titlerule=0mm, arc=.35mm, colframe=quarto-callout-note-color-frame, bottomrule=.15mm, coltitle=black, toptitle=1mm, toprule=.15mm, leftrule=.75mm, left=2mm, colback=white, opacitybacktitle=0.6, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomtitle=1mm, rightrule=.15mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{tries}, \texttt{max\_tries}
@@ -542,21 +542,21 @@ structure in 6D data using a distance correlation index
 (\texttt{docr2d\_2}):
 
 \begin{verbatim}
-Rows: 275,000
+Rows: 10
 Columns: 13
 $ idx_f     <chr> "dcor2d_2", "dcor2d_2", "dcor2d_2", "dcor2d_2", "dcor2d_2", ~
-$ d         <dbl> 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, ~
-$ n_jellies <dbl> 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, 20, ~
-$ max_tries <dbl> 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, ~
-$ sim       <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ~
-$ seed      <int> 3462, 3462, 3462, 3462, 3462, 3462, 3462, 3462, 3462, 3462, ~
-$ basis     <list> <<matrix[6 x 2]>>, <<matrix[6 x 2]>>, <<matrix[6 x 2]>>, <<~
+$ d         <dbl> 6, 6, 6, 6, 6, 6, 6, 6, 6, 6
+$ n_jellies <dbl> 20, 20, 20, 20, 20, 20, 20, 20, 20, 20
+$ max_tries <dbl> 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
+$ sim       <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+$ seed      <int> 3462, 3462, 3462, 3462, 3462, 3462, 3462, 3462, 3462, 3462
+$ basis     <list> <<matrix[6 x 2]>>, <<matrix[6 x 2]>>, <<matrix[6 x 2]>>, <<m~
 $ index_val <dbl> 0.0247212373, 0.0033938502, 0.0463398915, 0.0486230801, -0.0~
 $ info      <chr> "initiation", "initiation", "initiation", "initiation", "ini~
 $ method    <chr> "search_jellyfish", "search_jellyfish", "search_jellyfish", ~
-$ tries     <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, ~
-$ loop      <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 1~
-$ time      <drtn> 35.46031 secs, 35.46031 secs, 35.46031 secs, 35.46031 secs,~
+$ tries     <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
+$ loop      <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+$ time      <drtn> 35.46031 secs, 35.46031 secs, 35.46031 secs, 35.46031 secs, ~
 \end{verbatim}
 
 Information recorded can be categorised into the following categories:
@@ -701,18 +701,18 @@ index & n & variance & range & smoothness & nugget \\
 \endhead
 \bottomrule\noalign{}
 \endlastfoot
-dcor2d\_2 & 6 & 0.034 & 0.167 & 2.663 & 0.114 \\
-loess2d & 6 & 0.083 & 0.307 & 2.194 & 0.292 \\
-MIC & 6 & 0.016 & 0.100 & 2.394 & 0.087 \\
-TIC & 6 & 0.124 & 0.104 & 2.471 & 0.086 \\
-stringy & 6 & 0.000 & 1173.035 & 1.031 & 17608.047 \\
-splines2d & 6 & 0.040 & 0.189 & 2.606 & 0.104 \\
-MIC & 8 & 0.016 & 0.100 & 2.394 & 0.087 \\
-TIC & 8 & 0.124 & 0.104 & 2.471 & 0.086 \\
 holes & 6 & 0.002 & 0.408 & 2.364 & 0.212 \\
 holes & 8 & 0.000 & 0.259 & 2.373 & 0.613 \\
 holes & 10 & 0.000 & 0.144 & 2.317 & 1.831 \\
 holes & 12 & 0.000 & 0.254 & 2.173 & 0.879 \\
+MIC & 6 & 0.016 & 0.100 & 2.394 & 0.087 \\
+MIC & 8 & 0.016 & 0.100 & 2.394 & 0.087 \\
+TIC & 6 & 0.124 & 0.104 & 2.471 & 0.086 \\
+TIC & 8 & 0.124 & 0.104 & 2.471 & 0.086 \\
+dcor2d\_2 & 6 & 0.034 & 0.167 & 2.663 & 0.114 \\
+loess2d & 6 & 0.083 & 0.307 & 2.194 & 0.292 \\
+splines2d & 6 & 0.040 & 0.189 & 2.606 & 0.104 \\
+stringy & 6 & 0.000 & 1173.035 & 1.031 & 17608.047 \\
 \end{longtable}
 
 \begin{longtable}[]{@{}lrrrrr@{}}
