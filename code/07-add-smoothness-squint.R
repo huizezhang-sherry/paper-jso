@@ -34,7 +34,11 @@ smoothness_sine <- tibble::tibble(
 
 sine_tidy <- smoothness_sine |> tidyr::unnest_wider(smoothness) |> unnest(measure)
 
-smoothness <- bind_rows(sine_tidy, holes_tidy)
+smoothness <- bind_rows(sine_tidy, holes_tidy) |>
+  mutate(index = factor(index, levels = c("holes", "MIC", "TIC", "dcor2d_2",
+                                          "loess2d", "splines2d", "stringy"))) |>
+  arrange(index) |>
+  select(index, n, variance:nugget)
 save(smoothness, file = here::here("data", "smoothness.rda"))
 
 ################################################################################

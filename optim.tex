@@ -78,6 +78,20 @@
 \def\fps@figure{htbp}
 \makeatother
 
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
+\usepackage{xcolor}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \makeatletter
@@ -364,7 +378,7 @@ If they're better, we adopt them; if not, we stick with our current
 projection. This process continues and iteratively improves the
 projection, until we reach the maximum number of trials.
 
-\begin{tcolorbox}[enhanced jigsaw, opacityback=0, breakable, colbacktitle=quarto-callout-note-color!10!white, titlerule=0mm, arc=.35mm, colframe=quarto-callout-note-color-frame, bottomrule=.15mm, coltitle=black, toptitle=1mm, toprule=.15mm, leftrule=.75mm, left=2mm, colback=white, opacitybacktitle=0.6, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomtitle=1mm, rightrule=.15mm]
+\begin{tcolorbox}[enhanced jigsaw, colback=white, arc=.35mm, leftrule=.75mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colbacktitle=quarto-callout-note-color!10!white, bottomtitle=1mm, toptitle=1mm, opacityback=0, bottomrule=.15mm, titlerule=0mm, coltitle=black, rightrule=.15mm, breakable, toprule=.15mm, left=2mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{tries}, \texttt{max\_tries}
@@ -451,7 +465,7 @@ the execution of the optimisation, here we consider the three relevant
 properties (smoothness, squintability, and speed), and propose three
 metrics to evaluate these three properties.
 
-\subsection{Smoothness}\label{smoothness}
+\subsection{Smoothness}\label{sec-smoothness}
 
 If we evaluate the index function at some random points (like the random
 initialization of the jellyfish optimizer), then we can interpret these
@@ -497,7 +511,7 @@ project, we make use of the GpGp package.
 The fitted value \(\nu>0\) can be interpreted as follows: the higher
 \(\nu\), the smoother the index function.
 
-\subsection{Squintability}\label{squintability}
+\subsection{Squintability}\label{sec-squintability}
 
 From the literature, it is commonly understood that a large squint angle
 implies that the objective function value is close to optimal even when
@@ -674,77 +688,156 @@ Jellyfish optimiser, as a multi-start algorithm, is efficient in
 
 \end{figure}%
 
-\subsection{On skewness and kurtosis
-index}\label{on-skewness-and-kurtosis-index}
+\newpage
 
 \subsection{Another data example}\label{another-data-example}
 
-construct a relationship between jellyfish success and jellyfish
-parameters and the optimisation properties defined in
-Section~\ref{sec-theory}.
+{[}TODO: overall summary{]}construct a relationship between jellyfish
+success and jellyfish parameters and the optimisation properties defined
+in Section~\ref{sec-theory}. This can inform the choice of jellyfish
+parameters for a given optimisation problem.
 
-This can imform the choice of jellyfish parameters for a given
-optimisation problem.
+In addition to the pipe-finding problem, the sine-wave finding problem
+is also investigated in 6D and 8D spaces. Six indices are considered:
+\texttt{dcor2d\_2}, \texttt{loess2d}, \texttt{MIC}, \texttt{TIC},
+\texttt{spline}, and \texttt{stringy}, which gives the 12 problems
+printed as rows in Table~\ref{tbl-smoothness-squintability}. Combining
+these problems with different jellyfish optimiser parameters
+(\texttt{n\_jellies} and \texttt{max\_tries}), a total of 51
+observations is produced, comprising of 24 observations for the
+pipe-finding and 27 observations for the sine-wave finding.
 
-In addition to the pipe-finding problem, we also consider the problem of
-finding the sine wave structure in the 6D space and six indexes
-(\texttt{dcor2d\_2}, \texttt{loess2d}, \texttt{MIC}, \texttt{TIC},
-\texttt{spline}, and \texttt{stringy}) are considered. Combined with the
-jellyfish optimisers (\texttt{n\_jellies} = 20/50/100,
-\texttt{max\_tries} = 50/100), we obtain additional 27 setups for this
-investigation.
+For each observation, fifty (50) runs of the jellyfish optimisation is
+performed. In each run, summary statistics are calculated to find the
+best index across all the jellyfishes (\texttt{I\_max}) and the
+proportion of jellyfishes found (\texttt{P\_J}). At the observation
+level, the best index value across all the 50 runs
+(\texttt{I\_max\_max}) and the proportion of trials found
+(\texttt{P\_J\_hat}) is calculated.
 
-\begin{longtable}[]{@{}lrrrrr@{}}
-\toprule\noalign{}
-index & n & variance & range & smoothness & nugget \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-holes & 6 & 0.002 & 0.408 & 2.364 & 0.212 \\
-holes & 8 & 0.000 & 0.259 & 2.373 & 0.613 \\
-holes & 10 & 0.000 & 0.144 & 2.317 & 1.831 \\
-holes & 12 & 0.000 & 0.254 & 2.173 & 0.879 \\
-MIC & 6 & 0.016 & 0.100 & 2.394 & 0.087 \\
-MIC & 8 & 0.016 & 0.100 & 2.394 & 0.087 \\
-TIC & 6 & 0.124 & 0.104 & 2.471 & 0.086 \\
-TIC & 8 & 0.124 & 0.104 & 2.471 & 0.086 \\
-dcor2d\_2 & 6 & 0.034 & 0.167 & 2.663 & 0.114 \\
-loess2d & 6 & 0.083 & 0.307 & 2.194 & 0.292 \\
-splines2d & 6 & 0.040 & 0.189 & 2.606 & 0.104 \\
-stringy & 6 & 0.000 & 1173.035 & 1.031 & 17608.047 \\
+Smoothness and squintability measures are computed for each problem,
+following the procedures outlined in Section~\ref{sec-smoothness} and
+Section~\ref{sec-squintability}. To calculate smoothness, 300 random
+bases are used to estimate Gaussian process parameters (variance, range,
+smoothness, and nugget). For squintability, 50 random bases are sampled
+and interpolated to the optimal basis using a step size of 0.005. The
+index value and projection distance are calculated for all the
+interpolated bases. A binning procedure is then applied to average the
+index value at each bin width of 0.005. Finally, the scaled logistic
+function with four parameters (theta1 - theta4) is estimated by
+non-linear least square to obtain the squintability measure.
+
+Table~\ref{tbl-smoothness-squintability} presents all the parameters
+calculated for smoothness and squintability, with the column ``smooth''
+for smoothness and ``theta3'' for squintability.
+Figure~\ref{fig-idx-proj-dist} shows the relationship between the index
+value against the projection distance for each problem following the
+binning procedure. Table~\ref{tbl-all-sim} displays the first five rows
+after combining all calculations.
+
+\begin{longtable}[t]{|>{}ll>{}r|rrr>{}r|rrr>{}r|}
+
+\caption{\label{tbl-smoothness-squintability}Parameters estimated from
+the Gaussian process (including variance, range, smoothness, and nugget)
+and scaled logistic function (theta1 - theta4) for both the pipe-finding
+and sine-wave finding problems. The ``smooth'' and ``theta3'' column
+represent the smoothness and squintability measures.}
+
+\tabularnewline
+
+\toprule
+shape & index & d & variance & range & smooth & nugget & theta1 & theta2 & theta3 & theta4\\
+\midrule
+pipe & holes & 6 & 0.002 & 0.408 & 2.364 & 0.212 & 1.001 & 0.860 & 3.368 & 0.823\\
+pipe & holes & 8 & 0.000 & 0.259 & 2.373 & 0.613 & 1.001 & 0.869 & 3.264 & 0.811\\
+pipe & holes & 10 & 0.000 & 0.144 & 2.317 & 1.831 & 1.000 & 0.885 & 3.151 & 0.806\\
+pipe & holes & 12 & 0.000 & 0.254 & 2.173 & 0.879 & 1.000 & 0.878 & 3.345 & 0.806\\
+sine & MIC & 6 & 0.016 & 0.100 & 2.394 & 0.087 & 0.894 & 0.571 & 1.623 & -0.024\\
+\addlinespace
+sine & MIC & 8 & 0.016 & 0.100 & 2.394 & 0.087 & 0.932 & 0.328 & 1.314 & -0.030\\
+sine & TIC & 6 & 0.124 & 0.104 & 2.471 & 0.086 & 0.951 & 0.536 & 1.719 & -0.025\\
+sine & TIC & 8 & 0.124 & 0.104 & 2.471 & 0.086 & 0.945 & 0.564 & 1.723 & -0.027\\
+sine & dcor2d\_2 & 6 & 0.034 & 0.167 & 2.663 & 0.114 & 0.954 & 1.039 & 2.742 & -0.019\\
+sine & loess2d & 6 & 0.083 & 0.307 & 2.194 & 0.292 & 1.016 & 1.039 & 2.648 & 0.080\\
+\addlinespace
+sine & splines2d & 6 & 0.040 & 0.189 & 2.606 & 0.104 & 1.014 & 1.051 & 2.730 & -0.009\\
+sine & stringy & 6 & 0.000 & 1173.035 & 1.031 & 17608.047 & 1.011 & 0.011 & 254.734 & 0.727\\
+\bottomrule
+
 \end{longtable}
 
-\begin{longtable}[]{@{}lrrrrr@{}}
-\toprule\noalign{}
-index & n & theta1 & theta2 & theta3 & theta4 \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-holes & 6 & 1.001 & 0.860 & 3.368 & 0.823 \\
-holes & 8 & 1.001 & 0.869 & 3.264 & 0.811 \\
-holes & 10 & 1.000 & 0.885 & 3.151 & 0.806 \\
-holes & 12 & 1.000 & 0.878 & 3.345 & 0.806 \\
-MIC & 6 & 0.894 & 0.571 & 1.623 & -0.024 \\
-MIC & 8 & 0.932 & 0.328 & 1.314 & -0.030 \\
-TIC & 6 & 0.951 & 0.536 & 1.719 & -0.025 \\
-TIC & 8 & 0.945 & 0.564 & 1.723 & -0.027 \\
-dcor2d\_2 & 6 & 0.954 & 1.039 & 2.742 & -0.019 \\
-loess2d & 6 & 1.016 & 1.039 & 2.648 & 0.080 \\
-splines2d & 6 & 1.014 & 1.051 & 2.730 & -0.009 \\
-stringy & 6 & 1.011 & 0.011 & 254.734 & 0.727 \\
-\end{longtable}
+\begin{figure}
 
-\begin{figure}[H]
+\centering{
 
-{\centering \includegraphics{optim_files/figure-pdf/unnamed-chunk-10-1.pdf}
+\includegraphics{optim_files/figure-pdf/fig-idx-proj-dist-1.pdf}
 
 }
 
-\caption{sdkflskdfjl}
+\caption{\label{fig-idx-proj-dist}Index values against projection
+distance for the 12 pipe/sine-wave finding problem after the binning
+procedure during the estimation of the squintability measure. The index
+value is averaged at each bin width of 0.005 and the TIC index is scaled
+to 0-1 for comparison. When finding the sine-wave structure using the
+MIC and TIC index, a convex curved is observed, as opposed to the
+pipe-finding problem or the sine-wave finding problem with the
+dcor2d\_2, loess2d, and splines2d index. When finding the sine-wave with
+the stringy index, the index shows an instantaneous jump to the optimum
+when close to the best basis.}
 
 \end{figure}%
+
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.0714}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.0357}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.1310}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.1667}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.1190}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.1190}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.1190}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.0952}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.1429}}@{}}
+
+\caption{\label{tbl-all-sim}The first five rows of the datasets after
+combining all the calculation. The smoothness and squintability variable
+are uniquely characterised by the index function used and the data
+dimension, and thus do not vary across n\_jellies and max\_tries.
+Variables I\_max\_max, P\_J\_hat, and time are calculated at each 51
+observations.}
+
+\tabularnewline
+
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+index
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+d
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+smoothness
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+squintability
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+n\_jellies
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+max\_tries
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+I\_max\_max
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+P\_J\_hat
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+time
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+MIC & 6 & 2.394 & 1.623 & 20 & 50 & 0.999 & 1.00 & 2.479 secs \\
+MIC & 6 & 2.394 & 1.623 & 20 & 100 & 0.999 & 0.96 & 8.950 secs \\
+MIC & 6 & 2.394 & 1.623 & 50 & 50 & 1.000 & 1.00 & 5.651 secs \\
+MIC & 6 & 2.394 & 1.623 & 50 & 100 & 1.000 & 0.64 & 13.223 secs \\
+MIC & 6 & 2.394 & 1.623 & 100 & 50 & 1.000 & 0.76 & 19.453 secs \\
+
+\end{longtable}
 
 \section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}
 

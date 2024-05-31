@@ -251,7 +251,7 @@ execution of the optimisation, here we consider the three relevant
 properties (smoothness, squintability, and speed), and propose three
 metrics to evaluate these three properties.
 
-## Smoothness
+## Smoothness {#sec-smoothness}
 
 ```{=html}
 <!--
@@ -336,7 +336,7 @@ project, we make use of the GpGp package.
 The fitted value $\nu>0$ can be interpreted as follows: the higher
 $\nu$, the smoother the index function.
 
-## Squintability
+## Squintability {#sec-squintability}
 
 From the literature, it is commonly understood that a large squint angle
 implies that the objective function value is close to optimal even when
@@ -565,35 +565,42 @@ p1 + ggtitle("The Jellyfish Optimiser") | p2 + ggtitle("The Better Optimiser")
 
 ```
 
-## On skewness and kurtosis index
+
+\newpage 
+
 
 ## Another data example
 
-construct a relationship between jellyfish success and jellyfish
-parameters and the optimisation properties defined in @sec-theory.
-
-This can imform the choice of jellyfish parameters for a given
+[TODO: overall summary]construct a relationship between jellyfish success and jellyfish parameters and the optimisation properties defined in @sec-theory. This can inform the choice of jellyfish parameters for a given
 optimisation problem.
 
-In addition to the pipe-finding problem, we also consider the problem of
-finding the sine wave structure in the 6D space and six indexes
-(`dcor2d_2`, `loess2d`, `MIC`, `TIC`, `spline`, and `stringy`) are
-considered. Combined with the jellyfish optimisers (`n_jellies` =
-20/50/100, `max_tries` = 50/100), we obtain additional 27 setups for
-this investigation.
+In addition to the pipe-finding problem, the sine-wave finding problem is also investigated in 6D and 8D spaces. Six indices are considered: `dcor2d_2`, `loess2d`, `MIC`, `TIC`, `spline`, and `stringy`, which gives the 12 problems printed as rows in @tbl-smoothness-squintability. Combining these problems with different jellyfish optimiser parameters (`n_jellies` and `max_tries`), a total of 51 observations is produced, comprising of 24 observations for the pipe-finding and 27 observations for the sine-wave finding.
+
+For each observation, fifty (50) runs of the jellyfish optimisation is performed. In each run, summary statistics are calculated to find the best index across all the jellyfishes (`I_max`) and the proportion of jellyfishes found (`P_J`). At the observation level, the best index value across all the 50 runs  (`I_max_max`) and the proportion of trials found (`P_J_hat`) is calculated.
+
+Smoothness and squintability measures are computed for each problem, following the procedures outlined in @sec-smoothness and @sec-squintability. To calculate smoothness, 300 random bases are used to estimate Gaussian process parameters (variance, range, smoothness, and nugget). For squintability, 50 random bases are sampled and interpolated to the optimal basis using a step size of 0.005. The index value and projection distance are calculated for all the interpolated bases. A binning procedure is then applied to average the index value at each bin width of 0.005. Finally, the scaled logistic function with four parameters (theta1 - theta4) is estimated by non-linear least square to obtain the squintability measure.
+
+@tbl-smoothness-squintability presents all the parameters calculated for smoothness and squintability, with the column "smooth" for smoothness and "theta3" for squintability. @fig-idx-proj-dist shows the relationship between the index value against the projection distance for each problem following the binning procedure. @tbl-all-sim displays the first five rows after combining all calculations. 
 
 ```{r}
+#| label: tbl-smoothness-squintability
+#| tbl-cap: Parameters estimated from the Gaussian process (including variance, range, smoothness, and nugget) and scaled logistic function (theta1 - theta4) for both the pipe-finding and sine-wave finding problems. The "smooth" and "theta3" column represent the smoothness and squintability measures. 
 load(here::here("data/smoothness.rda"))
-smoothness |> knitr::kable(digits = 3)
 load(here::here("data/squintability.rda"))
-squintability |> knitr::kable(digits = 3)
+library(kableExtra)
+tibble(shape = c(rep("pipe", 4), rep("sine", 8)), smoothness) |>
+  left_join(squintability) |> 
+  rename(d = n, smooth = smoothness) |> 
+  knitr::kable(digits = 3) |> 
+  column_spec(1, border_left = TRUE) |> 
+  column_spec(c(3, 7, 11), border_right = TRUE) |> 
+  kable_styling(latex_options = "hold_position")
 ```
 
-
-```{r}
-#| fig.width = 8,
+```{r fig-idx-proj-dist}
+#| fig.width = 9,
 #| fig.height = 5,
-#| fig.cap = "sdkflskdfjl"
+#| fig.cap = "Index values against projection distance for the 12 pipe/sine-wave finding problem after the binning procedure during the estimation of the squintability measure. The index value is averaged at each bin width of 0.005 and the TIC index is scaled to 0-1 for comparison. When finding the sine-wave structure using the MIC and TIC index, a convex curved is observed, as opposed to the pipe-finding problem or the sine-wave finding problem with the dcor2d\\_2, loess2d, and splines2d index. When finding the sine-wave with the stringy index, the index shows an instantaneous jump to the optimum when close to the best basis."
 load(here::here("data/sq_basis_dist_idx.rda"))
 sq_basis_dist_idx |>
   ggplot(aes(x = dist, y = idx, group = index)) +
@@ -602,6 +609,22 @@ sq_basis_dist_idx |>
   xlab("projection distance") + ylab("index value")
 
 ```
+
+```{r}
+#| label: tbl-all-sim
+#| tbl-cap: The first five rows of the datasets after combining all the calculation. The smoothness and squintability variable are uniquely characterised by the index function used and the data dimension, and thus do not vary across n\\_jellies and max\\_tries. Variables I\\_max\\_max, P\\_J\\_hat, and time are calculated at each 51 observations.
+load(here::here("data/sim_df.rda"))
+sim_df |> 
+  dplyr::select(index, d, smoothness, squintability, n_jellies, max_tries, 
+                I_max_max, P_J_hat, time) |> 
+  arrange(index, d, n_jellies, max_tries) |> 
+  head(5) |> 
+  kable(digits = 3)
+```
+
+
+
+
 
 # Conclusion \[Di and Sherry\] {#sec-conclusion}
 
