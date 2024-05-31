@@ -378,7 +378,7 @@ If they're better, we adopt them; if not, we stick with our current
 projection. This process continues and iteratively improves the
 projection, until we reach the maximum number of trials.
 
-\begin{tcolorbox}[enhanced jigsaw, colback=white, arc=.35mm, leftrule=.75mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colbacktitle=quarto-callout-note-color!10!white, bottomtitle=1mm, toptitle=1mm, opacityback=0, bottomrule=.15mm, titlerule=0mm, coltitle=black, rightrule=.15mm, breakable, toprule=.15mm, left=2mm]
+\begin{tcolorbox}[enhanced jigsaw, left=2mm, coltitle=black, opacitybacktitle=0.6, colback=white, breakable, leftrule=.75mm, colbacktitle=quarto-callout-note-color!10!white, arc=.35mm, toptitle=1mm, bottomtitle=1mm, toprule=.15mm, colframe=quarto-callout-note-color-frame, titlerule=0mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomrule=.15mm, rightrule=.15mm, opacityback=0]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{tries}, \texttt{max\_tries}
@@ -732,8 +732,7 @@ calculated for smoothness and squintability, with the column ``smooth''
 for smoothness and ``theta3'' for squintability.
 Figure~\ref{fig-idx-proj-dist} shows the relationship between the index
 value against the projection distance for each problem following the
-binning procedure. Table~\ref{tbl-all-sim} displays the first five rows
-after combining all calculations.
+binning procedure.
 
 \begin{longtable}[t]{|>{}ll>{}r|rrr>{}r|rrr>{}r|}
 
@@ -787,16 +786,7 @@ when close to the best basis.}
 
 \end{figure}%
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.0714}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.0357}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.1310}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.1667}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.1190}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.1190}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.1190}}
-  >{\raggedleft\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.0952}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 16\tabcolsep) * \real{0.1429}}@{}}
+\begin{table}
 
 \caption{\label{tbl-all-sim}The first five rows of the datasets after
 combining all the calculation. The smoothness and squintability variable
@@ -805,39 +795,11 @@ dimension, and thus do not vary across n\_jellies and max\_tries.
 Variables I\_max\_max, P\_J\_hat, and time are calculated at each 51
 observations.}
 
-\tabularnewline
+\centering{
 
-\toprule\noalign{}
-\begin{minipage}[b]{\linewidth}\raggedright
-index
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-d
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-smoothness
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-squintability
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-n\_jellies
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-max\_tries
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-I\_max\_max
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
-P\_J\_hat
-\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
-time
-\end{minipage} \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-MIC & 6 & 2.394 & 1.623 & 20 & 50 & 0.999 & 1.00 & 2.479 secs \\
-MIC & 6 & 2.394 & 1.623 & 20 & 100 & 0.999 & 0.96 & 8.950 secs \\
-MIC & 6 & 2.394 & 1.623 & 50 & 50 & 1.000 & 1.00 & 5.651 secs \\
-MIC & 6 & 2.394 & 1.623 & 50 & 100 & 1.000 & 0.64 & 13.223 secs \\
-MIC & 6 & 2.394 & 1.623 & 100 & 50 & 1.000 & 0.76 & 19.453 secs \\
+}
 
-\end{longtable}
+\end{table}%
 
 \section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}
 
