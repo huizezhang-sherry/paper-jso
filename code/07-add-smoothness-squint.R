@@ -84,7 +84,8 @@ squintability <- sq_basis_df |>
   mutate(index = factor(index, levels = c("holes", "MIC", "TIC", "dcor2d_2",
                                           "loess2d", "splines2d", "stringy"))) |>
   arrange(index) |>
-  select(index, n, theta1: theta4)
+  select(index, n, theta1: theta4) |>
+  mutate(squint = theta1 * theta2 * theta3 / 4)
 save(squintability, file = here::here("data", "squintability.rda"))
 
 ############################################################################
@@ -92,7 +93,7 @@ save(squintability, file = here::here("data", "squintability.rda"))
 load(here::here("data", "sim_summary.rda"))
 sim_df <- sim_summary |>
   left_join(smoothness |> select(n, index, smoothness) |> rename(d = n)) |>
-  left_join(squintability |> select(index, n, theta3) |> rename(d = n, squintability = theta3)) |>
+  left_join(squintability |> select(index, n, squint) |> rename(d = n, squintability = squint)) |>
   select(index, d, I_max_max, P_J_hat, n_jellies, max_tries, smoothness, squintability, time)
 save(sim_df, file = here::here("data", "sim_df.rda"))
 

@@ -378,7 +378,7 @@ If they're better, we adopt them; if not, we stick with our current
 projection. This process continues and iteratively improves the
 projection, until we reach the maximum number of trials.
 
-\begin{tcolorbox}[enhanced jigsaw, left=2mm, coltitle=black, opacitybacktitle=0.6, colback=white, breakable, leftrule=.75mm, colbacktitle=quarto-callout-note-color!10!white, arc=.35mm, toptitle=1mm, bottomtitle=1mm, toprule=.15mm, colframe=quarto-callout-note-color-frame, titlerule=0mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomrule=.15mm, rightrule=.15mm, opacityback=0]
+\begin{tcolorbox}[enhanced jigsaw, coltitle=black, colbacktitle=quarto-callout-note-color!10!white, rightrule=.15mm, leftrule=.75mm, arc=.35mm, left=2mm, opacityback=0, breakable, toptitle=1mm, toprule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomtitle=1mm, colback=white, titlerule=0mm, bottomrule=.15mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{tries}, \texttt{max\_tries}
@@ -727,6 +727,9 @@ index value at each bin width of 0.005. Finally, the scaled logistic
 function with four parameters (theta1 - theta4) is estimated by
 non-linear least square to obtain the squintability measure.
 
+{[}TODO: discuss what the values of smooth and theta3 mean for the
+optimisation{]}
+
 Table~\ref{tbl-smoothness-squintability} presents all the parameters
 calculated for smoothness and squintability, with the column ``smooth''
 for smoothness and ``theta3'' for squintability.
@@ -734,33 +737,35 @@ Figure~\ref{fig-idx-proj-dist} shows the relationship between the index
 value against the projection distance for each problem following the
 binning procedure.
 
-\begin{longtable}[t]{|>{}ll>{}r|rrr>{}r|rrr>{}r|}
+\begin{longtable}[t]{|>{}ll>{}r|rrr>{}r|rrrr>{}r|}
 
 \caption{\label{tbl-smoothness-squintability}Parameters estimated from
 the Gaussian process (including variance, range, smoothness, and nugget)
-and scaled logistic function (theta1 - theta4) for both the pipe-finding
-and sine-wave finding problems. The ``smooth'' and ``theta3'' column
-represent the smoothness and squintability measures.}
+and scaled logistic function (theta1 - theta4) for the pipe-finding and
+sine-wave finding problems. The squint column is calculated as theta1 *
+theta2 * theta3 / 4, as described in Section~\ref{sec-squintability}.
+The ``smooth'' and ``squint'' column represent the smoothness and
+squintability measures.}
 
 \tabularnewline
 
 \toprule
-shape & index & d & variance & range & smooth & nugget & theta1 & theta2 & theta3 & theta4\\
+shape & index & d & variance & range & smooth & nugget & theta1 & theta2 & theta3 & theta4 & squint\\
 \midrule
-pipe & holes & 6 & 0.002 & 0.408 & 2.364 & 0.212 & 1.001 & 0.860 & 3.368 & 0.823\\
-pipe & holes & 8 & 0.000 & 0.259 & 2.373 & 0.613 & 1.001 & 0.869 & 3.264 & 0.811\\
-pipe & holes & 10 & 0.000 & 0.144 & 2.317 & 1.831 & 1.000 & 0.885 & 3.151 & 0.806\\
-pipe & holes & 12 & 0.000 & 0.254 & 2.173 & 0.879 & 1.000 & 0.878 & 3.345 & 0.806\\
-sine & MIC & 6 & 0.016 & 0.100 & 2.394 & 0.087 & 0.894 & 0.571 & 1.623 & -0.024\\
+pipe & holes & 6 & 0.002 & 0.408 & 2.364 & 0.212 & 1.001 & 0.860 & 3.368 & 0.823 & 0.725\\
+pipe & holes & 8 & 0.000 & 0.259 & 2.373 & 0.613 & 1.001 & 0.869 & 3.264 & 0.811 & 0.710\\
+pipe & holes & 10 & 0.000 & 0.144 & 2.317 & 1.831 & 1.000 & 0.885 & 3.151 & 0.806 & 0.697\\
+pipe & holes & 12 & 0.000 & 0.254 & 2.173 & 0.879 & 1.000 & 0.878 & 3.345 & 0.806 & 0.734\\
+sine & MIC & 6 & 0.016 & 0.100 & 2.394 & 0.087 & 0.894 & 0.571 & 1.623 & -0.024 & 0.207\\
 \addlinespace
-sine & MIC & 8 & 0.016 & 0.100 & 2.394 & 0.087 & 0.932 & 0.328 & 1.314 & -0.030\\
-sine & TIC & 6 & 0.124 & 0.104 & 2.471 & 0.086 & 0.951 & 0.536 & 1.719 & -0.025\\
-sine & TIC & 8 & 0.124 & 0.104 & 2.471 & 0.086 & 0.945 & 0.564 & 1.723 & -0.027\\
-sine & dcor2d\_2 & 6 & 0.034 & 0.167 & 2.663 & 0.114 & 0.954 & 1.039 & 2.742 & -0.019\\
-sine & loess2d & 6 & 0.083 & 0.307 & 2.194 & 0.292 & 1.016 & 1.039 & 2.648 & 0.080\\
+sine & MIC & 8 & 0.016 & 0.100 & 2.394 & 0.087 & 0.932 & 0.328 & 1.314 & -0.030 & 0.100\\
+sine & TIC & 6 & 0.124 & 0.104 & 2.471 & 0.086 & 0.951 & 0.536 & 1.719 & -0.025 & 0.219\\
+sine & TIC & 8 & 0.124 & 0.104 & 2.471 & 0.086 & 0.945 & 0.564 & 1.723 & -0.027 & 0.230\\
+sine & dcor2d\_2 & 6 & 0.034 & 0.167 & 2.663 & 0.114 & 0.954 & 1.039 & 2.742 & -0.019 & 0.679\\
+sine & loess2d & 6 & 0.083 & 0.307 & 2.194 & 0.292 & 1.016 & 1.039 & 2.648 & 0.080 & 0.699\\
 \addlinespace
-sine & splines2d & 6 & 0.040 & 0.189 & 2.606 & 0.104 & 1.014 & 1.051 & 2.730 & -0.009\\
-sine & stringy & 6 & 0.000 & 1173.035 & 1.031 & 17608.047 & 1.011 & 0.011 & 254.734 & 0.727\\
+sine & splines2d & 6 & 0.040 & 0.189 & 2.606 & 0.104 & 1.014 & 1.051 & 2.730 & -0.009 & 0.727\\
+sine & stringy & 6 & 0.000 & 1173.035 & 1.031 & 17608.047 & 1.011 & 0.011 & 254.734 & 0.727 & 0.711\\
 \bottomrule
 
 \end{longtable}
@@ -786,20 +791,68 @@ when close to the best basis.}
 
 \end{figure}%
 
-\begin{table}
+\begin{longtable}[]{@{}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.0811}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.0405}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1486}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1892}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1351}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1351}}
+  >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1081}}
+  >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1622}}@{}}
 
-\caption{\label{tbl-all-sim}The first five rows of the datasets after
-combining all the calculation. The smoothness and squintability variable
-are uniquely characterised by the index function used and the data
-dimension, and thus do not vary across n\_jellies and max\_tries.
-Variables I\_max\_max, P\_J\_hat, and time are calculated at each 51
-observations.}
+\caption{\label{tbl-all-sim}The first few rows of the datasets processed
+for modelling. The smoothness and squintability variable are uniquely
+characterised by the index function used and the data dimension, and
+thus do not vary across n\_jellies and max\_tries. The variable
+P\_J\_hat, and time are calculated at each observation.}
 
-\centering{
+\tabularnewline
 
-}
+\toprule\noalign{}
+\begin{minipage}[b]{\linewidth}\raggedright
+index
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+d
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+smoothness
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+squintability
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+n\_jellies
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+max\_tries
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedleft
+P\_J\_hat
+\end{minipage} & \begin{minipage}[b]{\linewidth}\raggedright
+time
+\end{minipage} \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+MIC & 6 & 2.394 & 0.207 & 20 & 50 & 0.12 & 2.479 secs \\
+MIC & 6 & 2.394 & 0.207 & 20 & 100 & 0.24 & 8.950 secs \\
+MIC & 6 & 2.394 & 0.207 & 50 & 50 & 0.52 & 5.651 secs \\
+MIC & 6 & 2.394 & 0.207 & 50 & 100 & 0.64 & 13.223 secs \\
+MIC & 6 & 2.394 & 0.207 & 100 & 50 & 0.76 & 19.453 secs \\
+MIC & 8 & 2.394 & 0.100 & 20 & 50 & 0.08 & 2.566 secs \\
+MIC & 8 & 2.394 & 0.100 & 20 & 100 & 0.08 & 4.960 secs \\
 
-\end{table}%
+\end{longtable}
+
+\begin{verbatim}
+# A tibble: 7 x 5
+  term          estimate std.error statistic p.value
+  <chr>            <dbl>     <dbl>     <dbl>   <dbl>
+1 (Intercept)     -4.67      4.51     -1.04  0.300  
+2 smoothness       1.60      1.53      1.05  0.294  
+3 squintability    7.06      2.21      3.20  0.00140
+4 d               -0.595     0.260    -2.29  0.0221 
+5 long_time       -0.851     1.35     -0.632 0.528  
+6 n_jellies        0.230     0.131     1.75  0.0795 
+7 max_tries        0.107     0.153     0.700 0.484  
+\end{verbatim}
 
 \section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}
 

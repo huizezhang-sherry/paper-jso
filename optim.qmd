@@ -66,6 +66,7 @@ library(tidyverse)
 library(ggplot2)
 library(patchwork)
 library(ggh4x)
+library(broom)
 ```
 
 # Introduction \[Nicolas and Jessica\]
@@ -580,13 +581,15 @@ For each observation, fifty (50) runs of the jellyfish optimisation is performed
 
 Smoothness and squintability measures are computed for each problem, following the procedures outlined in @sec-smoothness and @sec-squintability. To calculate smoothness, 300 random bases are used to estimate Gaussian process parameters (variance, range, smoothness, and nugget). For squintability, 50 random bases are sampled and interpolated to the optimal basis using a step size of 0.005. The index value and projection distance are calculated for all the interpolated bases. A binning procedure is then applied to average the index value at each bin width of 0.005. Finally, the scaled logistic function with four parameters (theta1 - theta4) is estimated by non-linear least square to obtain the squintability measure.
 
+[TODO: discuss what the values of smooth and theta3 mean for the optimisation]
+
 @tbl-smoothness-squintability presents all the parameters calculated for smoothness and squintability, with the column "smooth" for smoothness and "theta3" for squintability. @fig-idx-proj-dist shows the relationship between the index value against the projection distance for each problem following the binning procedure. 
 
 <!-- @tbl-all-sim displays the first five rows after combining all calculations.  -->
 
 ```{r}
 #| label: tbl-smoothness-squintability
-#| tbl-cap: Parameters estimated from the Gaussian process (including variance, range, smoothness, and nugget) and scaled logistic function (theta1 - theta4) for both the pipe-finding and sine-wave finding problems. The "smooth" and "theta3" column represent the smoothness and squintability measures. 
+#| tbl-cap: Parameters estimated from the Gaussian process (including variance, range, smoothness, and nugget) and scaled logistic function (theta1 - theta4) for the pipe-finding and sine-wave finding problems. The squint column is calculated as theta1 * theta2 * theta3 / 4, as described in @sec-squintability. The "smooth" and "squint" column represent the smoothness and squintability measures. 
 load(here::here("data/smoothness.rda"))
 load(here::here("data/squintability.rda"))
 library(kableExtra)
@@ -595,7 +598,7 @@ tibble(shape = c(rep("pipe", 4), rep("sine", 8)), smoothness) |>
   rename(d = n, smooth = smoothness) |> 
   knitr::kable(digits = 3) |> 
   column_spec(1, border_left = TRUE) |> 
-  column_spec(c(3, 7, 11), border_right = TRUE) |> 
+  column_spec(c(3, 7, 12), border_right = TRUE) |> 
   kable_styling(latex_options = "hold_position")
 ```
 
@@ -612,20 +615,30 @@ sq_basis_dist_idx |>
 
 ```
 
-```{r eval = FALSE}
+```{r}
 #| label: tbl-all-sim
-#| tbl-cap: The first five rows of the datasets after combining all the calculation. The smoothness and squintability variable are uniquely characterised by the index function used and the data dimension, and thus do not vary across n\\_jellies and max\\_tries. Variables I\\_max\\_max, P\\_J\\_hat, and time are calculated at each 51 observations.
+#| tbl-cap: The first few rows of the datasets processed for modelling. The smoothness and squintability variable are uniquely characterised by the index function used and the data dimension, and thus do not vary across n\\_jellies and max\\_tries. The variable P\\_J\\_hat, and time are calculated at each observation.
 load(here::here("data/sim_df.rda"))
 sim_df |> 
   dplyr::select(index, d, smoothness, squintability, n_jellies, max_tries, 
-                I_max_max, P_J_hat, time) |> 
+                -I_max_max, P_J_hat, time) |> 
   arrange(index, d, n_jellies, max_tries) |> 
-  head(5) |> 
+  head(7) |> 
   kable(digits = 3)
 ```
 
 
 
+```{r}
+sim_df2 <- sim_df |> 
+  mutate(n_jellies = n_jellies/10,
+         max_tries = max_tries/10,
+         long_time = ifelse(time > 30, 1, 0),
+         P_J_hat = ifelse(index == "stringy", 0, P_J_hat))
+
+mod1 <- glm(P_J_hat ~ smoothness + squintability + d + long_time + n_jellies + max_tries, data = sim_df2, family = binomial)
+broom::tidy(mod1)
+```
 
 
 # Conclusion \[Di and Sherry\] {#sec-conclusion}

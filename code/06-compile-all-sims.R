@@ -1,16 +1,12 @@
 library(tidyverse)
 load(file = "data/sim_pipe.rda")
 
-tour_level_best_basis <- sim_pipe |>
-  group_by(id) |>
-  filter(index_val == max(index_val)) |>
-  filter(row_number() == 1)
-
-setup_level_best_basis <- sim_pipe |>
-  group_by(n_jellies, max_tries, d) |>
-  filter(index_val == max(index_val)) |>
-  filter(row_number() == 1)
-
+# all the pipe simulation are conducted in one go,
+# so id is different for each n_jellies, max_tries, d combination
+pipe_run_df <- sim_pipe |> get_best(group = id)
+pipe_setup_df <- sim_pipe |>
+  mutate(id2 = paste0(n_jellies, max_tries, d)) |>
+  get_best(group = id2)
 
 # columns
 # setup:      number of experiment (1-4),
@@ -22,24 +18,28 @@ setup_level_best_basis <- sim_pipe |>
 # D:          the coefficient in c_t > .5 (the 3 in best_jelly - 3 * runif(1) ...)
 # I_max:      best index across all the jellyfish in each trial run,
 # basis:      projection basis
-tour_level_pipe <- sim_pipe |>
+pipe_run_summ <- sim_pipe |>
+  mutate(idx_f = "holes") |>
   group_by(id) |>
   reframe(I_max = max(index_val),
-          P_J = sum(abs(I_max - index_val) <= 0.05)/n()) |>
-  left_join(tour_level_best_basis)
-
+          P_J = sum(abs(I_max - index_val) <= 0.05)/n(),
+          time = mean(time))
 
 # columns
 # P_J_hat:    proportion of trials found
 # I_max_max:  best index of each setup
-setup_level_pipe <- tour_level_pipe |>
-  group_by(n_jellies, max_tries, d) |>
+pipe_setup_summ <- pipe_run_df |>
+  mutate(idx_f = "holes") |>
+  group_by(n_jellies, max_tries, d, idx_f) |>
   reframe(
-    I_max_max = max(I_max),
-    P_J_hat = sum(abs(I_max_max - I_max) <= 0.05)/n() # TODO: use a better rule
-    )
+    I_max_max = max(index_val),
+    P_J_hat = sum(abs(I_max_max - index_val) <= 0.05)/n(),
+    time = mean(time)
+  )
 
-setup_level_pipe |>
+
+
+pipe_setup |>
   ggplot(aes( x= as.factor(n_jellies), y = P_J_hat,
               group = d, color = as.factor(d))) +
   geom_line() +
@@ -52,21 +52,22 @@ load(here::here("data/sim_sine_6d_dcor2d.rda"))
 load(here::here("data/sim_sine_6d.rda")) # loess
 load(here::here("data/sim_sine_68d_TICMIC.rda"))
 load(here::here("data/sim_sine_6d_spline.rda"))
+load(here::here("data/sim_sine_6d_stringy.rda"))
 
 sim_data_sine <- bind_rows(sim_sine_6d_dcor2d,
                       sim_sine_6d |> mutate(idx_f = "loess2d"),
                       sim_sine_68d_TICMIC,
-                      sim_sine_6d_spline |> mutate(idx_f = "spline"))
+                      sim_sine_6d_spline |> mutate(idx_f = "spline"),
+                      sim_sine_6d_stringy |> mutate(idx_f = "stringy"),
+                      )
 
-tour_level_best_basis <- sim_data_sine |>
-  group_by(idx_f, id) |>
-  filter(index_val == max(index_val)) |>
-  filter(row_number() == 1)
+sine_run_df <- sim_data_sine |>
+  mutate(id2 = paste0(idx_f, n_jellies, max_tries, sim, d)) |>
+  get_best(group = id2)
 
-setup_level_best_basis <- sim_data_sine |>
-  group_by(idx_f, n_jellies, max_tries, d) |>
-  filter(index_val == max(index_val)) |>
-  filter(row_number() == 1)
+sine_setup_df <- sim_data_sine |>
+  mutate(id2 = paste0(idx_f, n_jellies, max_tries, d)) |>
+  get_best(group = id2)
 
 
 # columns
@@ -79,37 +80,26 @@ setup_level_best_basis <- sim_data_sine |>
 # D:          the coefficient in c_t > .5 (the 3 in best_jelly - 3 * runif(1) ...)
 # I_max:      best index across all the jellyfish in each trial run,
 # basis:      projection basis
-tour_level_sine <- sim_data_sine |>
-  group_by(id) |>
+sine_run_summ <- sim_data_sine |>
+  group_by(idx_f, n_jellies, max_tries, d, sim) |>
   reframe(I_max = max(index_val),
-          P_J = sum(abs(I_max - index_val) <= 0.05)/n()) |>
-  left_join(tour_level_best_basis)
+          P_J = sum(abs(I_max - index_val) <= 0.05)/n(),
+          time = mean(time))
 
 
 # columns
 # P_J_hat:    proportion of trials found
 # I_max_max:  best index of each setup
-setup_level_sine <- tour_level_sine |>
+sine_setup_summ <- sine_run_df |>
   group_by(idx_f, n_jellies, max_tries, d) |>
   reframe(
-    I_max_max = max(I_max),
-    P_J_hat = sum(abs(I_max_max - I_max) <= 0.05)/n() # TODO: use a better rule
+    I_max_max = max(index_val),
+    P_J_hat = sum(abs(I_max_max - index_val) <= 0.05)/n(),
+    time = mean(time)
   )
 
 
-sim_summary <- setup_level_pipe |> mutate(idx_f = "holes") |> bind_rows(setup_level_sine)
-
-sim_pipe_speed <- sim_pipe|> select(n_jellies:id, time) |>
-  group_by(d, n_jellies, max_tries) |>
-  summarize(time = mean(time), .groups = "drop")
-
-sim_sine_speed <- sim_data_sine |> select(idx_f: id, time) |>
-  group_by(idx_f, d, n_jellies, max_tries) |>
-  summarize(time = mean(time), .groups = "drop")
-
-sim_speed <- sim_pipe_speed |> mutate(idx_f = "holes") |> bind_rows(sim_sine_speed)
-sim_summary <- sim_summary |>
-  left_join(sim_speed) |>
+sim_summary <- pipe_setup_summ |>  bind_rows(sine_setup_summ) |>
   rename(index = idx_f) |>
   mutate(index = ifelse(index == "spline", "splines2d", index))
 save(sim_summary, file = here::here("data/sim_summary.rda"))
