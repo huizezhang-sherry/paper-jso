@@ -102,6 +102,15 @@ sine_setup_summ <- sine_run_df |>
 sim_summary <- pipe_setup_summ |>  bind_rows(sine_setup_summ) |>
   rename(index = idx_f) |>
   mutate(index = ifelse(index == "spline", "splines2d", index))
-save(sim_summary, file = here::here("data/sim_summary.rda"))
+
+############################################################################
+############################################################################
+load(here::here("data", "squintability.rda"))
+load(here::here("data", "smoothness.rda"))
+sim_df <- sim_summary |>
+  left_join(smoothness |> select(n, index, smoothness) |> rename(d = n)) |>
+  left_join(squintability |> select(index, n, squint) |> rename(d = n, squintability = squint)) |>
+  select(index, d, I_max_max, P_J_hat, n_jellies, max_tries, smoothness, squintability, time)
+save(sim_df, file = here::here("data", "sim_df.rda"))
 
 
