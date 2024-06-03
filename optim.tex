@@ -235,18 +235,6 @@ optimiser \sep data visualisation \sep
 \emph{Let's use British English (``American or British usage is
 accepted, but not a mixture of these'')}
 
-\begin{verbatim}
-Warning: package 'ggplot2' was built under R version 4.3.2
-\end{verbatim}
-
-\begin{verbatim}
-Warning: package 'tidyr' was built under R version 4.3.2
-\end{verbatim}
-
-\begin{verbatim}
-Warning: package 'ggh4x' was built under R version 4.3.2
-\end{verbatim}
-
 \section{Introduction {[}Nicolas and
 Jessica{]}}\label{introduction-nicolas-and-jessica}
 
@@ -378,7 +366,7 @@ If they're better, we adopt them; if not, we stick with our current
 projection. This process continues and iteratively improves the
 projection, until we reach the maximum number of trials.
 
-\begin{tcolorbox}[enhanced jigsaw, coltitle=black, colbacktitle=quarto-callout-note-color!10!white, rightrule=.15mm, leftrule=.75mm, arc=.35mm, left=2mm, opacityback=0, breakable, toptitle=1mm, toprule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomtitle=1mm, colback=white, titlerule=0mm, bottomrule=.15mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame]
+\begin{tcolorbox}[enhanced jigsaw, arc=.35mm, coltitle=black, colframe=quarto-callout-note-color-frame, opacityback=0, toprule=.15mm, opacitybacktitle=0.6, colback=white, bottomrule=.15mm, leftrule=.75mm, titlerule=0mm, toptitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomtitle=1mm, rightrule=.15mm, breakable, colbacktitle=quarto-callout-note-color!10!white, left=2mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{tries}, \texttt{max\_tries}
@@ -690,62 +678,92 @@ Jellyfish optimiser, as a multi-start algorithm, is efficient in
 
 \newpage
 
-\subsection{Another data example}\label{another-data-example}
+\subsection{Connecting optimisation success with its properties and
+jellyfish
+parameters}\label{connecting-optimisation-success-with-its-properties-and-jellyfish-parameters}
 
-{[}TODO: overall summary{]}construct a relationship between jellyfish
-success and jellyfish parameters and the optimisation properties defined
-in Section~\ref{sec-theory}. This can inform the choice of jellyfish
-parameters for a given optimisation problem.
+The optimisation properties (smoothness, squintability, and speed)
+proposed in the Section~\ref{sec-theory} provide numerical measures to
+characterise the difficulty of the optimisation for a given projection
+pursuit problem. This example investigates how these measures, combined
+with the jellyfish parameters, affect the success of the jellyfish
+optimisers and how they can guide the decisions made in hyperparameter
+tuning with the jellyfish optimiser. Simulations are conducted with
+different jellyfish optimisers to obtain the proportion of successful
+optimisation across a collection of scenarios, for which smoothness,
+squintability, and speed are calculated. A generalised linear model is
+used to link the proportion of success rate with the jellyfish
+parameters and the optimisation properties.
 
-In addition to the pipe-finding problem, the sine-wave finding problem
-is also investigated in 6D and 8D spaces. Six indices are considered:
-\texttt{dcor2d\_2}, \texttt{loess2d}, \texttt{MIC}, \texttt{TIC},
-\texttt{spline}, and \texttt{stringy}, which gives the 12 problems
-printed as rows in Table~\ref{tbl-smoothness-squintability}. Combining
-these problems with different jellyfish optimiser parameters
-(\texttt{n\_jellies} and \texttt{max\_tries}), a total of 51
-observations is produced, comprising of 24 observations for the
-pipe-finding and 27 observations for the sine-wave finding.
+In addition to the pipe-finding problem, also investigated is the
+sine-wave finding problem in 6D and 8D spaces with six indices
+considered: \texttt{dcor2d\_2}, \texttt{loess2d}, \texttt{MIC},
+\texttt{TIC}, \texttt{spline}, and \texttt{stringy}. Combining with
+different jellyfish optimiser parameters (\texttt{n\_jellies} and
+\texttt{max\_tries}), a total of 52 cases is produced, comprising of 24
+pipe-finding cases and 28 sine-wave finding cases. For each case, the
+jellyfish optimiser is run fifty (50) times and summary statistics are
+calculated on the best index value found across all 50 runs and the
+proportion of runs that find a close (with a difference less than 0.05)
+best index value (\texttt{P\_J\_hat}).
 
-For each observation, fifty (50) runs of the jellyfish optimisation is
-performed. In each run, summary statistics are calculated to find the
-best index across all the jellyfishes (\texttt{I\_max}) and the
-proportion of jellyfishes found (\texttt{P\_J}). At the observation
-level, the best index value across all the 50 runs
-(\texttt{I\_max\_max}) and the proportion of trials found
-(\texttt{P\_J\_hat}) is calculated.
+Smoothness and squintability are computed for each case, following the
+procedures outlined in Section~\ref{sec-smoothness} and
+Section~\ref{sec-squintability}. To calculate smoothness, three hundred
+random bases are simulated. Index values and projection distance to the
+optimal basis are calculated for each basis to fit a Gaussian process
+model. For squintability, fifty random bases are sampled and
+interpolated to the optimal basis with a step size of 0.005. The
+interpolated bases are first binned with a bin width of 0.005 to average
+the index values before feeding into a 4-parameter scaled logistic
+function, estimated by non-linear least square, to obtain the
+squintability measure.
 
-Smoothness and squintability measures are computed for each problem,
-following the procedures outlined in Section~\ref{sec-smoothness} and
-Section~\ref{sec-squintability}. To calculate smoothness, 300 random
-bases are used to estimate Gaussian process parameters (variance, range,
-smoothness, and nugget). For squintability, 50 random bases are sampled
-and interpolated to the optimal basis using a step size of 0.005. The
-index value and projection distance are calculated for all the
-interpolated bases. A binning procedure is then applied to average the
-index value at each bin width of 0.005. Finally, the scaled logistic
-function with four parameters (theta1 - theta4) is estimated by
-non-linear least square to obtain the squintability measure.
+Table~\ref{tbl-smoothness-squintability} presents the parameters
+estimated for each case from the Gaussian process (variance, range,
+smooth, and nugget) for smoothness and the scaled logistic function
+(theta1 to theta4, and squint) for squintability. The column ``smooth''
+and ``squint'' are used as the smoothness and squintability measure. The
+low squint value of MIC and TIC index is due to its convex shape of the
+index value against the projection distance, as shown in
+Figure~\ref{fig-idx-proj-dist}. Comparing to other concave shapes, the
+maximum first derivative happens at a smaller projection distance
+(\(\theta2\)), requiring the optimiser to get closer to the optimal to
+see a significant change in the index value, hence a small squintability
+measure. {[}TODO: the stringy squintability doens't make sense{]}
 
-{[}TODO: discuss what the values of smooth and theta3 mean for the
-optimisation{]}
+Table~\ref{tbl-mod-data} presents the processed data for modelling after
+augmenting the jellyfish parameters (\texttt{n\_jellies} and
+\texttt{max\_tries}) and the average time spent on each run
+(\texttt{time}) for each case. A generalised linear model is fitted with
+a binomial family and a logit link function to the data to investigate
+the relationship between the proportion of jellyfish success and
+jellyfish parameters and the optimisation properties. Pre-processing of
+the data include 1) scale the jellyfish parameters (\texttt{n\_jellies}
+and \texttt{max\_tries}) by 10 for interpretation, and 2) create a
+binary variable \texttt{long\_time} to flag the cases with average time
+spent on each run greater than 30 seconds. Table~\ref{tbl-mod-output}
+presents the model output with the estimated coefficients. The model
+suggests a positive relationship between the proportion of jellyfish
+success and the jellyfish parameters, \texttt{n\_jellies} and
+\texttt{max\_tries}, optimisation property parameter,
+\texttt{smoothness} and \texttt{squintability}, and a negative
+relationship with the average time spent on each run
+(\texttt{long\_time}) and the data dimension (\texttt{d}). The variable
+\texttt{squintability} and \texttt{d} are significant, suggesting their
+importance over jellyfish parameters to the success of the optimisation.
 
-Table~\ref{tbl-smoothness-squintability} presents all the parameters
-calculated for smoothness and squintability, with the column ``smooth''
-for smoothness and ``theta3'' for squintability.
-Figure~\ref{fig-idx-proj-dist} shows the relationship between the index
-value against the projection distance for each problem following the
-binning procedure.
+\begingroup\fontsize{7}{9}\selectfont
 
 \begin{longtable}[t]{|>{}ll>{}r|rrr>{}r|rrrr>{}r|}
 
 \caption{\label{tbl-smoothness-squintability}Parameters estimated from
 the Gaussian process (including variance, range, smoothness, and nugget)
-and scaled logistic function (theta1 - theta4) for the pipe-finding and
-sine-wave finding problems. The squint column is calculated as theta1 *
-theta2 * theta3 / 4, as described in Section~\ref{sec-squintability}.
-The ``smooth'' and ``squint'' column represent the smoothness and
-squintability measures.}
+and scaled logistic function (theta1 to theta4) for the pipe-finding and
+sine-wave finding problems. The squint column is calculated as
+\(\frac{\theta1 \theta2 \theta3}{4}\), as described in
+Section~\ref{sec-squintability}. The ``smooth'' and ``squint'' column
+represent the smoothness and squintability measures.}
 
 \tabularnewline
 
@@ -770,6 +788,8 @@ sine & stringy & 6 & 0.000 & 1173.035 & 1.031 & 17608.047 & 1.011 & 0.011 & 254.
 
 \end{longtable}
 
+\endgroup{}
+
 \begin{figure}
 
 \centering{
@@ -781,13 +801,14 @@ sine & stringy & 6 & 0.000 & 1173.035 & 1.031 & 17608.047 & 1.011 & 0.011 & 254.
 \caption{\label{fig-idx-proj-dist}Index values against projection
 distance for the 12 pipe/sine-wave finding problem after the binning
 procedure during the estimation of the squintability measure. The index
-value is averaged at each bin width of 0.005 and the TIC index is scaled
-to 0-1 for comparison. When finding the sine-wave structure using the
-MIC and TIC index, a convex curved is observed, as opposed to the
-pipe-finding problem or the sine-wave finding problem with the
-dcor2d\_2, loess2d, and splines2d index. When finding the sine-wave with
-the stringy index, the index shows an instantaneous jump to the optimum
-when close to the best basis.}
+value is averaged at each bin width of 0.005 and the \texttt{TIC} index
+is scaled to 0-1 for comparison. When finding the sine-wave structure
+using the \texttt{MIC} and \texttt{TIC} index, a convex curved is
+observed, as opposed to the pipe-finding problem or the sine-wave
+finding problem with the \texttt{dcor2d\_2}, \texttt{loess2d}, and
+\texttt{splines2d} index. When finding the sine-wave with the stringy
+index, the index shows an instantaneous jump to the optimum when close
+to the best basis.}
 
 \end{figure}%
 
@@ -801,11 +822,12 @@ when close to the best basis.}
   >{\raggedleft\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1081}}
   >{\raggedright\arraybackslash}p{(\columnwidth - 14\tabcolsep) * \real{0.1622}}@{}}
 
-\caption{\label{tbl-all-sim}The first few rows of the datasets processed
-for modelling. The smoothness and squintability variable are uniquely
-characterised by the index function used and the data dimension, and
-thus do not vary across n\_jellies and max\_tries. The variable
-P\_J\_hat, and time are calculated at each observation.}
+\caption{\label{tbl-mod-data}The first few rows of the datasets
+processed for modelling. The smoothness and squintability variable are
+uniquely characterised by the index function used and the data
+dimension, and thus do not vary across \texttt{n\_jellies} and
+\texttt{max\_tries}. The variable \texttt{P\_J\_hat}, and time are
+calculated at each observation.}
 
 \tabularnewline
 
@@ -841,18 +863,34 @@ MIC & 8 & 2.394 & 0.100 & 20 & 100 & 0.08 & 4.960 secs \\
 
 \end{longtable}
 
-\begin{verbatim}
-# A tibble: 7 x 5
-  term          estimate std.error statistic p.value
-  <chr>            <dbl>     <dbl>     <dbl>   <dbl>
-1 (Intercept)     -4.67      4.51     -1.04  0.300  
-2 smoothness       1.60      1.53      1.05  0.294  
-3 squintability    7.06      2.21      3.20  0.00140
-4 d               -0.595     0.260    -2.29  0.0221 
-5 long_time       -0.851     1.35     -0.632 0.528  
-6 n_jellies        0.230     0.131     1.75  0.0795 
-7 max_tries        0.107     0.153     0.700 0.484  
-\end{verbatim}
+\begin{longtable}[t]{|>{}lrrr>{}r|}
+
+\caption{\label{tbl-mod-output}Model estimates of proportion of
+jellyfish success (\texttt{P\_J\_hat}) on optimisation properties
+(\texttt{smoothness}, \texttt{squintability}, and \texttt{d}) and
+jellyfish parameters (\texttt{long\_time}, \texttt{n\_jellies}, and
+\texttt{max\_tries}) from the generalised linear model with a binomial
+family and a logit link function. The variable \texttt{long\_time} is
+derived to flag the cases with average time spent on each run greater
+than 30 seconds and the variable \texttt{n\_jellies} and
+\texttt{max\_tries} are scaled by 10 for interpretation.}
+
+\tabularnewline
+
+\toprule
+term & estimate & std.error & statistic & p.value\\
+\midrule
+intercept & -4.672 & 4.512 & -1.036 & 0.300\\
+smoothness & 1.604 & 1.530 & 1.048 & 0.294\\
+squintability & 7.062 & 2.210 & 3.195 & 0.001\\
+d & -0.595 & 0.260 & -2.289 & 0.022\\
+long\_time & -0.851 & 1.348 & -0.632 & 0.528\\
+\addlinespace
+n\_jellies & 0.230 & 0.131 & 1.754 & 0.080\\
+max\_tries & 0.107 & 0.153 & 0.700 & 0.484\\
+\bottomrule
+
+\end{longtable}
 
 \section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}
 

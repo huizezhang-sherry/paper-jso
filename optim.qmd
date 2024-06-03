@@ -60,13 +60,18 @@ editor:
 *Let's use British English ("American or British usage is accepted, but
 not a mixture of these")*
 
-```{r setup, echo = FALSE, message=FALSE}
+```{r setup, echo = FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(tidyverse)
 library(ggplot2)
 library(patchwork)
 library(ggh4x)
 library(broom)
+library(kableExtra)
+load(here::here("data/smoothness.rda"))
+load(here::here("data/squintability.rda"))
+load(here::here("data/sq_basis_dist_idx.rda"))
+load(here::here("data/sim_df.rda"))
 ```
 
 # Introduction \[Nicolas and Jessica\]
@@ -570,43 +575,37 @@ p1 + ggtitle("The Jellyfish Optimiser") | p2 + ggtitle("The Better Optimiser")
 \newpage 
 
 
-## Another data example
+## Connecting optimisation success with its properties and jellyfish parameters
 
-[TODO: overall summary]construct a relationship between jellyfish success and jellyfish parameters and the optimisation properties defined in @sec-theory. This can inform the choice of jellyfish parameters for a given
-optimisation problem.
+The optimisation properties (smoothness, squintability, and speed) proposed in the @sec-theory provide numerical measures to characterise the difficulty of the optimisation for a given projection pursuit problem. This example investigates how these measures, combined with the jellyfish parameters, affect the success of the jellyfish optimisers and how they can guide the decisions made in hyperparameter tuning with the jellyfish optimiser. Simulations are conducted with different jellyfish optimisers to obtain the proportion of successful optimisation across a collection of scenarios, for which smoothness, squintability, and speed are calculated. A generalised linear model is used to link the proportion of success rate with the jellyfish parameters and the optimisation properties.
 
-In addition to the pipe-finding problem, the sine-wave finding problem is also investigated in 6D and 8D spaces. Six indices are considered: `dcor2d_2`, `loess2d`, `MIC`, `TIC`, `spline`, and `stringy`, which gives the 12 problems printed as rows in @tbl-smoothness-squintability. Combining these problems with different jellyfish optimiser parameters (`n_jellies` and `max_tries`), a total of 51 observations is produced, comprising of 24 observations for the pipe-finding and 27 observations for the sine-wave finding.
 
-For each observation, fifty (50) runs of the jellyfish optimisation is performed. In each run, summary statistics are calculated to find the best index across all the jellyfishes (`I_max`) and the proportion of jellyfishes found (`P_J`). At the observation level, the best index value across all the 50 runs  (`I_max_max`) and the proportion of trials found (`P_J_hat`) is calculated.
+In addition to the pipe-finding problem, also investigated is the sine-wave finding problem in 6D and 8D spaces with six indices considered: `dcor2d_2`, `loess2d`, `MIC`, `TIC`, `spline`, and `stringy`. Combining with different jellyfish optimiser parameters (`n_jellies` and `max_tries`), a total of `r nrow(sim_df)` cases is produced, comprising of `r nrow(filter(sim_df, index == "holes"))` pipe-finding cases  and `r nrow(filter(sim_df, index != "holes"))` sine-wave finding cases. For each case, the jellyfish optimiser is run fifty (50) times and summary statistics are calculated on the best index value found across all 50 runs and the proportion of runs that find a close (with a difference less than 0.05) best index value (`P_J_hat`).
 
-Smoothness and squintability measures are computed for each problem, following the procedures outlined in @sec-smoothness and @sec-squintability. To calculate smoothness, 300 random bases are used to estimate Gaussian process parameters (variance, range, smoothness, and nugget). For squintability, 50 random bases are sampled and interpolated to the optimal basis using a step size of 0.005. The index value and projection distance are calculated for all the interpolated bases. A binning procedure is then applied to average the index value at each bin width of 0.005. Finally, the scaled logistic function with four parameters (theta1 - theta4) is estimated by non-linear least square to obtain the squintability measure.
+Smoothness and squintability are computed for each case, following the procedures outlined in @sec-smoothness and @sec-squintability. To calculate smoothness, three hundred random bases are simulated. Index values and projection distance to the optimal basis are calculated for each basis to fit a Gaussian process model. For squintability, fifty random bases are sampled and interpolated to the optimal basis with a step size of 0.005. The interpolated bases are first binned with a bin width of 0.005 to average the index values before feeding into a 4-parameter scaled logistic function, estimated by non-linear least square, to obtain the squintability measure.
 
-[TODO: discuss what the values of smooth and theta3 mean for the optimisation]
+@tbl-smoothness-squintability presents the parameters estimated for each case from the Gaussian process (variance, range, smooth, and nugget) for smoothness and the scaled logistic function (theta1 to theta4, and squint) for squintability. The column "smooth" and "squint" are used as the smoothness and squintability measure. The low squint value of MIC and TIC index is due to its convex shape of the index value against the projection distance, as shown in @fig-idx-proj-dist. Comparing to other concave shapes, the maximum first derivative happens at a smaller projection distance ($\theta2$), requiring the optimiser to get closer to the optimal to see a significant change in the index value, hence a small squintability measure. [TODO: the stringy squintability doens't make sense]
 
-@tbl-smoothness-squintability presents all the parameters calculated for smoothness and squintability, with the column "smooth" for smoothness and "theta3" for squintability. @fig-idx-proj-dist shows the relationship between the index value against the projection distance for each problem following the binning procedure. 
+@tbl-mod-data presents the processed data for modelling after augmenting the jellyfish parameters (`n_jellies` and `max_tries`) and the average time spent on each run (`time`) for each case. A generalised linear model is fitted with a binomial family and a logit link function to the data to investigate the relationship between the proportion of jellyfish success and jellyfish parameters and the optimisation properties. Pre-processing of the data include 1) scale the jellyfish parameters (`n_jellies` and `max_tries`) by 10 for interpretation, and 2) create a binary variable `long_time` to flag the cases with average time spent on each run greater than 30 seconds. @tbl-mod-output presents the model output with the estimated coefficients. The model suggests a positive relationship between the proportion of jellyfish success and the jellyfish parameters, `n_jellies` and `max_tries`, optimisation property parameter, `smoothness` and `squintability`, and a negative relationship with the average time spent on each run (`long_time`) and the data dimension (`d`). The variable `squintability` and `d` are significant, suggesting their importance over jellyfish parameters to the success of the optimisation.
 
 <!-- @tbl-all-sim displays the first five rows after combining all calculations.  -->
 
 ```{r}
 #| label: tbl-smoothness-squintability
-#| tbl-cap: Parameters estimated from the Gaussian process (including variance, range, smoothness, and nugget) and scaled logistic function (theta1 - theta4) for the pipe-finding and sine-wave finding problems. The squint column is calculated as theta1 * theta2 * theta3 / 4, as described in @sec-squintability. The "smooth" and "squint" column represent the smoothness and squintability measures. 
-load(here::here("data/smoothness.rda"))
-load(here::here("data/squintability.rda"))
-library(kableExtra)
+#| tbl-cap: Parameters estimated from the Gaussian process (including variance, range, smoothness, and nugget) and scaled logistic function (theta1 to theta4) for the pipe-finding and sine-wave finding problems. The squint column is calculated as $\frac{\theta1 \theta2 \theta3}{4}$, as described in @sec-squintability. The "smooth" and "squint" column represent the smoothness and squintability measures. 
 tibble(shape = c(rep("pipe", 4), rep("sine", 8)), smoothness) |>
   left_join(squintability) |> 
   rename(d = n, smooth = smoothness) |> 
-  knitr::kable(digits = 3) |> 
+  knitr::kable(digits = 3, booktabs = T) |> 
   column_spec(1, border_left = TRUE) |> 
   column_spec(c(3, 7, 12), border_right = TRUE) |> 
-  kable_styling(latex_options = "hold_position")
+  kable_styling(latex_options = "hold_position", font_size = 7)
 ```
 
 ```{r fig-idx-proj-dist}
 #| fig.width = 9,
 #| fig.height = 5,
-#| fig.cap = "Index values against projection distance for the 12 pipe/sine-wave finding problem after the binning procedure during the estimation of the squintability measure. The index value is averaged at each bin width of 0.005 and the TIC index is scaled to 0-1 for comparison. When finding the sine-wave structure using the MIC and TIC index, a convex curved is observed, as opposed to the pipe-finding problem or the sine-wave finding problem with the dcor2d\\_2, loess2d, and splines2d index. When finding the sine-wave with the stringy index, the index shows an instantaneous jump to the optimum when close to the best basis."
-load(here::here("data/sq_basis_dist_idx.rda"))
+#| fig.cap = "Index values against projection distance for the 12 pipe/sine-wave finding problem after the binning procedure during the estimation of the squintability measure. The index value is averaged at each bin width of 0.005 and the `TIC` index is scaled to 0-1 for comparison. When finding the sine-wave structure using the `MIC` and `TIC` index, a convex curved is observed, as opposed to the pipe-finding problem or the sine-wave finding problem with the `dcor2d_2`, `loess2d`, and `splines2d` index. When finding the sine-wave with the stringy index, the index shows an instantaneous jump to the optimum when close to the best basis."
 sq_basis_dist_idx |>
   ggplot(aes(x = dist, y = idx, group = index)) +
   geom_line() +
@@ -616,9 +615,8 @@ sq_basis_dist_idx |>
 ```
 
 ```{r}
-#| label: tbl-all-sim
-#| tbl-cap: The first few rows of the datasets processed for modelling. The smoothness and squintability variable are uniquely characterised by the index function used and the data dimension, and thus do not vary across n\\_jellies and max\\_tries. The variable P\\_J\\_hat, and time are calculated at each observation.
-load(here::here("data/sim_df.rda"))
+#| label: tbl-mod-data
+#| tbl-cap: The first few rows of the datasets processed for modelling. The smoothness and squintability variable are uniquely characterised by the index function used and the data dimension, and thus do not vary across `n_jellies` and `max_tries`. The variable `P_J_hat`, and time are calculated at each observation.
 sim_df |> 
   dplyr::select(index, d, smoothness, squintability, n_jellies, max_tries, 
                 -I_max_max, P_J_hat, time) |> 
@@ -628,8 +626,9 @@ sim_df |>
 ```
 
 
-
 ```{r}
+#| label: tbl-mod-output
+#| tbl-cap: Model estimates of proportion of jellyfish success (`P_J_hat`) on optimisation properties (`smoothness`, `squintability`, and `d`) and jellyfish parameters (`long_time`, `n_jellies`, and `max_tries`) from the generalised linear model with a binomial family and a logit link function. The variable `long_time` is derived to flag the cases with average time spent on each run greater than 30 seconds and the variable `n_jellies` and `max_tries` are scaled by 10 for interpretation.
 sim_df2 <- sim_df |> 
   mutate(n_jellies = n_jellies/10,
          max_tries = max_tries/10,
@@ -637,7 +636,11 @@ sim_df2 <- sim_df |>
          P_J_hat = ifelse(index == "stringy", 0, P_J_hat))
 
 mod1 <- glm(P_J_hat ~ smoothness + squintability + d + long_time + n_jellies + max_tries, data = sim_df2, family = binomial)
-broom::tidy(mod1)
+broom::tidy(mod1) |> 
+  mutate(term = ifelse(term == "(Intercept)", "intercept", term)) |>
+  kable(digits = 3) |> 
+  column_spec(c(1,5), border_right = TRUE) |> 
+  column_spec(1, border_left = TRUE)
 ```
 
 
