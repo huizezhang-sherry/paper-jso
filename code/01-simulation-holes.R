@@ -43,3 +43,11 @@ sim_res <- sim_setup |>
 
 # sim_pipe <- sim_res |> select(-alpha)
 # save(sim_pipe, file = "data/sim_pipe.rda")
+
+
+pipe_jellyfish <- sim_pipe |>
+  filter(n_jellies == 100, max_tries == 100) |>
+  get_best(group = id) |>
+  ungroup() |>
+  mutate(optimiser = "jellyfish")
+# save(pipe_jellyfish, file = "data/pipe_jellyfish.rda")

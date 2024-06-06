@@ -68,6 +68,10 @@ library(patchwork)
 library(ggh4x)
 library(broom)
 library(kableExtra)
+library(ferrn)
+load(here::here("data/sim_pipe.rda"))
+load(here::here("data/pipe_better.rda"))
+load(here::here("data/pipe_jellyfish.rda"))
 load(here::here("data/smoothness.rda"))
 load(here::here("data/squintability.rda"))
 load(here::here("data/sq_basis_dist_idx.rda"))
@@ -488,92 +492,114 @@ The jellyfish optimiser has been implemented in the tourr package
 [@wickham_tourr_2011] and we will use the diagnostic plots proposed in
 the ferrn package [@RJ-2021-105] to visualise the optimisation process.
 
-## Going beyond 10D
+## Performance of the jellyfish optimiser in high-dimensional pipe-finding problems
 
-The pipe-finding problem is initially used to investigate indexes and
-optimisers in @laa_using_2020, and we extend it from a 6D problem to a
-12D problem.
+[unfinished]
 
-Jellyfish optimiser, as a multi-start algorithm, is efficient in \[...\]
-for high-dimensional problems
+The aim of this example is to investigate the performance of jellyfish optimisers in high-dimensional problems.
 
-```{r echo = FALSE}
-load(here::here("data/pipe_better.rda"))
-load(here::here("data/pipe_jellyfish.rda"))
-```
+The projection pursuit problem is to find the pipe shape, investigated in @laa_using_2020, using the holes index in 6/8/10/12-D data. For each case, 50 simulations are conducted for each combination of jellyfish hyper-parameter: `n_jellies = 20/50/100` and `max_tries = 50/100`. The performance of the jellyfish optimiser is also compared with an existing opitmiser: the search better opitmiser with `max.tries = 1000`.
+
+@fig-proportion presents the proportion of jellyfishes that finds the index value close to (absolute value less than 0.05) the best index value found at each `max_tries`/`n_jellies` combination at $d = 6/8/10/12$ data dimension. As the number of jellies and maximum tries increase, the proportion of jellyfishes that find the optimal projection increases. This suggests for higher dimensional problems ($d = 8/10/12$), an `n_jellies = 100` and `max_tries = 100` is necessary for at least half of the jellyfish optimiser to find the optimal projection.
+
+@fig-proj presents the final projection found across the 50 simulations at each 10th quantile between the jellyfish and search better optimiser (`n_jellies = 100`, `max_tries = 100` is used for the jellyfish optimiser). While the jellyfish optimiser may not always find the optimal projection in the worse case scenarios, especially as the dimension increases, it tends to find higher index values and crisper pipe shapes than the search better optimiser at each quantile across all the four data dimensions. 
 
 ```{r}
+#| label = fig-proportion,
 #| fig.width = 6,
 #| fig.height = 3,
 #| fig.align = "center",
-#| fig.cap = "sthis sdfaksdlf"
-pipe_better |>
-  bind_rows(pipe_jellyfish) |>
-  mutate(dim = as.factor(6 + (as.numeric(dim) - 1) * 2)) |>
-  ggplot(aes(x = dim, y = index_val, group = interaction(optimiser, dim), color = optimiser)) +
-  geom_violin(width = 2, adjust = 0.5, position = position_dodge(width = 0.4)) +
-  ggbeeswarm::geom_quasirandom(size = 0.1, width = 0.1, dodge.width = 0.4) +
-  theme_bw() +
-  scale_y_continuous(breaks = seq(0.85, 1, 0.01)) +
-  scale_color_brewer(palette = "Accent") + 
-  labs(y = "Index", x = "Dimension")
+#| fig.cap = "Proportion of jellyfishes reaches close to the optimal index value in the pipe-finding problem. As the dimension goes up, the numer/ proportion of jellyfishes that reach the optimal index value decreases. Increasing the jellyfish hyperparameters (`n_jellies` and `max_tries`) help to improve the proportion."
+pipe_run_summ <- sim_pipe |>
+  mutate(idx_f = "holes") |>
+  group_by(id, n_jellies, max_tries, d, loop) |> 
+  summarise(I_max = max(index_val)) 
+  
+pipe_sim_best <- pipe_run_summ |> 
+  ungroup(loop, id) |> 
+  summarise(I_best = max(I_max))
+  
+pipe_res <- pipe_run_summ |> 
+  left_join(pipe_sim_best) |> 
+  mutate(diff = abs(I_max - I_best) < 0.05) |> 
+  ungroup(id, loop) |> 
+  summarise(proportion = sum(diff) / n()) |> 
+  mutate(d = as.factor(d), n_jellies = as.factor(n_jellies))
+
+pipe_res |> 
+  ggplot(aes(x = n_jellies, y = proportion, 
+             group = interaction(d, max_tries),
+             color = d)) + 
+  geom_line() + 
+  scale_color_brewer(palette = "Dark2") +
+  facet_wrap(vars(max_tries), 
+             labeller = "label_both") + 
+  theme_bw()
 
 ```
 
-```{r}
-#| fig.width = 8,
-#| fig.height = 5,
+
+
+```{r} 
+#| fig.height = 7.5,
+#| fig.width = 10,
+#| label = fig-proj,
 #| fig.align = "center",
-#| fig.cap = "sthis sdfaksdlf"
-get_proj <- function(data){
-  quantiles <- map(1:4, ~data |>
-                     filter(dim == .x) |>
-                     pull(index_val) |>
-                     quantile(seq(0, 1, 0.5), type = 3) |>
-                     rev() |>
-                     unname())
+#| fig.cap = "Projections found by the jellyfish and search better optimiser at each 10th quantile across 50 simulations. The holes index is used to find the target pipe shape in the 6/8/10/12D space. An `n_jellies = 100` and `max_tries = 100` are used for the jellyfish optimiser and `max.tries = 1000` is used for the search better optimiser." 
 
-  res <- map2_dfr(
-    unlist(quantiles),
-    rep(1:4, each = 3),
-    ~ data |>
-      filter(dim == .y, index_val == .x) |>
-      select(dim, proj, index_val),
-    .id = "id"
-    ) |>
-    unnest(proj) |>
-    mutate(index_val = sprintf("%.3f", index_val),
-           optimiser = "jellyfish",
-           id = (as.numeric(id) - 1) %%3 + 1,
-           dim = as.factor(6 + (as.numeric(dim) - 1) * 2)) |>
-    mutate(id = case_when(id == 1 ~ "best",
-                          id == 2 ~ "mean",
-                          id == 3 ~ "worst",
-                          TRUE ~ "0thers"))
-  return(res)
-}
+aaa <- map_dfr(
+  list(pipe1000, pipe1000_8d, pipe1000_10d, pipe1000_12d), 
+  ~{
+    d_dim = dim(.x)[2]
+    pipe_jellyfish |> 
+      filter(d == d_dim) |> 
+      arrange(index_val) |>
+      filter(row_number() %in% c(1, seq(5, 50, 5))) |> 
+      mutate(id = factor(
+        paste0(c(0, seq(5, 50, 5)) / 50 * 100, "th"),
+        levels = paste0(c(0, seq(5, 50, 5)) / 50 * 100, "th"))) |> 
+      compute_projection(data = .x, col = c("d", "index_val", "id"))
+  }
+)
 
-
-p1 <- get_proj(pipe_jellyfish)  |>
-  ggplot(aes(x = V1, y = V2)) +
-  geom_point(size = 0.1) +
-  geom_text(data = ~. |> distinct(id, dim, index_val),
-           aes(label = index_val), x =0, y = 3.7, size = 3) +
-  facet_grid(dim ~ id) +
+p1 <- aaa |> 
+  ggplot() + 
+  geom_point(aes(x = V1, y = V2), size = 0.05) + 
+  geom_text(data = aaa |> select(-V1, -V2) |> unique(), 
+            aes(label = round(index_val,3)), x =0, y = 3.7, 
+            size = 3) + 
+  facet_grid(d ~ id) + 
   xlim(-4, 4) + ylim(-4, 4) +
   theme_bw() +
   theme(aspect.ratio = 1, axis.ticks = element_blank(),
         axis.text = element_blank(), axis.title = element_blank(),
         panel.grid = element_blank())
-p2 <- p1 %+% get_proj(pipe_better)
-p1 + ggtitle("The Jellyfish Optimiser") | p2 + ggtitle("The Better Optimiser")
 
+bbb <- pipe_better |> 
+  group_by(dim) |> 
+  arrange(index_val) |> 
+  filter(row_number() %in% c(1, seq(5, 50, 5))) |>  
+  mutate(id = factor(
+    paste0(c(0, seq(5, 50, 5)) / 50 * 100, "th"),
+    levels = paste0(c(0, seq(5, 50, 5)) / 50 * 100, "th")), 
+    d= 4 + 2 * as.numeric(dim)) |> 
+  unnest(proj)
 
+p2 <- bbb |> 
+  ggplot() + 
+  geom_point(aes(x = V1, y = V2), size = 0.05) + 
+  geom_text(data = bbb |> select(-V1, -V2) |> unique(), 
+            aes(label = round(index_val,3)), x =0, y = 3.7, 
+            size = 3) + 
+  facet_grid(d ~ id) + 
+  xlim(-4, 4) + ylim(-4, 4) +
+  theme_bw() +
+  theme(aspect.ratio = 1, axis.ticks = element_blank(),
+        axis.text = element_blank(), axis.title = element_blank(),
+        panel.grid = element_blank())
+
+(p1 + ggtitle("The jellyfish optimiser"))/(p2 + ggtitle("The search better optimiser"))
 ```
-
-
-\newpage 
-
 
 ## Connecting optimisation success with its properties and jellyfish parameters
 
@@ -645,89 +671,5 @@ broom::tidy(mod1) |>
 
 
 # Conclusion \[Di and Sherry\] {#sec-conclusion}
-
-<!-- # Bibliography styles -->
-
-<!-- Here are two sample references:  @Feynman1963118 @Dirac1953888. -->
-
-<!-- By default, natbib will be used with the `authoryear` style, set in `classoption` variable in YAML.  -->
-
-<!-- You can sets extra options with `natbiboptions` variable in YAML header. Example  -->
-
-<!-- ``` -->
-
-<!-- natbiboptions: longnamesfirst,angle,semicolon -->
-
-<!-- ``` -->
-
-<!-- There are various more specific bibliography styles available at -->
-
-<!-- <https://support.stmdocs.in/wiki/index.php?title=Model-wise_bibliographic_style_files>.  -->
-
-<!-- To use one of these, add it in the header using, for example, `biblio-style: model1-num-names`. -->
-
-<!-- ## Using CSL  -->
-
-<!-- If `cite-method` is set to `citeproc` in `elsevier_article()`, then pandoc is used for citations instead of `natbib`. In this case, the `csl` option is used to format the references. By default, this template will provide an appropriate style, but alternative `csl` files are available from <https://www.zotero.org/styles?q=elsevier>. These can be downloaded -->
-
-<!-- and stored locally, or the url can be used as in the example header. -->
-
-<!-- # Equations -->
-
-<!-- Here is an equation: -->
-
-<!-- $$  -->
-
-<!--   f_{X}(x) = \left(\frac{\alpha}{\beta}\right) -->
-
-<!--   \left(\frac{x}{\beta}\right)^{\alpha-1} -->
-
-<!--   e^{-\left(\frac{x}{\beta}\right)^{\alpha}};  -->
-
-<!--   \alpha,\beta,x > 0 . -->
-
-<!-- $$ -->
-
-<!-- Inline equations work as well: $\sum_{i = 2}^\infty\{\alpha_i^\beta\}$ -->
-
-<!-- # Figures and tables -->
-
-<!-- @fig-meaningless is generated using an R chunk. -->
-
-<!-- ```{r} -->
-
-<!-- #| label: fig-meaningless -->
-
-<!-- #| fig-cap: A meaningless scatterplot -->
-
-<!-- #| fig-width: 5 -->
-
-<!-- #| fig-height: 5 -->
-
-<!-- #| fig-align: center -->
-
-<!-- #| out-width: 50% -->
-
-<!-- #| echo: false -->
-
-<!-- plot(runif(25), runif(25)) -->
-
-<!-- ``` -->
-
-<!-- # Tables coming from R -->
-
-<!-- Tables can also be generated using R chunks, as shown in @tbl-simple example. -->
-
-<!-- ```{r} -->
-
-<!-- #| label: tbl-simple -->
-
-<!-- #| tbl-cap: Caption centered above table -->
-
-<!-- #| echo: true -->
-
-<!-- knitr::kable(head(mtcars)[,1:4]) -->
-
-<!-- ``` -->
 
 # References

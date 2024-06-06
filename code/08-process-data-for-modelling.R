@@ -37,16 +37,6 @@ pipe_setup_summ <- pipe_run_df |>
     time = mean(time)
   )
 
-
-
-pipe_setup |>
-  ggplot(aes( x= as.factor(n_jellies), y = P_J_hat,
-              group = d, color = as.factor(d))) +
-  geom_line() +
-  facet_wrap(vars(max_tries)) +
-  #facet_wrap(vars(d)) +
-  scale_color_brewer(palette = "Dark2")
-
 #############################################################################
 load(here::here("data/sim_sine_6d_dcor2d.rda"))
 load(here::here("data/sim_sine_6d.rda")) # loess
