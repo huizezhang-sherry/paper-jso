@@ -505,11 +505,11 @@ p2 <- angle_dcor2d |>
 
 ```
 
-# Application \[Di and Sherry\] {#sec-simulation}
+# Application \[Di and Sherry\] {#sec-app}
 
-The JS optimiser provides a new swarm-based search strategy to optimise projection pursuit problems. Two examples are provided in this section to demonstrate its performance. The first example compares its performance with the search better optimiser and explores how it behaves with different combinations of hyper-parameter. The second example studies the effect of optimisation properties defined in @sec-theory, along with JS hyper-parameters, on the outcome of the optimisation.
+The JS optimiser provides a new swarm-based search strategy to optimise projection pursuit problems. Two examples are provided in this section to demonstrate its performance. The first example compares its performance with the search better optimiser and explores how it behaves with different combinations of hyper-parameter. The second example studies the effect of optimisation properties defined in @sec-theory, along with jellyfish hyper-parameters, on the outcome of the optimisation.
 
-## Performance of JS optimiser in pipe-finding problems
+## Performance of JS optimiser in pipe-finding problems {#sec-app-1}
 
 The performance of JS optimiser is investigated in two folds: 1) compare it with a commonly used optimiser: the search better optimiser [@RJ-2021-105; @laa_using_2020], and 2) examine its success rate under different hyper-parameters (number of jellyfishes and the maximum number of tries). The projection pursuit problem used is finding the pipe shape using the holes index, investigated by @laa_using_2020. 
 
@@ -615,61 +615,56 @@ Fifty (50) simulations are conducted with both JS and the search better optimise
 
 In the second experiment, fifty (50) simulations are conducted at each  hyper-parameter combination to analyse its effects on the success rate of the JS optimiser. The hyper-parameters tested include: 1) 20, 50, and 100 jellyfishes, and 2) 50 and 100 maximum number of tries. In each simulation,  success is defined as achieving a final index value within 0.05 of the best index value found among all 50 simulations. For example, in the 8-dimensional data scenario with 20 jellyfishes and a maximum number of tries set to 100, the optimal index value is `r pipe_sim_best |> filter(n_jellies == 20, max_tries == 100, d == 8) |> pull(I_best) |> round(3) -> aa; aa`. Out of the 50 simulations, `r pipe_run_summ |> filter(n_jellies == 20, max_tries == 100, d == 8) |> filter(I_max >= aa - 0.05) |> nrow() -> bb; bb` achieved an index value within [`r aa - 0.05`, `r aa`], resulting in a success rate of `r pipe_run_summ |> filter(n_jellies == 20, max_tries == 100, d == 8) |> mutate(a = I_max >= aa - 0.05) |> pull(a) -> cc; round(sum(cc)/length(cc), 3)`. @fig-proportion presents the proportion of success for each hyper-parameter combinations. As the number of jellyfish and maximum tries increase, the success rate also increases. For simpler problems (6 dimensions), small parameter values (20 jellyfishes and a max number of tries of 50) can already result in high success rate, while for higher-dimensional problems (8, 10, and 12 dimensions), a combination of 100 jellyfishes and 100 maximum number of tries is necessary for at least half of the jellyfishes to find the optimal projection. 
 
-## Connecting optimisation success with its properties and jellyfish parameters
+## Factors affecting JS optimiser success rate: optimisation properties and jellyfish hyper-parameters {#sec-app-2}
 
-The optimisation properties (smoothness, squintability, and speed) proposed in the @sec-theory provide numerical measures to characterise the difficulty of the optimisation for a given projection pursuit problem. This example investigates how these measures, combined with the jellyfish parameters, affect the success of the jellyfish optimisers and how they can guide the decisions made in hyperparameter tuning with the jellyfish optimiser. Simulations are conducted with different jellyfish optimisers to obtain the proportion of successful optimisation across a collection of scenarios, for which smoothness, squintability, and speed are calculated. A generalised linear model is used to link the proportion of success rate with the jellyfish parameters and the optimisation properties.
+The optimisation properties, including smoothness, squintability, and speed, offer numerical metrics to characterise the complexity of a projection pursuit optimisation problem. This example investigates how these metrics, alongside jellyfish hyper-parameters (the number of jellyfish and the maximum number of tries), affect the success of the JS optimiser. Simulations are conducted to obtain the success rate across various projection pursuit problems, characterised by shape-to-find, data dimension, and index function used, as well as different hyper-parameter combinations. Smoothness and squintability are calculated for each projection pursuit problem as outlined in @sec-theory. A generalised linear model is used to construct the relationship between the success rate, jellyfish hyper-parameters and optimisation properties.
 
+In addition to the pipe-finding problem, a new shape, sine wave, is investigated in 6D and 8D spaces with six indices considered: `dcor2d_2`, `loess2d`, `MIC`, `TIC`, `spline`, and `stringy`. Combining with two jellyfish hyper-parameters, a total of `r nrow(sim_df)` cases is produced, comprising of `r nrow(filter(sim_df, index == "holes"))` pipe-finding cases  and `r nrow(filter(sim_df, index != "holes"))` sine-wave finding cases. For each case, the JS optimiser is run fifty (50) times and the success rate is calculated as in @sec-app-1.
 
-In addition to the pipe-finding problem, also investigated is the sine-wave finding problem in 6D and 8D spaces with six indices considered: `dcor2d_2`, `loess2d`, `MIC`, `TIC`, `spline`, and `stringy`. Combining with different jellyfish optimiser parameters (`n_jellies` and `max_tries`), a total of `r nrow(sim_df)` cases is produced, comprising of `r nrow(filter(sim_df, index == "holes"))` pipe-finding cases  and `r nrow(filter(sim_df, index != "holes"))` sine-wave finding cases. For each case, the jellyfish optimiser is run fifty (50) times and summary statistics are calculated on the best index value found across all 50 runs and the proportion of runs that find a close (with a difference less than 0.05) best index value (`P_J_hat`).
+*Note: should we print out the 52 cases investigated somewhere, say appendex, since it is not full grid simulation (otherwise for the sine-wave problem there will be 6 indexes x 6 configurations = 36 cases for 6-D data and 2 indexes [MIC & TIC] x 6 configurations = 12 cases for 8-D data)? We only do a selection of 28 of them to save time/ computational resources.*
 
-Smoothness and squintability are computed for each case, following the procedures outlined in @sec-smoothness and @sec-squintability. To calculate smoothness, three hundred random bases are simulated. Index values and projection distance to the optimal basis are calculated for each basis to fit a Gaussian process model. For squintability, fifty random bases are sampled and interpolated to the optimal basis with a step size of 0.005. The interpolated bases are first binned with a bin width of 0.005 to average the index values before feeding into a 4-parameter scaled logistic function, estimated by non-linear least square, to obtain the squintability measure.
+Smoothness and squintability are computed for each case, following the procedures outlined in @sec-smoothness and @sec-squintability. To calculate smoothness, three hundred random bases are simulated. Index values and projection distance (to the optimal basis) are calculated for each random basis before fitting them into a Gaussian process model. For squintability, fifty random bases are sampled and interpolated to the optimal basis with a step size of 0.005. For these interpolated bases, index values and projection distances to the optimal basis are calculated and averaged with a bin width of 0.005. The squintability measure is then calculated from fitting a 4-parameter scaled logistic function of index value against projection distance, estimated by non-linear least square. 
 
-@tbl-smoothness-squintability presents the parameters estimated for each case from the Gaussian process (variance, range, smooth, and nugget) for smoothness and the scaled logistic function (theta1 to theta4, and squint) for squintability. The column "smooth" and "squint" are used as the smoothness and squintability measure. The low squint value of MIC and TIC index is due to its convex shape of the index value against the projection distance, as shown in @fig-idx-proj-dist. Comparing to other concave shapes, the maximum first derivative happens at a smaller projection distance ($\theta2$), requiring the optimiser to get closer to the optimal to see a significant change in the index value, hence a small squintability measure. [TODO: the stringy squintability doens't make sense]
+*Note: Shall I repeat the scaled logistic function with our parameterisation here? It can be handy to interpret theta1 - theta4 but they should've already been explained in the squintability section.*
 
-@tbl-mod-data presents the processed data for modelling after augmenting the jellyfish parameters (`n_jellies` and `max_tries`) and the average time spent on each run (`time`) for each case. A generalised linear model is fitted with a binomial family and a logit link function to the data to investigate the relationship between the proportion of jellyfish success and jellyfish parameters and the optimisation properties. Pre-processing of the data include 1) scale the jellyfish parameters (`n_jellies` and `max_tries`) by 10 for interpretation, and 2) create a binary variable `long_time` to flag the cases with average time spent on each run greater than 30 seconds. @tbl-mod-output presents the model output with the estimated coefficients. The model suggests a positive relationship between the proportion of jellyfish success and the jellyfish parameters, `n_jellies` and `max_tries`, optimisation property parameter, `smoothness` and `squintability`, and a negative relationship with the average time spent on each run (`long_time`) and the data dimension (`d`). The variable `squintability` and `d` are significant, suggesting their importance over jellyfish parameters to the success of the optimisation.
+@tbl-smoothness-squintability presents the parameters estimated from the Gaussian process (variance, range, smooth, and nugget) and the scaled logistic function ($\theta_1$ to $\theta_4$) for each case. The column "smooth" is used as the smoothness measure and the column  "squint" is calculated as $\frac{\theta_1 \theta_2 \theta_3}{4}$ as squintability. The low squint value of MIC and TIC index is due to its convex shape of the index value against the projection distance, as shown in @fig-idx-proj-dist. Comparing to other concave shapes, the maximum first derivative happens at a smaller projection distance ($\theta_2$), requiring the optimiser to get closer to the optimal to see a significant change in the index value, hence a small squintability measure. 
 
-<!-- @tbl-all-sim displays the first five rows after combining all calculations.  -->
+*Note: the stringy squintability doesn't make sense*
+
+@tbl-mod-data combines all the variables calculated above (the JS optimiser success rate, jellyfish hyper-parameters, and optimisation properties) into one table. Three pre-processing steps are applied to the data: 1) scaling the jellyfish hyper-parameters by a factor of 10 for interpretation, 2) creating a new binary variable `long_time` to indicate cases with an average run time over 30 seconds, and 3) encoding the success rate for the stringy case as 0, since none of the 50 simulations identified the sine-wave shape. A generalised linear model with a binomial family and a logit link function is used to fit the data and @tbl-mod-output presents the model outputs. The model suggests that the success rate of the JS optimiser is positively associated with the two jellyfish hyper-parameters, as well as with smoothness and squintability. However, being flagged with long runtime and an increase of data dimension will reduce the success rate. The variable `squintability` and `dimension` are significant, suggesting their importance relative to jellyfish hyper-parameters in the optimisation sucess.
 
 ```{r}
 #| label: tbl-smoothness-squintability
-#| tbl-cap: Parameters estimated from the Gaussian process (including variance, range, smoothness, and nugget) and scaled logistic function (theta1 to theta4) for the pipe-finding and sine-wave finding problems. The squint column is calculated as $\frac{\theta1 \theta2 \theta3}{4}$, as described in @sec-squintability. The "smooth" and "squint" column represent the smoothness and squintability measures. 
-tibble(shape = c(rep("pipe", 4), rep("sine", 8)), smoothness) |>
+#| tbl-cap: Parameters estimated from the Gaussian process (including variance, range, smoothness, and nugget) and scaled logistic function ($\theta_1$ to $\theta_4$) for the pipe-finding and sine-wave finding problems.  The "smooth" column and "squint" column, calculated as $\frac{\theta_1 \theta_2 \theta_3}{4}$, represent the smoothness and squintability measures. 
+dt <- tibble(shape = c(rep("pipe", 4), rep("sine", 8)), smoothness) |>
   left_join(squintability) |> 
-  rename(d = n, smooth = smoothness) |> 
-  knitr::kable(digits = 3, booktabs = T) |> 
+  rename(d = n, smooth = smoothness)
+dt |> 
+  knitr::kable(digits = 3, booktabs = T, escape = FALSE, row.names = TRUE) |> 
   column_spec(1, border_left = TRUE) |> 
-  column_spec(c(3, 7, 12), border_right = TRUE) |> 
-  kable_styling(latex_options = "hold_position", font_size = 7)
-```
-
-```{r fig-idx-proj-dist}
-#| fig.width = 9,
-#| fig.height = 5,
-#| fig.cap = "Index values against projection distance for the 12 pipe/sine-wave finding problem after the binning procedure during the estimation of the squintability measure. The index value is averaged at each bin width of 0.005 and the `TIC` index is scaled to 0-1 for comparison. When finding the sine-wave structure using the `MIC` and `TIC` index, a convex curved is observed, as opposed to the pipe-finding problem or the sine-wave finding problem with the `dcor2d_2`, `loess2d`, and `splines2d` index. When finding the sine-wave with the stringy index, the index shows an instantaneous jump to the optimum when close to the best basis."
-sq_basis_dist_idx |>
-  ggplot(aes(x = dist, y = idx, group = index)) +
-  geom_line() +
-  facet_nested_wrap(~index + n, nrow = 3, labeller = label_both, scales = "free_y") + 
-  xlab("projection distance") + ylab("index value")
-
+  column_spec(c(3, 7, 12, 13), border_right = TRUE) |> 
+  kable_styling(latex_options = "hold_position", font_size = 7, full_width = FALSE)
 ```
 
 ```{r}
 #| label: tbl-mod-data
-#| tbl-cap: The first few rows of the datasets processed for modelling. The smoothness and squintability variable are uniquely characterised by the index function used and the data dimension, and thus do not vary across `n_jellies` and `max_tries`. The variable `P_J_hat`, and time are calculated at each observation.
+#| tbl-cap: The first 7 rows of the datasets processed for modelling. 
 sim_df |> 
   dplyr::select(index, d, smoothness, squintability, n_jellies, max_tries, 
                 -I_max_max, P_J_hat, time) |> 
   arrange(index, d, n_jellies, max_tries) |> 
   head(7) |> 
-  kable(digits = 3)
+  kable(digits = 3, col.names = c("Index", "D", "Smoothness", "Squintability", 
+                                  "Num. of jellyfish", "Max. Num. of tries", "Prop. of success", "Time"), 
+        booktabs = T) |> 
+  kable_styling(latex_options = "hold_position", font_size = 7)
 ```
 
 
 ```{r}
 #| label: tbl-mod-output
-#| tbl-cap: Model estimates of proportion of jellyfish success (`P_J_hat`) on optimisation properties (`smoothness`, `squintability`, and `d`) and jellyfish parameters (`long_time`, `n_jellies`, and `max_tries`) from the generalised linear model with a binomial family and a logit link function. The variable `long_time` is derived to flag the cases with average time spent on each run greater than 30 seconds and the variable `n_jellies` and `max_tries` are scaled by 10 for interpretation.
-sim_df2 <- sim_df |> 
+#| tbl-cap: Model estimates of proportion of jellyfish success on optimisation properties and jellyfish hyper-parameters from the generalised linear model with a binomial family and a logit link function. The variable smoothness, squintability, number of jellyfish and maximum numer of tries are positively associated with the JS optimiser success rate while data dimension and being flagged as long runtime are negatively associated with teh success rate. The variable squintability and dimension are significant, suggesting their importance relative to jellyfish hyper-parameters in the optimisation success.
+sim_df2 <- sim_df |>  
   mutate(n_jellies = n_jellies/10,
          max_tries = max_tries/10,
          long_time = ifelse(time > 30, 1, 0),
@@ -677,7 +672,8 @@ sim_df2 <- sim_df |>
 
 mod1 <- glm(P_J_hat ~ smoothness + squintability + d + long_time + n_jellies + max_tries, data = sim_df2, family = binomial)
 broom::tidy(mod1) |> 
-  mutate(term = ifelse(term == "(Intercept)", "intercept", term)) |>
+  mutate(term = c("Intercept", "Smoothness", "Squintability", "dimension (d)", 
+                  "long time", "number of jellyfish", "maximum number of tries")) |>
   kable(digits = 3) |> 
   column_spec(c(1,5), border_right = TRUE) |> 
   column_spec(1, border_left = TRUE)
@@ -685,5 +681,20 @@ broom::tidy(mod1) |>
 
 
 # Conclusion \[Di and Sherry\] {#sec-conclusion}
+
+
+# Additional plot: 
+
+```{r fig-idx-proj-dist}
+#| fig.width = 9,
+#| fig.height = 5,
+#| fig.cap = "Index values against projection distance for the 12 pipe/sine-wave finding problem after the binning procedure during the estimation of the squintability measure. The index value is averaged at each bin width of 0.005 and the `TIC` index is scaled to 0-1 for comparison. When finding the sine-wave structure using the `MIC` and `TIC` index, a convex curved is observed, as opposed to the pipe-finding problem or the sine-wave finding problem with the `dcor2d_2`, `loess2d`, and `splines2d` index. When finding the sine-wave with the stringy index, the index shows an instantaneous jump to the optimum when close to the best basis." 
+sq_basis_dist_idx |>
+  ggplot(aes(x = dist, y = idx, group = index)) +
+  geom_line() +
+  facet_nested_wrap(~index + n, nrow = 3, labeller = label_both) + 
+  xlab("projection distance") + ylab("index value")
+
+```
 
 # References
