@@ -117,7 +117,7 @@ integrated with the guided tour. @sec-background explains the
 optimisation that is used in the current the projection pursuit guided
 tour. @sec-theory provides more details on the jellyfish optimiser and
 formalises several characteristics of projection pursuit indexes that
-are help to measure optimisaer performance. @sec-simulation describes a
+are help to measure optimiser performance. @sec-simulation describes a
 simulation study on performance of the jellyfish for several types of
 data and index functions. @sec-conclusion summarises the work and
 provides suggestions for future directions.
@@ -488,64 +488,19 @@ p2 <- angle_dcor2d |>
 
 # Application \[Di and Sherry\] {#sec-simulation}
 
-The jellyfish optimiser has been implemented in the tourr package
-[@wickham_tourr_2011] and we will use the diagnostic plots proposed in
-the ferrn package [@RJ-2021-105] to visualise the optimisation process.
 
-## Performance of the jellyfish optimiser in high-dimensional pipe-finding problems
+[maybe a leading paragraph here to summarise the two examples]
 
-[unfinished]
+## Performance of jellyfish search optimiser in pipe-finding problems
 
-The aim of this example is to investigate the performance of jellyfish optimisers in high-dimensional problems.
-
-The projection pursuit problem is to find the pipe shape, investigated in @laa_using_2020, using the holes index in 6/8/10/12-D data. For each case, 50 simulations are conducted for each combination of jellyfish hyper-parameter: `n_jellies = 20/50/100` and `max_tries = 50/100`. The performance of the jellyfish optimiser is also compared with an existing opitmiser: the search better opitmiser with `max.tries = 1000`.
-
-@fig-proportion presents the proportion of jellyfishes that finds the index value close to (absolute value less than 0.05) the best index value found at each `max_tries`/`n_jellies` combination at $d = 6/8/10/12$ data dimension. As the number of jellies and maximum tries increase, the proportion of jellyfishes that find the optimal projection increases. This suggests for higher dimensional problems ($d = 8/10/12$), an `n_jellies = 100` and `max_tries = 100` is necessary for at least half of the jellyfish optimiser to find the optimal projection.
-
-@fig-proj presents the final projection found across the 50 simulations at each 10th quantile between the jellyfish and search better optimiser (`n_jellies = 100`, `max_tries = 100` is used for the jellyfish optimiser). While the jellyfish optimiser may not always find the optimal projection in the worse case scenarios, especially as the dimension increases, it tends to find higher index values and crisper pipe shapes than the search better optimiser at each quantile across all the four data dimensions. 
-
-```{r}
-#| label = fig-proportion,
-#| fig.width = 6,
-#| fig.height = 3,
-#| fig.align = "center",
-#| fig.cap = "Proportion of jellyfishes reaches close to the optimal index value in the pipe-finding problem. As the dimension goes up, the numer/ proportion of jellyfishes that reach the optimal index value decreases. Increasing the jellyfish hyperparameters (`n_jellies` and `max_tries`) help to improve the proportion."
-pipe_run_summ <- sim_pipe |>
-  mutate(idx_f = "holes") |>
-  group_by(id, n_jellies, max_tries, d, loop) |> 
-  summarise(I_max = max(index_val)) 
-  
-pipe_sim_best <- pipe_run_summ |> 
-  ungroup(loop, id) |> 
-  summarise(I_best = max(I_max))
-  
-pipe_res <- pipe_run_summ |> 
-  left_join(pipe_sim_best) |> 
-  mutate(diff = abs(I_max - I_best) < 0.05) |> 
-  ungroup(id, loop) |> 
-  summarise(proportion = sum(diff) / n()) |> 
-  mutate(d = as.factor(d), n_jellies = as.factor(n_jellies))
-
-pipe_res |> 
-  ggplot(aes(x = n_jellies, y = proportion, 
-             group = interaction(d, max_tries),
-             color = d)) + 
-  geom_line() + 
-  scale_color_brewer(palette = "Dark2") +
-  facet_wrap(vars(max_tries), 
-             labeller = "label_both") + 
-  theme_bw()
-
-```
-
-
+The jellyfish search optimiser introduces a new swarm-based search strategy to optimise the projection pursuit problems. In this example, the performance of jellyfish search optimiser is investigated in two folds: 1) compare the jellyfish search optimiser with a commonly used optimiser: the search better optimiser [@RJ-2021-105; @laa_using_2020], and 2) examine the jellyfish search optimiser under different hyper-parameters: the number of jellyfish (20, 50, and 100) and the maximum number of tries (50 and 100). The projection pursuit problem investigated is finding the pipe shape using the holes index in 6, 8, 10, and 12-dimensional data, as investigated by @laa_using_2020. 
 
 ```{r} 
 #| fig.height = 7.5,
 #| fig.width = 10,
 #| label = fig-proj,
 #| fig.align = "center",
-#| fig.cap = "Projections found by the jellyfish and search better optimiser at each 10th quantile across 50 simulations. The holes index is used to find the target pipe shape in the 6/8/10/12D space. An `n_jellies = 100` and `max_tries = 100` are used for the jellyfish optimiser and `max.tries = 1000` is used for the search better optimiser." 
+#| fig.cap = "Projections found by the jellyfish and search better optimisers at each 10th quantile across 50 simulations. The projection pursuit problem is to find the pipe shape using the holes index in the 6, 8, 10, and 12-dimensional spaces. The jellyfish optimiser uses 100 jellyfish and 100 maximum number of tries, while the search better optimiser uses a maximum 1000 tries in each step of random sampling. The index value found by the jellyfish optimiser finds the pipe shape across all simulations in the 6-dimensional space and reaches a higher index value and clearer pipe shape in higher dimensions than the search better optimiser."
 
 aaa <- map_dfr(
   list(pipe1000, pipe1000_8d, pipe1000_10d, pipe1000_12d), 
@@ -600,6 +555,47 @@ p2 <- bbb |>
 
 (p1 + ggtitle("The jellyfish optimiser"))/(p2 + ggtitle("The search better optimiser"))
 ```
+
+```{r}
+#| label = fig-proportion,
+#| fig.width = 6,
+#| fig.height = 3,
+#| fig.align = "center",
+#| fig.cap = "Proportion of jellyfishes reaches near-optimal index values in the pipe-finding problems. The proportion is calculated as the number of jellyfish, out of the total number of jellyfish across 50 simulations, that have an index value within 0.05 of the best jellyfish's index value across all simulations. As the dimensionality increases, the proportion of jellyfishes reaching the optimal index value decreases. Increasing the jellyfish hyperparameters (number of jellyfish` and maximum number of tries) improves the proportion."
+pipe_run_summ <- sim_pipe |>
+  mutate(idx_f = "holes") |>
+  group_by(id, n_jellies, max_tries, d) |> 
+  summarise(I_max = max(index_val)) 
+  
+pipe_sim_best <- pipe_run_summ |> 
+  group_by(n_jellies, max_tries, d) |>
+  summarise(I_best = max(I_max))
+  
+pipe_res <- pipe_run_summ |> 
+  left_join(pipe_sim_best) |> 
+  mutate(diff = abs(I_max - I_best) < 0.05) |> 
+  group_by(n_jellies, max_tries, d) |> 
+  summarise(proportion = sum(diff) / n()) |> 
+  mutate(d = as.factor(d), n_jellies = as.factor(n_jellies))
+
+pipe_res |> 
+  rename(`max # of tries` = max_tries) |>
+  ggplot(aes(x = n_jellies, y = proportion, 
+             group = interaction(d, `max # of tries`),
+             color = d)) + 
+  geom_line() + 
+  scale_color_brewer(palette = "Dark2", name = "dimension") +
+  facet_wrap(vars(`max # of tries`), 
+             labeller = "label_both") + 
+  theme_bw() + 
+  xlab("Number of jellyfish") + 
+  ylab("Proportion of success")
+
+```
+
+In the first experiment, fifty simulations for both the jellyfish and the search better optimiser, across the four dimensions and @fig-proj presents the final projections found by the two optimisers, broken down by 10th quantile. The jellyfish optimiser uses 100 number of jellyfishes and 100 maximum number of tries, while a maximum of 1000 samples are allowed before the search better optimiser terminates, at each iteration of sampling. In the 6-dimensional data scenario, the jellyfish optimiser finds the clear pipe shape at all the 50 simulations, while the shape found by the search better optimiser begin to blur in worse case scenarios. As the dimension increases, while the jellyfish optimiser may not find the pipe shape due to random sampling, the pipe shape can be clearly seen more than 50% of the time across all dimensions. Compared with the search better optimiser, the jellyfish optimiser achieves higher index values and clearer pipe shapes. 
+
+In the second experiment, fifty simulations are conducted for each combination of jellyfish hyper-parameters:  50 and 100 maximum number of tries and 20, 50, and 100 jellyfishes to understand the effect of hyper-parameters on the performance of the jellyfish optimiser. A optimisation run is considered successfully finding the target shape if its final index value is within 0.05 of the best index value found under the same scenario across all simulations. For example, in the 8-dimensional data scenario with 50 maximum number of tries, the best optimiser achieved an index value of `r pipe_sim_best |> filter(n_jellies == 50, max_tries == 50, d == 8) |> pull(I_best) |> round(3)`. Out of the 50 simulations, `r pipe_run_summ |> filter(n_jellies == 50, max_tries == 50, d == 8) |> filter(I_max >= 0.997 - 0.05) |> nrow() -> aa; aa` found an index value within 0.05 of the best value, resulting in a successful rate of `r pipe_run_summ |> filter(n_jellies == 50, max_tries == 50, d == 8) |> mutate(a = I_max >= 0.997 - 0.05) |> pull(a) -> bb; round(sum(bb)/length(bb), 3)` (`r aa`/ 50). @fig-proportion presents the proportion of successful optimiser for each scenario. As the number of jellyfish and maximum tries increase, the proportion of jellyfish finding the optimal projection also increases. For simpler problems (6 dimensions), small parameter values can result in high successful rate, while for higher-dimensional problems (8, 10, and 12 dimensions), a combination of 100 jellyfishes and 100 maximum number of tries is necessary for at least half of the jellyfishes to find the optimal projection. 
 
 ## Connecting optimisation success with its properties and jellyfish parameters
 
