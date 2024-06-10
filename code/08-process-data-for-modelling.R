@@ -88,10 +88,10 @@ sine_setup_summ <- sine_run_df |>
     time = mean(time)
   )
 
-
 sim_summary <- pipe_setup_summ |>  bind_rows(sine_setup_summ) |>
   rename(index = idx_f) |>
   mutate(index = ifelse(index == "spline", "splines2d", index))
+save(sim_summary, file = here::here("data", "sim_summary.rda"))
 
 ############################################################################
 ############################################################################

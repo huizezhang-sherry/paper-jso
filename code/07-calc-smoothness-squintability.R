@@ -67,9 +67,24 @@ sq_sine_basis_df <- tibble::tibble(
     index, data = data, n = n, best = best, return_early = TRUE)
   ))
 
-sq_basis_df <- sq_holes_basis_df |> dplyr::bind_rows(sq_sine_basis_df)
+sq_basis_df <- sq_holes_basis_df |>
+  dplyr::bind_rows(sq_sine_basis_df) |>
+  unnest(basis_df) |>
+  group_by(n, index) |>
+  mutate(
+    holes = ifelse(
+      index == "holes",
+      (holes - min(holes, na.rm = TRUE))/
+        (max(holes, na.rm = TRUE) - min(holes, na.rm = TRUE)),
+      NA),
+    stringy = ifelse(
+      index == "stringy",
+      (stringy - min(stringy, na.rm = TRUE))/
+        (max(stringy, na.rm = TRUE) - min(stringy, na.rm = TRUE)),
+      NA))|>
+  nest(basis_df = c(id:stringy)) |>
+  ungroup()
 save(sq_basis_df, file = here::here("data/sq_basis_df.rda"))
-
 
 
 start_prms1 <- c(theta1 = 1, theta2 = 1, theta3 = 3, theta4 = 0)
