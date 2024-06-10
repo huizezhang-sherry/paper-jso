@@ -1,39 +1,47 @@
 ---
-title: Studying the Performance of the Jellyfish Optimiser for the Application of Projection Pursuit
+title: Studying the Performance of the Jellyfish Search Optimiser for the Application of Projection Pursuit
 header-includes:
    - \usepackage{algorithm}
    - \usepackage{algpseudocode}
 author:
-  - name: Alice Anonymous
-    email: alice@example.com
+  - name: H. Sherry Zhang
+    email: huize.zhang@austin.utexas.edu
     affiliations: 
-        - id: some-tech
-          name: Some Institute of Technology
-          department: Department Name
-          address: Street Address
-          city: City
-          state: State
-          postal-code: Postal Code
+        - id: 1
+          name: University of Texas at Austin
+          department: Department of Statistics and Data Sciences
+          city: Austin
+          country: United States
+          postal-code: 78751
     attributes:
         corresponding: true
-  - name: Bob Security
-    email: bob@example.com
+  - name: Dianne Cook
+    email: dicook@monash.edu
     affiliations:
-        - id: another-u
-          name: Another University
-          department: Department Name
-          address: Street Address
-          city: City
-          state: State
-          postal-code: Postal Code
-  - name: Cat Memes
-    email: cat@example.com
+        - id: 2
+          name: Monash University
+          department: Department of Econometrics and Business Statistics
+          city: Melbourne
+          country: Australia
+          postal-code: 3800
+  - name: Nicolas  Langrené
+    email: nicolaslangrene@uic.edu.cn
     affiliations:
-        - ref: another-u
-  - name: Derek Zoolander
-    email: derek@example.com
-    affilations:
-        - ref: some-tech
+        - id: 3
+          name: BNU-HKBU United International College
+          department: Department of Mathematical Sciences
+          city: Zhuhai
+          country: China
+          postal-code: 519087
+  - name: Jessica Leung
+    email: Jessica.Leung@monash.edu
+    affiliations:
+        - id: 2
+          name: Monash University
+          department: Department of Econometrics and Business Statistics
+          city: Melbourne
+          country: Australia
+          postal-code: 3800
 abstract: |
   This is the abstract. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum augue turpis, dictum non malesuada a, volutpat eget velit. Nam placerat turpis purus, eu tristique ex tincidunt et. Mauris sed augue eget turpis ultrices tincidunt. Sed et mi in leo porta egestas. Aliquam non laoreet velit. Nunc quis ex vitae eros aliquet auctor nec ac libero. Duis laoreet sapien eu mi luctus, in bibendum leo molestie. Sed hendrerit diam diam, ac dapibus nisl volutpat vitae. Aliquam bibendum varius libero, eu efficitur justo rutrum at. Sed at tempus elit.
 keywords: 
@@ -57,8 +65,19 @@ editor:
     wrap: 72
 ---
 
-*Let's use British English ("American or British usage is accepted, but
+**README**:
+
+* British English ("American or British usage is accepted, but
 not a mixture of these")*
+
+* No "we" - always third person
+
+* Check if the affiliation information is correct
+
+* word use: 
+
+  * Use jellyfish search optimiser, or JS optimiser, not jellyfish optimiser (my bad for leading the way)
+  * "hyper-parameter" rather than "hyperparameter"
 
 ```{r setup, echo = FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
@@ -488,19 +507,18 @@ p2 <- angle_dcor2d |>
 
 # Application \[Di and Sherry\] {#sec-simulation}
 
+The JS optimiser provides a new swarm-based search strategy to optimise projection pursuit problems. Two examples are provided in this section to demonstrate its performance. The first example compares its performance with the search better optimiser and explores how it behaves with different combinations of hyper-parameter. The second example studies the effect of optimisation properties defined in @sec-theory, along with JS hyper-parameters, on the outcome of the optimisation.
 
-[maybe a leading paragraph here to summarise the two examples]
+## Performance of JS optimiser in pipe-finding problems
 
-## Performance of jellyfish search optimiser in pipe-finding problems
-
-The jellyfish search optimiser introduces a new swarm-based search strategy to optimise the projection pursuit problems. In this example, the performance of jellyfish search optimiser is investigated in two folds: 1) compare the jellyfish search optimiser with a commonly used optimiser: the search better optimiser [@RJ-2021-105; @laa_using_2020], and 2) examine the jellyfish search optimiser under different hyper-parameters: the number of jellyfish (20, 50, and 100) and the maximum number of tries (50 and 100). The projection pursuit problem investigated is finding the pipe shape using the holes index in 6, 8, 10, and 12-dimensional data, as investigated by @laa_using_2020. 
+The performance of JS optimiser is investigated in two folds: 1) compare it with a commonly used optimiser: the search better optimiser [@RJ-2021-105; @laa_using_2020], and 2) examine its success rate under different hyper-parameters (number of jellyfishes and the maximum number of tries). The projection pursuit problem used is finding the pipe shape using the holes index, investigated by @laa_using_2020. 
 
 ```{r} 
 #| fig.height = 7.5,
 #| fig.width = 10,
 #| label = fig-proj,
 #| fig.align = "center",
-#| fig.cap = "Projections found by the jellyfish and search better optimisers at each 10th quantile across 50 simulations. The projection pursuit problem is to find the pipe shape using the holes index in the 6, 8, 10, and 12-dimensional spaces. The jellyfish optimiser uses 100 jellyfish and 100 maximum number of tries, while the search better optimiser uses a maximum 1000 tries in each step of random sampling. The index value found by the jellyfish optimiser finds the pipe shape across all simulations in the 6-dimensional space and reaches a higher index value and clearer pipe shape in higher dimensions than the search better optimiser."
+#| fig.cap = "Projections found by the jellyfish and search better optimisers at each 10th quantile across 50 simulations. The projection pursuit problem is to find the pipe shape using the holes index in the 6, 8, 10, and 12-dimensional spaces. The JS optimiser uses 100 jellyfishes and a maximum number of tries of 100. The search better optimiser uses a maximum of 1000 tries in each step of random sampling step before the algorithm terminates. In the 6-D data space, the JS optimiser always finds a clear pipe shape while the search better optimiser also finds the pipe shape but with a wide rim. At higher data dimensions, the JS optimiser finds a higher index value and a clearer pipe shape across all the quantiles than the search better optimiser."
 
 aaa <- map_dfr(
   list(pipe1000, pipe1000_8d, pipe1000_10d, pipe1000_12d), 
@@ -553,7 +571,7 @@ p2 <- bbb |>
         axis.text = element_blank(), axis.title = element_blank(),
         panel.grid = element_blank())
 
-(p1 + ggtitle("The jellyfish optimiser"))/(p2 + ggtitle("The search better optimiser"))
+(p1 + ggtitle("The JS optimiser"))/(p2 + ggtitle("The search better optimiser"))
 ```
 
 ```{r}
@@ -561,7 +579,7 @@ p2 <- bbb |>
 #| fig.width = 6,
 #| fig.height = 3,
 #| fig.align = "center",
-#| fig.cap = "Proportion of jellyfishes reaches near-optimal index values in the pipe-finding problems. The proportion is calculated as the number of jellyfish, out of the total number of jellyfish across 50 simulations, that have an index value within 0.05 of the best jellyfish's index value across all simulations. As the dimensionality increases, the proportion of jellyfishes reaching the optimal index value decreases. Increasing the jellyfish hyperparameters (number of jellyfish` and maximum number of tries) improves the proportion."
+#| fig.cap = "Proportion of simulations reaches near-optimal index values in the pipe-finding problem using the holes index. The proportion is calculated based on the number of simulations, out of 50, that achieve an index value within 0.05 of the best-performing simulation. As the dimensionality increases, the proportion of simulations reaching the optimal index value increases."
 pipe_run_summ <- sim_pipe |>
   mutate(idx_f = "holes") |>
   group_by(id, n_jellies, max_tries, d) |> 
@@ -593,9 +611,9 @@ pipe_res |>
 
 ```
 
-In the first experiment, fifty simulations for both the jellyfish and the search better optimiser, across the four dimensions and @fig-proj presents the final projections found by the two optimisers, broken down by 10th quantile. The jellyfish optimiser uses 100 number of jellyfishes and 100 maximum number of tries, while a maximum of 1000 samples are allowed before the search better optimiser terminates, at each iteration of sampling. In the 6-dimensional data scenario, the jellyfish optimiser finds the clear pipe shape at all the 50 simulations, while the shape found by the search better optimiser begin to blur in worse case scenarios. As the dimension increases, while the jellyfish optimiser may not find the pipe shape due to random sampling, the pipe shape can be clearly seen more than 50% of the time across all dimensions. Compared with the search better optimiser, the jellyfish optimiser achieves higher index values and clearer pipe shapes. 
+Fifty (50) simulations are conducted with both JS and the search better optimiser, in four dimensions ($d = 6, 8, 10, 12$). The JS optimiser uses 100 jellyfishes and 100 maximum number of tries, while the search better optimiser allows a maximum of 1000 samples at each iteration before the algorithm terminates. @fig-proj presents the final projections found by the two optimisers, broken down by 10th quantile, faceted by the data dimension. In the 6-dimensional data scenario, the JS optimiser consistently identifies a clear pipe shape. The search better optimiser, although also find the pipe shape but with a wide rim, suggesting a further polish search may be required. With increasing dimensions, the JS optimiser may not always identify the pipe shape due to random sampling, it still presents a pipe shape in over 50% of cases. When compared to the search better optimiser, the JS optimiser reaches higher index values and clearer pipe shapes across all quantiles.
 
-In the second experiment, fifty simulations are conducted for each combination of jellyfish hyper-parameters:  50 and 100 maximum number of tries and 20, 50, and 100 jellyfishes to understand the effect of hyper-parameters on the performance of the jellyfish optimiser. A optimisation run is considered successfully finding the target shape if its final index value is within 0.05 of the best index value found under the same scenario across all simulations. For example, in the 8-dimensional data scenario with 50 maximum number of tries, the best optimiser achieved an index value of `r pipe_sim_best |> filter(n_jellies == 50, max_tries == 50, d == 8) |> pull(I_best) |> round(3)`. Out of the 50 simulations, `r pipe_run_summ |> filter(n_jellies == 50, max_tries == 50, d == 8) |> filter(I_max >= 0.997 - 0.05) |> nrow() -> aa; aa` found an index value within 0.05 of the best value, resulting in a successful rate of `r pipe_run_summ |> filter(n_jellies == 50, max_tries == 50, d == 8) |> mutate(a = I_max >= 0.997 - 0.05) |> pull(a) -> bb; round(sum(bb)/length(bb), 3)` (`r aa`/ 50). @fig-proportion presents the proportion of successful optimiser for each scenario. As the number of jellyfish and maximum tries increase, the proportion of jellyfish finding the optimal projection also increases. For simpler problems (6 dimensions), small parameter values can result in high successful rate, while for higher-dimensional problems (8, 10, and 12 dimensions), a combination of 100 jellyfishes and 100 maximum number of tries is necessary for at least half of the jellyfishes to find the optimal projection. 
+In the second experiment, fifty (50) simulations are conducted at each  hyper-parameter combination to analyse its effects on the success rate of the JS optimiser. The hyper-parameters tested include: 1) 20, 50, and 100 jellyfishes, and 2) 50 and 100 maximum number of tries. In each simulation,  success is defined as achieving a final index value within 0.05 of the best index value found among all 50 simulations. For example, in the 8-dimensional data scenario with 20 jellyfishes and a maximum number of tries set to 100, the optimal index value is `r pipe_sim_best |> filter(n_jellies == 20, max_tries == 100, d == 8) |> pull(I_best) |> round(3) -> aa; aa`. Out of the 50 simulations, `r pipe_run_summ |> filter(n_jellies == 20, max_tries == 100, d == 8) |> filter(I_max >= aa - 0.05) |> nrow() -> bb; bb` achieved an index value within [`r aa - 0.05`, `r aa`], resulting in a success rate of `r pipe_run_summ |> filter(n_jellies == 20, max_tries == 100, d == 8) |> mutate(a = I_max >= aa - 0.05) |> pull(a) -> cc; round(sum(cc)/length(cc), 3)`. @fig-proportion presents the proportion of success for each hyper-parameter combinations. As the number of jellyfish and maximum tries increase, the success rate also increases. For simpler problems (6 dimensions), small parameter values (20 jellyfishes and a max number of tries of 50) can already result in high success rate, while for higher-dimensional problems (8, 10, and 12 dimensions), a combination of 100 jellyfishes and 100 maximum number of tries is necessary for at least half of the jellyfishes to find the optimal projection. 
 
 ## Connecting optimisation success with its properties and jellyfish parameters
 
