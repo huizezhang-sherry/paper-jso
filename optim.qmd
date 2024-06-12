@@ -89,6 +89,9 @@ library(broom)
 library(kableExtra)
 library(ferrn)
 load(here::here("data/sim_pipe.rda"))
+load(here::here("data/sim_sine_6d_spline_head.rda"))
+load(here::here("data/sim_sine_6d_spline_best.rda"))
+load(here::here("data/sim_sine_6d_spline_projdist.rda"))
 load(here::here("data/pipe_better.rda"))
 load(here::here("data/pipe_jellyfish.rda"))
 load(here::here("data/smoothness.rda"))
@@ -401,84 +404,43 @@ The speed of optimizing an index function can be calculated/measured
 using the computational complexity (in big O notation, with respect to
 the sample size) of computing the index function.
 
-# Visualisation of jellyfish optimiser
+# Visualisation of jellyfish optimiser {#sec-vis}
 
-Information of the jellyfish optimiser is available in a tabular format
-and below is an example data collected from finding the sine-wave
-structure in 6D data using a distance correlation index (`docr2d_2`):
+The data structure proposed in @RJ-2021-105 is implemented for JS optimisers and  additional information such as index function used, data dimension, and jellyfish hyper-parameters can be included as additional columns. Below prints an example data collected from finding the sine-wave structure in 6D data (`d = 6`) using a spline index function(`splines2d`):
+
 
 ```{r}
-load(here::here("data/sim_example.rda"))
+dplyr::glimpse(sim_sine_6d_spline_head |> mutate(index = "spline2d") |> select(-id, -info)) 
 ```
 
-```{r}
-dplyr::glimpse(sim_example |> select(-id)) 
-```
+The jellyfish hyper-parameters used are 50 jellyfishes (`n_jellies`) and a maximum of 50 tries (`max_tries`). The full data contains 50 simulations, recorded by the variable `sim`, with different seeds (`seed`). Recorded in columns `basis`, `index_val`, `tries`, `loop` and `time`, are the sampled projection basis, calculated index value, iteration ID, jellyfish ID, and time taken to find the optimum, respectively. The basis column records every visited basis before comparing with the current (last) basis. If a visited basis has a smaller index value than the current (last) one, the JS optimiser keeps the current basis for the next iteration in the search but still records the visited inferior basis. This data can be used to derive numerical summaries and plots:
 
-Information recorded can be categorised into the following categories:
+-   **success rate**:  Success rate is defined as the proportion of simulations that achieve a final index value within 0.05 of the best index value found among all 50 simulations. In the dataset above, the optimal index value is `r sim_sine_6d_spline_best |> pull(index_val) |> max() |> round(3) -> aa; aa`. Out of the 50 simulations, `r sim_sine_6d_spline_best |> filter(index_val >= aa - 0.05) |> nrow() -> bb; bb` achieved an index value within [`r aa - 0.05`, `r aa`], resulting in a success rate of `r sim_sine_6d_spline_best |> mutate(a = index_val >= aa - 0.05) |> pull(a) -> cc; round(sum(cc)/length(cc), 3)`. @fig-projection shows the best projection found in each simulation, sorted by the index value. Most of the projections show a clear sine-wave structure, while the last six shows only a straight line with clusters at the end. When local optima exist in the projection pursuit problem, plotting the projections found in each simulation or by each jellyfish can help identify these local optima.
 
--   projection pursuit variables: the index function used (`idx_f`), the
-    data dimension (`d`)
--   jellyfish optimiser parameters: the number of jellies (`n_jellies`),
-    the maximum number of tries (`max_tries`)
--   simulation variables: the simulation number (`sim`), the seed used
-    (`seed`)
--   optimisation variables: the projection basis in a matrix format
-    (`basis`), the index value (`index_val`), a description of the
-    status - one of "initiation", "current_best", and "jellyfish_update"
-    (`info`), current iteration ID (`tries`), current jelly ID (`loop`),
-    and the time taken to find the optimum (`time`).
-
-The basis column records every basis *visited* by the jellyfish
-optimiser prior to comparing with the current basis. In each iteration,
-if the index value of a visited basis is smaller than that of the
-current one, the jellyfish optimiser will retain the current basis for
-the next iteration, while still documenting the visited basis.
-
-Numerical information to compute:
-
--   angular distance between the projection basis and the theoretical
-    best basis,
--   the proportion of simulation that found the optimal basis,
--   the proportion of jellies, within each simulation, that found the
-    optimal basis,
-
-Visualisation to inspect:
-
--   inspect the basis visited by each jellyfish in the reduced PCA
-    space,
--   inspect the final 2D projections reached by each jellyfish,
--   plot the index value against the angular distance between the
-    projection basis and the theoretical best basis
-
-Plotting the basis in the space and the projected data can help to
-understand 1) whether each simulation finds the same optimum or some
-simulations find local optima; and 2) whether the index function used
-can detect the structure in the data and the projection contains the
-structure of interest.
-
-The visualisations above can be faceted by the projection pursuit
-variables and jellyfish optimiser parameters to compare the performance
-of different indexes to detect the same structure and how the jellyfish
-optimiser parameters affect the optimisation process.
-
-\[example plots\]
+-  **Projection distance**: The projection distance between projection bases and the theoretical best basis (or the empirical best basis if the theoretical best is unknown) is calculated as the Frobenius norm, which measures how close a visited basis is to the best basis. Plotting this projection distance against the index value for each basis visited reveals how the index value changes as the basis approaches the optimal basis, helping to identify the squintability of the index function.  @fig-index-value-proj-dist shows the index value against the projection distance for the given example and its binned version. As the projection distance decreases, the index value initially increases with an increasing slope and then level off. The index value shows greater variation at medium projection distances compared to small and large distances. 
 
 ```{r}
-load(here::here("data/sine_dcor2d_best.rda"))
+#| label: fig-projection
+#| fig.height: 6
+#| fig.width: 10
+#| fig.cap: Best projections found by the JS opitmiser in each simulation, sorted by the index value. The projection pursuit problem is to detect the 6D sine-wave structure using the spline index. Most simulations have detected a clear sine-wave pattern, while the last six show a straight line with clustering at the ends.. In this simulation, the success rate is 0.88 (44/50).
 set.seed(123456)
 sin1000 <- spinebil::sinData(6, 1000) %>% scale() %>% as_tibble()
 colnames(sin1000) <- paste0("V", 1:6)
 
 
-proj_dt <- map_dfr(sine_dcor2d_best |> pull(basis), 
-              ~as_tibble(as.matrix(sin1000) %*% .x), .id = "sim") 
+proj_dt <- map_dfr(sim_sine_6d_spline_best |> pull(basis), 
+              ~as_tibble(as.matrix(sin1000) %*% .x), .id = "sim") |> 
+  mutate(sim = as.numeric(sim)) |> 
+  left_join(sim_sine_6d_spline_best |> select(sim, index_val), by = "sim")
 
-p1 <- proj_dt |>
+proj_dt |>
   ggplot(aes(x = V1, y = V2)) + 
   geom_point(size = 0.1) + 
+  geom_text(aes(label = round(index_val, 3)), x = 0, y = 3.7, 
+            size = 3) +
   xlim(-4, 4) + ylim(-4, 4) +
-  facet_wrap(~as.numeric(sim), ncol = 10) + 
+  facet_wrap(~fct_reorder(as.factor(sim), -index_val), ncol = 10) + 
   theme_bw() +
   theme(aspect.ratio = 1, axis.ticks = element_blank(),
         axis.text = element_blank(), axis.title = element_blank(),
@@ -486,23 +448,24 @@ p1 <- proj_dt |>
 ```
 
 ```{r}
-#| fig.height: 5 
-#| fig.width: 10
-#| fig.cap: sdfjsflk
-p1 
-```
+#| label: fig-index-value-proj-dist
+#| fig.height: 3
+#| fig.width: 8
+#| fig.cap: "Projection distance plotted against the index value for detecting the 6D sine-wave structure using the spline index function. a) The index values start around 0 with low variance at large projection distances. As the projection distance decreases, the index values increase with a larger variance. Towards the minimum projection distance, the index values increase and cluster around 1, indicating the optimiser is approaching to the optimum. b)  Projection distances are binned with a bin width of 0.1, and index values are averaged over each bin. The relationship between the two variables forms a sigmoid curve."
+p1 <- sim_sine_6d_spline_projdist |> 
+  ggplot(aes(x = proj_dist, y = index_val)) +
+  geom_point(size = 0.1, alpha = 0.5) + 
+  labs(x = "Projection distance", y = "Index value")
 
-```{r eval = FALSE}
-theo_best <- matrix(c(rep(0, 8), 1, 0, 0, 1), nrow = 6, byrow = TRUE)
-angle_dcor2d <- sine_dcor2d_5050 |>
-    rowwise() |>
-    mutate(angle = tourr::proj_dist(theo_best, basis))
+p2 <- sim_sine_6d_spline_projdist |> 
+  group_by(proj_bin = proj_dist %/% 0.1) |> 
+  summarise(index_val = mean(index_val)) |> 
+  ggplot(aes(x = proj_bin, y = index_val)) + 
+  geom_line() +
+  geom_point() + 
+  labs(x = "Projection distance", y = "Index value")
 
-p2 <- angle_dcor2d |>
-  ggplot(aes(x = angle, y = index_val)) +
-  geom_point(size = 0.1) +
-  theme(aspect.ratio = 1) 
-
+(p1 | p2) + plot_annotation(tag_levels = "a")
 ```
 
 # Application \[Di and Sherry\] {#sec-app}
@@ -613,7 +576,7 @@ pipe_res |>
 
 Fifty (50) simulations are conducted with both JS and the search better optimiser, in four dimensions ($d = 6, 8, 10, 12$). The JS optimiser uses 100 jellyfishes and 100 maximum number of tries, while the search better optimiser allows a maximum of 1000 samples at each iteration before the algorithm terminates. @fig-proj presents the final projections found by the two optimisers, broken down by 10th quantile, faceted by the data dimension. In the 6-dimensional data scenario, the JS optimiser consistently identifies a clear pipe shape. The search better optimiser, although also find the pipe shape but with a wide rim, suggesting a further polish search may be required. With increasing dimensions, the JS optimiser may not always identify the pipe shape due to random sampling, it still presents a pipe shape in over 50% of cases. When compared to the search better optimiser, the JS optimiser reaches higher index values and clearer pipe shapes across all quantiles.
 
-In the second experiment, fifty (50) simulations are conducted at each  hyper-parameter combination to analyse its effects on the success rate of the JS optimiser. The hyper-parameters tested include: 1) 20, 50, and 100 jellyfishes, and 2) 50 and 100 maximum number of tries. In each simulation,  success is defined as achieving a final index value within 0.05 of the best index value found among all 50 simulations. For example, in the 8-dimensional data scenario with 20 jellyfishes and a maximum number of tries set to 100, the optimal index value is `r pipe_sim_best |> filter(n_jellies == 20, max_tries == 100, d == 8) |> pull(I_best) |> round(3) -> aa; aa`. Out of the 50 simulations, `r pipe_run_summ |> filter(n_jellies == 20, max_tries == 100, d == 8) |> filter(I_max >= aa - 0.05) |> nrow() -> bb; bb` achieved an index value within [`r aa - 0.05`, `r aa`], resulting in a success rate of `r pipe_run_summ |> filter(n_jellies == 20, max_tries == 100, d == 8) |> mutate(a = I_max >= aa - 0.05) |> pull(a) -> cc; round(sum(cc)/length(cc), 3)`. @fig-proportion presents the proportion of success for each hyper-parameter combinations. As the number of jellyfish and maximum tries increase, the success rate also increases. For simpler problems (6 dimensions), small parameter values (20 jellyfishes and a max number of tries of 50) can already result in high success rate, while for higher-dimensional problems (8, 10, and 12 dimensions), a combination of 100 jellyfishes and 100 maximum number of tries is necessary for at least half of the jellyfishes to find the optimal projection. 
+In the second experiment, fifty (50) simulations are conducted at each  hyper-parameter combination to analyse its effects on the success rate of the JS optimiser. The hyper-parameters tested include: 1) 20, 50, and 100 jellyfishes, and 2) 50 and 100 maximum number of tries. In each simulation,  success rate is calculated as defined in @sec-vis. @fig-proportion presents the proportion of success for each hyper-parameter combinations. As the number of jellyfish and maximum tries increase, the success rate also increases. For simpler problems (6 dimensions), small parameter values (20 jellyfishes and a maximum number of tries of 50) can already result in high success rate, while for higher-dimensional problems (8, 10, and 12 dimensions), a combination of 100 jellyfishes and 100 maximum number of tries is necessary for at least half of the jellyfishes to find the optimal projection. 
 
 ## Factors affecting JS optimiser success rate: optimisation properties and jellyfish hyper-parameters {#sec-app-2}
 
@@ -621,7 +584,7 @@ The optimisation properties, including smoothness, squintability, and speed, off
 
 In addition to the pipe-finding problem, a new shape, sine wave, is investigated in 6D and 8D spaces with six indices considered: `dcor2d_2`, `loess2d`, `MIC`, `TIC`, `spline`, and `stringy`. Combining with two jellyfish hyper-parameters, a total of `r nrow(sim_df)` cases is produced, comprising of `r nrow(filter(sim_df, index == "holes"))` pipe-finding cases  and `r nrow(filter(sim_df, index != "holes"))` sine-wave finding cases. For each case, the JS optimiser is run fifty (50) times and the success rate is calculated as in @sec-app-1.
 
-*Note: should we print out the 52 cases investigated somewhere, say appendex, since it is not full grid simulation (otherwise for the sine-wave problem there will be 6 indexes x 6 configurations = 36 cases for 6-D data and 2 indexes [MIC & TIC] x 6 configurations = 12 cases for 8-D data)? We only do a selection of 28 of them to save time/ computational resources.*
+*Note: should we print out the 52 cases investigated somewhere, say appendix, since it is not full grid simulation (otherwise for the sine-wave problem there will be 6 indexes x 6 configurations = 36 cases for 6-D data and 2 indexes [MIC & TIC] x 6 configurations = 12 cases for 8-D data)? We only do a selection of 28 of them to save time/ computational resources.*
 
 Smoothness and squintability are computed for each case, following the procedures outlined in @sec-smoothness and @sec-squintability. To calculate smoothness, three hundred random bases are simulated. Index values and projection distance (to the optimal basis) are calculated for each random basis before fitting them into a Gaussian process model. For squintability, fifty random bases are sampled and interpolated to the optimal basis with a step size of 0.005. For these interpolated bases, index values and projection distances to the optimal basis are calculated and averaged with a bin width of 0.005. The squintability measure is then calculated from fitting a 4-parameter scaled logistic function of index value against projection distance, estimated by non-linear least square. 
 
@@ -631,7 +594,7 @@ Smoothness and squintability are computed for each case, following the procedure
 
 *Note: the stringy squintability doesn't make sense*
 
-@tbl-mod-data combines all the variables calculated above (the JS optimiser success rate, jellyfish hyper-parameters, and optimisation properties) into one table. Three pre-processing steps are applied to the data: 1) scaling the jellyfish hyper-parameters by a factor of 10 for interpretation, 2) creating a new binary variable `long_time` to indicate cases with an average run time over 30 seconds, and 3) encoding the success rate for the stringy case as 0, since none of the 50 simulations identified the sine-wave shape. A generalised linear model with a binomial family and a logit link function is used to fit the data and @tbl-mod-output presents the model outputs. The model suggests that the success rate of the JS optimiser is positively associated with the two jellyfish hyper-parameters, as well as with smoothness and squintability. However, being flagged with long runtime and an increase of data dimension will reduce the success rate. The variable `squintability` and `dimension` are significant, suggesting their importance relative to jellyfish hyper-parameters in the optimisation sucess.
+@tbl-mod-data combines all the variables calculated above (the JS optimiser success rate, jellyfish hyper-parameters, and optimisation properties) into one table. Three pre-processing steps are applied to the data: 1) scaling the jellyfish hyper-parameters by a factor of 10 for interpretation, 2) creating a new binary variable `long_time` to indicate cases with an average run time over 30 seconds, and 3) encoding the success rate for the stringy case as 0, since none of the 50 simulations identified the sine-wave shape. A generalised linear model with a binomial family and a logit link function is used to fit the data and @tbl-mod-output presents the model outputs. The model suggests that the success rate of the JS optimiser is positively associated with the two jellyfish hyper-parameters, as well as with smoothness and squintability. However, being flagged with long runtime and an increase of data dimension will reduce the success rate. The variable `squintability` and `dimension` are significant, suggesting their importance relative to jellyfish hyper-parameters in the optimisation success.
 
 ```{r}
 #| label: tbl-smoothness-squintability
@@ -663,7 +626,7 @@ sim_df |>
 
 ```{r}
 #| label: tbl-mod-output
-#| tbl-cap: Model estimates of proportion of jellyfish success on optimisation properties and jellyfish hyper-parameters from the generalised linear model with a binomial family and a logit link function. The variable smoothness, squintability, number of jellyfish and maximum numer of tries are positively associated with the JS optimiser success rate while data dimension and being flagged as long runtime are negatively associated with teh success rate. The variable squintability and dimension are significant, suggesting their importance relative to jellyfish hyper-parameters in the optimisation success.
+#| tbl-cap: Model estimates of proportion of jellyfish success on optimisation properties and jellyfish hyper-parameters from the generalised linear model with a binomial family and a logit link function. The variable smoothness, squintability, number of jellyfish and maximum number of tries are positively associated with the JS optimiser success rate while data dimension and being flagged as long runtime are negatively associated with the success rate. The variable squintability and dimension are significant, suggesting their importance relative to jellyfish hyper-parameters in the optimisation success.
 sim_df2 <- sim_df |>  
   mutate(n_jellies = n_jellies/10,
          max_tries = max_tries/10,
