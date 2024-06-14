@@ -64,12 +64,9 @@ sim_res <- sim_setup |>
   unnest(res)
 
 sim_sine_6d <- sim_res |> select(-alpha)
-save(sim_sine_6d, file = "data/sim_sine_6d.rda")
+sim_sine_6d_loess2d <- tibble(index = "loess") |>
+  bind_cols(sim_sine_6d) |>
+  select(index, d, n_jellies, max_tries, sim:time)
+save(sim_sine_6d_loess2d, file = "data-raw/sim_sine_6d_loess2d.rda")
 
 
-# sum <- sim_res |> group_by(id) |> filter(index_val == max(index_val)) |> filter(row_number() == 1)
-# b <- sum |> filter(id == 2) |> pull(basis)
-# dt <- as.matrix(sine1000) %*% b[[1]]
-# as_tibble(dt) |>
-#   ggplot(aes(x = V2 ,y = V1)) +
-#   geom_point()

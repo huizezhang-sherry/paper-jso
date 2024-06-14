@@ -52,10 +52,17 @@ t2 - t1
 sim_sine_6d_spline130 <- sim_res |> select(-alpha)
 sim_sine_6d_spline3150 <- sim_res |> select(-alpha)
 
-sim_sine_6d_spline <- bind_rows(sim_sine_6d_spline130, sim_sine_6d_spline3150 |> mutate(id = id + 30))
-save(sim_sine_6d_spline, file = here::here("data/sim_sine_6d_spline.rda"))
+sim_sine_6d_spline <- bind_rows(
+  sim_sine_6d_spline130, sim_sine_6d_spline3150 |> mutate(id = id + 30)
+  )
+sim_sine_6d_splines2d <- tibble(index = "splines2d") |>
+  bind_cols(sim_sine_6d_spline) |>
+  select(index, d, n_jellies, max_tries, sim:time)
+save(sim_sine_6d_splines2d, file = here::here("data-raw/sim_sine_6d_splines2d.rda"))
 
-
+################################################################################
+################################################################################
+# additional smaller data
 sim_sine_6d_spline_head <- sim_sine_6d_spline |>
   filter(n_jellies == 50, max_tries == 50) |>
   head(10)
@@ -65,18 +72,23 @@ sim_sine_6d_spline_best <- sim_sine_6d_spline |>
   get_best(group = sim) |> ungroup()
 save(sim_sine_6d_spline_best, file = here::here("data/sim_sine_6d_spline_best.rda"))
 
+mmat <- matrix(c(rep(0, 8), 1, 0, 0, 1), nrow = 6, byrow = TRUE)
 sim_sine_6d_spline_projdist <- sim_sine_6d_spline |>
   filter(n_jellies == 50, max_tries == 50) |>
   rowwise() |>
-  mutate(proj_dist = tourr::proj_dist(basis, matrix(c(rep(0, 8), 1, 0, 0, 1), nrow = 6, byrow = TRUE))) |>
+  mutate(proj_dist = tourr::proj_dist(basis, mmat)) |>
   select(-d, -id, -info, -method, -time, -basis) |>
   ungroup()
 save(sim_sine_6d_spline_projdist, file = here::here("data/sim_sine_6d_spline_projdist.rda"))
 
+
+################################################################################
+################################################################################
 set.seed(123456)
 sine1000 <- spinebil::sinData(6, 1000) %>% scale() %>% as_tibble()
 colnames(sine1000) <- paste0("V", 1:6)
-sum <- sim_sine_6d_spline |> group_by(id) |> filter(index_val == max(index_val)) |> filter(row_number() == 1)
+sum <- sim_sine_6d_spline |>
+  group_by(id) |> filter(index_val == max(index_val)) |> filter(row_number() == 1)
 b <- sum |> pull(basis)
 dt <- map_dfr(b, ~as_tibble(as.matrix(sine1000) %*% .x), .id = "id")
 dt |>

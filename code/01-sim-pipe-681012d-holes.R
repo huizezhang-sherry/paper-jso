@@ -41,9 +41,13 @@ sim_res <- sim_setup |>
   ungroup() |>
   unnest(res)
 
-# sim_pipe <- sim_res |> select(-alpha)
-# save(sim_pipe, file = "data/sim_pipe.rda")
+sim_pipe_raw <- sim_res |> select(index, d, n_jellies, max_tries, sim:time)
+sim_pipe <- tibble(index = "holes") |> bind_cols(sim_pipe_raw)
+save(sim_pipe, file = "data-raw/sim_pipe.rda")
 
+################################################################################
+################################################################################
+# additional smaller data
 sim_pipe_run_best <- sim_pipe |>
   group_by(id, n_jellies, max_tries, d) |>
   summarise(I_max = max(index_val))
@@ -54,6 +58,6 @@ pipe_jellyfish <- sim_pipe |>
   get_best(group = id) |>
   ungroup() |>
   mutate(optimiser = "jellyfish")
-# save(pipe_jellyfish, file = "data/pipe_jellyfish.rda")
+save(pipe_jellyfish, file = "data/pipe_jellyfish.rda")
 
 

@@ -68,28 +68,5 @@ t2 <- Sys.time()
 t2 - t1
 
 
-sim_sine_6d_dcor2d <- sim_res |> select(-alpha)
-save(sim_sine_6d_dcor2d , file = "data/sim_sine_6d_dcor2d.rda")
-sim_example <- sim_sine_6d_dcor2d |> head(10)
-save(sim_example , file = "data/sim_example.rda")
-sine_dcor2d_best <- sim_sine_6d_dcor2d |>
-  filter(n_jellies == 50, max_tries == 50) |>
-  group_by(sim) |>
-  filter(index_val == max(index_val)) |>
-  filter(row_number() == 1) |>
-  ungroup()
-save(sine_dcor2d_best , file = "data/sine_dcor2d_best.rda")
-
-
-
-#
-# set.seed(123456)
-# sine1000 <- spinebil::sinData(6, 1000) %>% scale() %>% as_tibble()
-# colnames(sine1000) <- paste0("V", 1:6)
-# sum <- sim_res |> group_by(id) |> filter(index_val == max(index_val)) |> filter(row_number() == 1)
-# b <- sum |> filter(id == 2) |> pull(basis)
-# dt <- as_tibble(as.matrix(sine1000) %*% b[[1]])
-# dt |>
-#   ggplot(aes(x = V2 ,y = V1)) +
-#   geom_point() +
-#   theme(aspect.ratio = 1)
+sim_sine_6d_dcor2d <- sim_res |> select(-alpha) |> rename(index = idx_f)
+save(sim_sine_6d_dcor2d , file = "data-raw/sim_sine_6d_dcor2d.rda")

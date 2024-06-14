@@ -74,42 +74,6 @@ sim_res <- sim_setup |>
 t2 <- Sys.time()
 t2 - t1
 
-# both indexes are similar
-# I_max_max shows that most combination (max_tries x n_jellies x d x idx_f)
+sim_sine_68d_TICMIC <- sim_res |> select(-alpha) |> rename(index = idx_f)
+save(sim_sine_68d_TICMIC, file = "data/sim_sine_68d_TICMIC.rda")
 
-
-# sim_sine_68d_TICMIC <- sim_res |> select(-alpha)
-# save(sim_sine_68d_TICMIC, file = "data/sim_sine_68d_TICMIC.rda")
-#
-#
-set.seed(123456)
-sine1000 <- spinebil::sinData(6, 1000) %>% scale() %>% as_tibble()
-colnames(sine1000) <- paste0("V", 1:6)
-sum <- sim_res |> group_by(id) |> filter(index_val == max(index_val)) |> filter(row_number() == 1)
-#tour_level |> filter(id == 167) |> pull(basis)
-# tour_level |>
-#   filter(n_jellies == 50, max_tries == 100, idx_f == "MIC", d == 6) |>
-#   filter(id == 164) |> pull(basis) -> b
-b <- setup_level_best_basis |> filter(id == 717) |> pull(basis)
-ids <- setup_level_best_basis |> filter(d == 6) |> pull(id)
-res <- map_dfr(ids, ~{
-  b <- setup_level_best_basis |> filter(id == .x) |> pull(basis)
-  dt <- as_tibble(as.matrix(sine1000) %*% b[[1]])
-  return(dt)
-}, .id = "id")
-
-labels_df <- setup_level_best_basis |>
-  ungroup() |>
-  filter(d == 6) |>
-  select(idx_f:max_tries, index_val) |>
-  mutate(id = as.character(1:10))
-
-library(ggh4x)
-res |>
-  left_join(labels_df) |>
-  ggplot(aes(x = V2 ,y = V1)) +
-  geom_point() +
-  geom_text(data = labels_df,
-            aes(x = -3, y = 3, label = round(index_val, 2)),
-            nudge_x = 0.1, nudge_y = 0.1) +
-  facet_nested(idx_f ~ n_jellies + max_tries, labeller = label_both )

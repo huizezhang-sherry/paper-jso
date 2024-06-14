@@ -57,17 +57,9 @@ sim_sine_6d_stringy2150 <- sim_res |> select(-alpha)
 sim_sine_6d_stringy <- bind_rows(sim_sine_6d_stringy12, sim_sine_6d_stringy310,
                                  sim_sine_6d_stringy1120, sim_sine_6d_stringy2150)
 
-save(sim_sine_6d_stringy, file = here::here("data/sim_sine_6d_stringy.rda"))
+sim_sine_6d_stringy <- tibble(index = "stringy") |>
+  bind_cols(sim_sine_6d_stringy) |>
+  select(index, d, n_jellies, max_tries, sim:time)
+save(sim_sine_6d_stringy, file = here::here("data-raw/sim_sine_6d_stringy.rda"))
 
 
-# set.seed(123456)
-# sine1000 <- spinebil::sinData(6, 1000) %>% scale() %>% as_tibble()
-# colnames(sine1000) <- paste0("V", 1:6)
-# sum <- sim_sine_6d_stringy310 |> group_by(id) |> filter(index_val == max(index_val)) |> filter(row_number() == 1)
-# b <- sum |> pull(basis)
-# dt <- map_dfr(b, ~as_tibble(as.matrix(sine1000) %*% .x), .id = "id")
-# dt |>
-#   ggplot(aes(x = V2 ,y = V1)) +
-#   geom_point(size = 0.3) +
-#   theme(aspect.ratio = 1) +
-#   facet_wrap(vars(id))
