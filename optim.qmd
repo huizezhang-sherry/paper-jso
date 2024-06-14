@@ -470,7 +470,12 @@ summaries and plots:
 set.seed(123456)
 sin1000 <- spinebil::sinData(6, 1000) %>% scale() %>% as_tibble()
 colnames(sin1000) <- paste0("V", 1:6)
-
+#remotes::install_github("uschiLaa/spinebil")
+#load(here::here("data/sine_dcor2d_best.rda"))
+#load(here::here("data/sin1000.rda"))
+#set.seed(123456)
+#sin1000 <- spinebil::sinData(6, 1000) %>% scale() %>% as_tibble()
+#colnames(sin1000) <- paste0("V", 1:6)
 
 proj_dt <- map_dfr(sim_sine_6d_spline_best |> pull(basis), 
               ~as_tibble(as.matrix(sin1000) %*% .x), .id = "sim") |> 
