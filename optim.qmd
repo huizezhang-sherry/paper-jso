@@ -81,6 +81,7 @@ editor:
 
 ```{r setup, echo = FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+#install the latest version of ferrn from: https://github.com/huizezhang-sherry/ferrn
 library(tidyverse)
 library(ggplot2)
 library(patchwork)
@@ -395,6 +396,8 @@ magnitude of the most negative rate of change.
 
 \[Nicolas's pdf\]
 
+TODO: add equation reference to main text line 705
+
 To the best of our knowledge, this is the first attempt to measure the
 notion of squintability.
 
@@ -466,18 +469,8 @@ summaries and plots:
 #| fig.height: 6
 #| fig.width: 10
 #| fig.cap: Best projections found by the JS opitmiser in each simulation, sorted by the index value. The projection pursuit problem is to detect the 6D sine-wave structure using the spline index. Most simulations have detected a clear sine-wave pattern, while the last six show a straight line with clustering at the ends.. In this simulation, the success rate is 0.88 (44/50).
-#set.seed(123456)
-#sin1000 <- spinebil::sinData(6, 1000) %>% scale() %>% as_tibble()
-#colnames(sin1000) <- paste0("V", 1:6)
-#remotes::install_github("uschiLaa/spinebil")
-#load(here::here("data/sim_sine_6d_spline_best.rda"))
-load(here::here("data/sin1000.rda"))
-#set.seed(123456)
-#sin1000 <- spinebil::sinData(6, 1000) %>% scale() %>% as_tibble()
-#colnames(sin1000) <- paste0("V", 1:6)
-
 proj_dt <- map_dfr(sim_sine_6d_spline_best |> pull(basis), 
-              ~as_tibble(as.matrix(sin1000) %*% .x), .id = "sim") |> 
+              ~as_tibble(as.matrix(sine1000) %*% .x), .id = "sim") |> 
   mutate(sim = as.numeric(sim)) |> 
   left_join(sim_sine_6d_spline_best |> select(sim, index_val), by = "sim")
 
@@ -683,13 +676,6 @@ pipe-finding cases and `r nrow(filter(sim_df, index != "holes"))`
 sine-wave finding cases. For each case, the JS optimiser is run fifty
 times and the success rate is calculated as in @sec-app-1.
 
-*Note: should we print out the 52 cases investigated somewhere, say
-appendix, since it is not full grid simulation (otherwise for the
-sine-wave problem there will be 6 indexes x 6 configurations = 36 cases
-for 6-D data and 2 indexes \[MIC & TIC\] x 6 configurations = 12 cases
-for 8-D data)? We only do a selection of 28 of them to save time/
-computational resources.*
-
 Smoothness and squintability are computed for each case, following the
 procedures outlined in @sec-smoothness and @sec-squintability. To
 calculate smoothness, three hundred random bases are simulated. Index
@@ -703,15 +689,11 @@ measure is then calculated from fitting a 4-parameter scaled logistic
 function of index value against projection distance, estimated by
 non-linear least squares.
 
-*Note: Shall I repeat the scaled logistic function with our
-parameterisation here? It can be handy to interpret theta1 - theta4 but
-they should've already been explained in the squintability section.*
-
 @tbl-smoothness-squintability presents the parameters estimated from the
 Gaussian process (variance, range, smooth, and nugget) and the scaled
 logistic function ($\theta_1$ to $\theta_4$) for each case. The column
 "smooth" is used as the smoothness measure and the column "squint" is
-calculated as $\frac{\theta_1 \theta_2 \theta_3}{4}$ as squintability.
+calculated as [TODO: equation reference] as squintability.
 The low squint value of MIC and TIC index is due to its convex shape of
 the index value against the projection distance, as shown in
 @fig-idx-proj-dist. Comparing to other concave shapes, the maximum first
@@ -720,7 +702,17 @@ requiring the optimiser to get closer to the optimal to see a
 significant change in the index value, hence a small squintability
 measure.
 
-*Note: the stringy squintability doesn't make sense*
+```{r fig-idx-proj-dist}
+#| fig.width = 9,
+#| fig.height = 5,
+#| fig.cap = "Index values versus projection distance for the 12 pipe/sine-wave finding problem, after the binning procedure for calculating the squintability measure. The index values, averaged at bin width of 0.005, are scaled from 0 to 1 for comparison (holes, TIC, and stringy). The `MIC` and `TIC` index curves are convex while others are concave. The stringy curve shows an instantaneous jump to the optimum when aproaching the best basis." 
+sq_basis_dist_idx |>
+  ggplot(aes(x = dist, y = idx, group = index)) +
+  geom_line() +
+  facet_nested_wrap(~index + n, nrow = 3, labeller = label_both) + 
+  xlab("projection distance") + ylab("index value")
+
+```
 
 @tbl-mod-data combines all the variables calculated above (the JS
 optimiser success rate, jellyfish hyper-parameters, and optimisation
@@ -742,15 +734,22 @@ success.
 
 ```{r}
 #| label: tbl-smoothness-squintability
-#| tbl-cap: Parameters estimated from the Gaussian process (including variance, range, smoothness, and nugget) and scaled logistic function ($\theta_1$ to $\theta_4$) for the pipe-finding and sine-wave finding problems.  The "smooth" column and "squint" column, calculated as $\frac{\theta_1 \theta_2 \theta_3}{4}$, represent the smoothness and squintability measures. 
+#| tbl-cap: Parameters estimated from the Gaussian process (including variance, range, smoothness, and nugget) and scaled logistic function ($\theta_1$ to $\theta_4$) for the pipe-finding and sine-wave finding problems.  The column "smooth" and "squint" represent the smoothness and squintability measures. 
 dt <- tibble(shape = c(rep("pipe", 4), rep("sine", 8)), smoothness) |>
   left_join(squintability) |> 
-  rename(d = n, smooth = smoothness)
+  rename(d = n, smooth = smoothness) |> 
+  mutate(index = ifelse(index == "dcor2d_2", "dcor2d", index)) 
 dt |> 
-  knitr::kable(digits = 3, booktabs = T, escape = FALSE, row.names = TRUE) |> 
+  knitr::kable(
+    digits = 3, format = "latex", 
+    col.names = c(
+      "shape", "index", "d",
+      "variance", "range", "smooth", "nugget",
+      "$\\theta_1$", "$\\theta_2$", "$\\theta_3$", "$\\theta_4$", "squint"),
+    booktabs = T, escape = FALSE, row.names = TRUE) |> 
   column_spec(1, border_left = TRUE) |> 
-  column_spec(c(3, 7, 12, 13), border_right = TRUE) |> 
-  kable_styling(latex_options = "hold_position", font_size = 7, full_width = FALSE)
+  column_spec(c(4, 8, 12, 13), border_right = TRUE) |> 
+  kable_styling(font_size = 7)
 ```
 
 ```{r}
@@ -758,11 +757,13 @@ dt |>
 #| tbl-cap: The first 7 rows of the datasets processed for modelling. 
 sim_df |> 
   dplyr::select(index, d, smoothness, squintability, n_jellies, max_tries, 
-                -I_max_max, P_J_hat, time) |> 
+                -I_max, P_J, time) |> 
   arrange(index, d, n_jellies, max_tries) |> 
   head(7) |> 
-  kable(digits = 3, col.names = c("Index", "D", "Smoothness", "Squintability", 
-                                  "Num. of jellyfish", "Max. Num. of tries", "Prop. of success", "Time"), 
+  kable(digits = 3,
+        col.names = c("Index", "D", "Smoothness", "Squintability", 
+                      "Num. of jellyfish", "Max. Num. of tries", 
+                      "Prop. of success", "Time"), 
         booktabs = T) |> 
   kable_styling(latex_options = "hold_position", font_size = 7)
 ```
@@ -774,31 +775,18 @@ sim_df2 <- sim_df |>
   mutate(n_jellies = n_jellies/10,
          max_tries = max_tries/10,
          long_time = ifelse(time > 30, 1, 0),
-         P_J_hat = ifelse(index == "stringy", 0, P_J_hat))
+         P_J = ifelse(index == "stringy", 0, P_J))
 
-mod1 <- glm(P_J_hat ~ smoothness + squintability + d + long_time + n_jellies + max_tries, data = sim_df2, family = binomial)
+mod1 <- glm(P_J ~ smoothness + squintability + d + long_time + n_jellies + max_tries, data = sim_df2, family = binomial)
 broom::tidy(mod1) |> 
   mutate(term = c("Intercept", "Smoothness", "Squintability", "dimension (d)", 
                   "long time", "number of jellyfish", "maximum number of tries")) |>
   kable(digits = 3) |> 
   column_spec(c(1,5), border_right = TRUE) |> 
-  column_spec(1, border_left = TRUE)
+  column_spec(1, border_left = TRUE) |> 
+  kable_styling(font_size = 7)
 ```
 
 # Conclusion \[Di and Sherry\] {#sec-conclusion}
-
-# Additional plot:
-
-```{r fig-idx-proj-dist}
-#| fig.width = 9,
-#| fig.height = 5,
-#| fig.cap = "Index values against projection distance for the 12 pipe/sine-wave finding problem after the binning procedure during the estimation of the squintability measure. The index value is averaged at each bin width of 0.005 and the `TIC` index is scaled to 0-1 for comparison. When finding the sine-wave structure using the `MIC` and `TIC` index, a convex curved is observed, as opposed to the pipe-finding problem or the sine-wave finding problem with the `dcor2d_2`, `loess2d`, and `splines2d` index. When finding the sine-wave with the stringy index, the index shows an instantaneous jump to the optimum when close to the best basis." 
-sq_basis_dist_idx |>
-  ggplot(aes(x = dist, y = idx, group = index)) +
-  geom_line() +
-  facet_nested_wrap(~index + n, nrow = 3, labeller = label_both) + 
-  xlab("projection distance") + ylab("index value")
-
-```
 
 # References

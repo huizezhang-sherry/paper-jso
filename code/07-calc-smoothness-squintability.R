@@ -89,7 +89,7 @@ save(sq_basis_df, file = here::here("data/sq_basis_df.rda"))
 
 start_prms1 <- c(theta1 = 1, theta2 = 1, theta3 = 3, theta4 = 0)
 start_prms2 <- c(theta1 = 1, theta2 = 0.01, theta3 = 50, theta4 = 0)
-squintability <- sq_basis_df |>
+squintability_raw <- sq_basis_df |>
   dplyr::mutate(start = ifelse(index == "stringy", list(start_prms2),
                                list(start_prms1))) |>
   dplyr::rowwise() |>
@@ -99,12 +99,26 @@ squintability <- sq_basis_df |>
   mutate(index = factor(index, levels = c("holes", "MIC", "TIC", "dcor2d_2",
                                           "loess2d", "splines2d", "stringy"))) |>
   arrange(index) |>
-  select(index, n, theta1: theta4) |>
-  mutate(squint = abs(theta1 * theta2 * theta3 / 4))
+  select(index, n, theta1: theta4)
+
+max_dist_df <- sq_basis_df |>
+  rowwise() |>
+  mutate(max_dist = basis_df |>
+           pivot_longer(holes:stringy, names_to = "index_f",
+                        values_to = "value", values_drop_na = TRUE) |>
+           pull(dist) |>
+           max()
+         ) |>
+  select(n, index, max_dist) |>
+  ungroup()
+
+squintability <- squintability_raw |>
+  left_join(max_dist_df) |>
+  mutate(
+    dd = (1/(1 + exp(-theta3 * theta2)) - 1/(1 + exp(theta3 * (max_dist)))),
+    squint = abs((theta1 - theta4)/dd  * theta2 * theta3 / 4)) |>
+  select(-dd, -max_dist)
 save(squintability, file = here::here("data", "squintability.rda"))
-
-
-
 ############################################################################
 ############################################################################
 sq_basis_dist_idx <- sq_basis_df |>
