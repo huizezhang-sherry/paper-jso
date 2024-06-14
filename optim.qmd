@@ -417,7 +417,7 @@ in 6D data (`d = 6`) using a spline index function(`splines2d`) is
 printed below:
 
 ```{r}
-dplyr::glimpse(sim_sine_6d_spline_head |> mutate(index = "spline2d") |> select(-id, -info)) 
+dplyr::glimpse(sim_sine_6d_spline_head |> select(-id, -info)) 
 ```
 
 The jellyfish hyper-parameters used are 50 jellyfishes (`n_jellies`) and

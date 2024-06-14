@@ -388,7 +388,7 @@ If they're better, we adopt them; if not, we stick with our current
 projection. This process continues and iteratively improves the
 projection, until we reach the maximum number of trials.
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, arc=.35mm, colbacktitle=quarto-callout-note-color!10!white, titlerule=0mm, toptitle=1mm, colframe=quarto-callout-note-color-frame, title={Algorithm: Jellyfish Optimizer Pseudo Code}, coltitle=black, colback=white, bottomrule=.15mm, rightrule=.15mm, left=2mm, bottomtitle=1mm, breakable, toprule=.15mm, leftrule=.75mm, opacityback=0]
+\begin{tcolorbox}[enhanced jigsaw, bottomrule=.15mm, toptitle=1mm, left=2mm, opacitybacktitle=0.6, colbacktitle=quarto-callout-note-color!10!white, bottomtitle=1mm, titlerule=0mm, toprule=.15mm, opacityback=0, colframe=quarto-callout-note-color-frame, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colback=white, breakable, arc=.35mm, rightrule=.15mm, leftrule=.75mm, coltitle=black]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{tries}, \texttt{max\_tries}
@@ -571,9 +571,10 @@ function(\texttt{splines2d}) is printed below:
 \begin{verbatim}
 Rows: 10
 Columns: 12
+$ index     <chr> "splines2d", "splines2d", "splines2d", "splines2d", "splines~
+$ d         <dbl> 6, 6, 6, 6, 6, 6, 6, 6, 6, 6
 $ n_jellies <dbl> 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
 $ max_tries <dbl> 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
-$ d         <dbl> 6, 6, 6, 6, 6, 6, 6, 6, 6, 6
 $ sim       <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 $ seed      <int> 3462, 3462, 3462, 3462, 3462, 3462, 3462, 3462, 3462, 3462
 $ basis     <list> <<matrix[6 x 2]>>, <<matrix[6 x 2]>>, <<matrix[6 x 2]>>, <<m~
@@ -582,7 +583,6 @@ $ method    <chr> "search_jellyfish", "search_jellyfish", "search_jellyfish", ~
 $ tries     <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 $ loop      <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 $ time      <drtn> 4.362133 mins, 4.362133 mins, 4.362133 mins, 4.362133 mins, ~
-$ index     <chr> "spline2d", "spline2d", "spline2d", "spline2d", "spline2d", ~
 \end{verbatim}
 
 The jellyfish hyper-parameters used are 50 jellyfishes
