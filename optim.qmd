@@ -2,7 +2,6 @@
 title: Studying the Performance of the Jellyfish Search Optimiser for the Application of Projection Pursuit
 header-includes:
    - \usepackage{algorithm}
-   - \usepackage{algpseudocode}
 author:
   - name: H. Sherry Zhang
     email: huize.zhang@austin.utexas.edu
@@ -467,12 +466,12 @@ summaries and plots:
 #| fig.height: 6
 #| fig.width: 10
 #| fig.cap: Best projections found by the JS opitmiser in each simulation, sorted by the index value. The projection pursuit problem is to detect the 6D sine-wave structure using the spline index. Most simulations have detected a clear sine-wave pattern, while the last six show a straight line with clustering at the ends.. In this simulation, the success rate is 0.88 (44/50).
-set.seed(123456)
-sin1000 <- spinebil::sinData(6, 1000) %>% scale() %>% as_tibble()
-colnames(sin1000) <- paste0("V", 1:6)
+#set.seed(123456)
+#sin1000 <- spinebil::sinData(6, 1000) %>% scale() %>% as_tibble()
+#colnames(sin1000) <- paste0("V", 1:6)
 #remotes::install_github("uschiLaa/spinebil")
-#load(here::here("data/sine_dcor2d_best.rda"))
-#load(here::here("data/sin1000.rda"))
+#load(here::here("data/sim_sine_6d_spline_best.rda"))
+load(here::here("data/sin1000.rda"))
 #set.seed(123456)
 #sin1000 <- spinebil::sinData(6, 1000) %>% scale() %>% as_tibble()
 #colnames(sin1000) <- paste0("V", 1:6)
