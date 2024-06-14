@@ -88,7 +88,7 @@ library(ggh4x)
 library(broom)
 library(kableExtra)
 library(ferrn)
-load(here::here("data/sim_pipe.rda"))
+load(here::here("data/sim_pipe_run_best.rda"))
 load(here::here("data/sim_sine_6d_spline_head.rda"))
 load(here::here("data/sim_sine_6d_spline_best.rda"))
 load(here::here("data/sim_sine_6d_spline_projdist.rda"))
@@ -543,16 +543,11 @@ p2 <- bbb |>
 #| fig.height = 3,
 #| fig.align = "center",
 #| fig.cap = "Proportion of simulations reaches near-optimal index values in the pipe-finding problem using the holes index. The proportion is calculated based on the number of simulations, out of 50, that achieve an index value within 0.05 of the best-performing simulation. As the dimensionality increases, the proportion of simulations reaching the optimal index value increases."
-pipe_run_summ <- sim_pipe |>
-  mutate(idx_f = "holes") |>
-  group_by(id, n_jellies, max_tries, d) |> 
-  summarise(I_max = max(index_val)) 
-  
-pipe_sim_best <- pipe_run_summ |> 
+pipe_sim_best <- sim_pipe_run_best |> 
   group_by(n_jellies, max_tries, d) |>
   summarise(I_best = max(I_max))
   
-pipe_res <- pipe_run_summ |> 
+pipe_res <- sim_pipe_run_best |> 
   left_join(pipe_sim_best) |> 
   mutate(diff = abs(I_max - I_best) < 0.05) |> 
   group_by(n_jellies, max_tries, d) |> 
