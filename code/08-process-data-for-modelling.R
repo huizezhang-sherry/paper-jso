@@ -26,12 +26,12 @@ pipe_setup_summ <- pipe_run_df |>
 load(here::here("data-raw/sim_sine_6d_dcor2d.rda"))
 load(here::here("data-raw/sim_sine_6d_loess2d.rda"))
 load(here::here("data-raw/sim_sine_68d_TICMIC.rda"))
-load(here::here("data-raw/sim_sine_6d_spline.rda"))
+load(here::here("data-raw/sim_sine_6d_splines2d.rda"))
 load(here::here("data-raw/sim_sine_6d_stringy.rda"))
 
 sim_data_sine <- bind_rows(
   sim_sine_6d_dcor2d, sim_sine_6d_loess2d, sim_sine_68d_TICMIC,
-  sim_sine_6d_spline, sim_sine_6d_stringy)
+  sim_sine_6d_splines2d, sim_sine_6d_stringy)
 
 sine_run_df <- sim_data_sine |>
   mutate(id2 = paste0(index, n_jellies, max_tries, sim, d)) |>

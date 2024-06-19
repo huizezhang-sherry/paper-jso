@@ -75,5 +75,5 @@ t2 <- Sys.time()
 t2 - t1
 
 sim_sine_68d_TICMIC <- sim_res |> select(-alpha) |> rename(index = idx_f)
-save(sim_sine_68d_TICMIC, file = "data/sim_sine_68d_TICMIC.rda")
+save(sim_sine_68d_TICMIC, file = "data-raw/sim_sine_68d_TICMIC.rda")
 

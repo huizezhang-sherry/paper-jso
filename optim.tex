@@ -388,7 +388,7 @@ If they're better, we adopt them; if not, we stick with our current
 projection. This process continues and iteratively improves the
 projection, until we reach the maximum number of trials.
 
-\begin{tcolorbox}[enhanced jigsaw, bottomrule=.15mm, toptitle=1mm, left=2mm, opacitybacktitle=0.6, colbacktitle=quarto-callout-note-color!10!white, bottomtitle=1mm, titlerule=0mm, toprule=.15mm, opacityback=0, colframe=quarto-callout-note-color-frame, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colback=white, breakable, arc=.35mm, rightrule=.15mm, leftrule=.75mm, coltitle=black]
+\begin{tcolorbox}[enhanced jigsaw, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm, left=2mm, breakable, toprule=.15mm, colframe=quarto-callout-note-color-frame, opacityback=0, titlerule=0mm, bottomtitle=1mm, colback=white, toptitle=1mm, rightrule=.15mm, bottomrule=.15mm, leftrule=.75mm, colbacktitle=quarto-callout-note-color!10!white, opacitybacktitle=0.6, coltitle=black]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{tries}, \texttt{max\_tries}
@@ -781,8 +781,8 @@ In addition to the pipe-finding problem, a new shape, sine wave, is
 investigated in 6D and 8D spaces with six indices considered:
 \texttt{dcor2d\_2}, \texttt{loess2d}, \texttt{MIC}, \texttt{TIC},
 \texttt{spline}, and \texttt{stringy}. Combining with two jellyfish
-hyper-parameters, a total of 42 cases is produced, comprising of 24
-pipe-finding cases and 8 sine-wave finding cases. For each case, the JS
+hyper-parameters, a total of 52 cases is produced, comprising of 24
+pipe-finding cases and 28 sine-wave finding cases. For each case, the JS
 optimiser is run fifty times and the success rate is calculated as in
 Section~\ref{sec-app-1}.
 
@@ -864,20 +864,20 @@ pipe-finding and sine-wave finding problems. The column ``smooth'' and
 \toprule
   & shape & index & d & variance & range & smooth & nugget & $\theta_1$ & $\theta_2$ & $\theta_3$ & $\theta_4$ & squint\\
 \midrule
-1 & pipe & holes & 6 & 0.002 & 0.408 & 2.364 & 0.212 & 0.991 & 0.860 & 3.368 & 0.172 & 0.627\\
-2 & pipe & holes & 8 & 0.000 & 0.259 & 2.373 & 0.613 & 1.011 & 0.869 & 3.264 & 0.085 & 0.696\\
-3 & pipe & holes & 10 & 0.000 & 0.144 & 2.317 & 1.831 & 1.011 & 0.885 & 3.151 & 0.153 & 0.636\\
-4 & pipe & holes & 12 & 0.000 & 0.254 & 2.173 & 0.879 & 0.999 & 0.878 & 3.345 & 0.196 & 0.621\\
-5 & sine & MIC & 6 & 0.016 & 0.100 & 2.394 & 0.087 & 0.894 & 0.571 & 1.623 & -0.024 & 0.314\\
+1 & pipe & holes & 6 & 0.002 & 0.371 & 2.355 & 0.221 & 1.015 & 0.860 & 3.368 & 0.018 & 0.763\\
+2 & pipe & holes & 8 & 0.000 & 0.178 & 2.189 & 0.820 & 1.014 & 0.869 & 3.264 & 0.029 & 0.740\\
+3 & pipe & holes & 10 & 0.000 & 0.107 & 2.192 & 3.027 & 1.016 & 0.885 & 3.151 & 0.022 & 0.737\\
+4 & pipe & holes & 12 & 0.000 & 0.148 & 2.295 & 1.581 & 1.011 & 0.878 & 3.345 & 0.004 & 0.779\\
+5 & sine & MIC & 6 & 0.016 & 0.092 & 2.457 & 0.083 & 0.894 & 0.571 & 1.623 & -0.024 & 0.314\\
 \addlinespace
-6 & sine & MIC & 8 & 0.016 & 0.100 & 2.394 & 0.087 & 0.932 & 0.328 & 1.314 & -0.030 & 0.193\\
-7 & sine & TIC & 6 & 0.124 & 0.104 & 2.471 & 0.086 & 0.951 & 0.536 & 1.719 & -0.025 & 0.330\\
-8 & sine & TIC & 8 & 0.124 & 0.104 & 2.471 & 0.086 & 0.945 & 0.564 & 1.723 & -0.027 & 0.341\\
+6 & sine & MIC & 8 & 0.016 & 0.081 & 2.636 & 0.084 & 0.932 & 0.328 & 1.314 & -0.030 & 0.193\\
+7 & sine & TIC & 6 & 0.124 & 0.110 & 2.444 & 0.086 & 0.951 & 0.536 & 1.719 & -0.027 & 0.330\\
+8 & sine & TIC & 8 & 0.125 & 0.099 & 2.475 & 0.085 & 0.949 & 0.564 & 1.723 & -0.028 & 0.342\\
 9 & sine & dcor2d & 6 & 0.034 & 0.167 & 2.663 & 0.114 & 0.954 & 1.039 & 2.742 & -0.019 & 0.737\\
-10 & sine & loess2d & 6 & 0.083 & 0.307 & 2.194 & 0.292 & 1.016 & 1.039 & 2.648 & 0.080 & 0.689\\
+10 & sine & loess2d & 6 & 0.079 & 0.336 & 1.988 & 0.309 & 1.016 & 1.039 & 2.648 & 0.080 & 0.689\\
 \addlinespace
-11 & sine & splines2d & 6 & 0.040 & 0.189 & 2.606 & 0.104 & 1.014 & 1.051 & 2.730 & -0.009 & 0.780\\
-12 & sine & stringy & 6 & 0.000 & 1173.035 & 1.031 & 17608.047 & 1.040 & 0.011 & 254.733 & 0.170 & 0.648\\
+11 & sine & splines2d & 6 & 0.042 & 0.242 & 2.537 & 0.102 & 1.014 & 1.051 & 2.730 & -0.009 & 0.780\\
+12 & sine & stringy & 6 & 0.000 & 0.007 & 1.536 & 38.166 & 1.045 & 0.011 & 254.734 & 0.053 & 0.739\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -898,14 +898,14 @@ for modelling.}
 \toprule
 Index & D & Smoothness & Squintability & Num. of jellyfish & Max. Num. of tries & Prop. of success & Time\\
 \midrule
-dcor2d\_2 & 6 & 2.663 & 0.737 & 20 & 50 & 0.44 & 35.320 secs\\
-dcor2d\_2 & 6 & 2.663 & 0.737 & 20 & 100 & 0.60 & 70.347 secs\\
-dcor2d\_2 & 6 & 2.663 & 0.737 & 50 & 50 & 0.90 & 87.158 secs\\
-holes & 6 & 2.364 & 0.627 & 20 & 50 & 0.88 & 0.801 secs\\
-holes & 6 & 2.364 & 0.627 & 20 & 100 & 0.96 & 1.456 secs\\
+MIC & 6 & 2.457 & 0.314 & 20 & 50 & 0.12 & 2.479 secs\\
+MIC & 6 & 2.457 & 0.314 & 20 & 100 & 0.24 & 8.950 secs\\
+MIC & 6 & 2.457 & 0.314 & 50 & 50 & 0.52 & 5.651 secs\\
+MIC & 6 & 2.457 & 0.314 & 50 & 100 & 0.64 & 13.223 secs\\
+MIC & 6 & 2.457 & 0.314 & 100 & 50 & 0.76 & 19.453 secs\\
 \addlinespace
-holes & 6 & 2.364 & 0.627 & 50 & 50 & 1.00 & 1.477 secs\\
-holes & 6 & 2.364 & 0.627 & 50 & 100 & 1.00 & 3.052 secs\\
+MIC & 8 & 2.636 & 0.193 & 20 & 50 & 0.08 & 2.566 secs\\
+MIC & 8 & 2.636 & 0.193 & 20 & 100 & 0.08 & 4.960 secs\\
 \bottomrule
 
 \end{longtable}
@@ -932,14 +932,14 @@ hyper-parameters in the optimisation success.}
 \toprule
 term & estimate & std.error & statistic & p.value\\
 \midrule
-Intercept & 2.685 & 15.464 & 0.174 & 0.862\\
-Smoothness & 3.070 & 3.631 & 0.845 & 0.398\\
-Squintability & -8.545 & 22.252 & -0.384 & 0.701\\
-dimension (d) & -0.610 & 0.355 & -1.719 & 0.086\\
-long time & -1.683 & 1.930 & -0.872 & 0.383\\
+Intercept & -4.523 & 5.332 & -0.848 & 0.396\\
+Smoothness & 1.195 & 1.915 & 0.624 & 0.533\\
+Squintability & 8.241 & 2.737 & 3.011 & 0.003\\
+dimension (d) & -0.628 & 0.255 & -2.462 & 0.014\\
+long time & -0.874 & 1.286 & -0.680 & 0.497\\
 \addlinespace
-number of jellyfish & 0.269 & 0.175 & 1.538 & 0.124\\
-maximum number of tries & 0.080 & 0.196 & 0.410 & 0.682\\
+number of jellyfish & 0.216 & 0.127 & 1.701 & 0.089\\
+maximum number of tries & 0.113 & 0.150 & 0.752 & 0.452\\
 \bottomrule
 
 \end{longtable}

@@ -16,11 +16,14 @@ smoothness_holes <- tibble::tibble(
               matrix(c(rep(0, 12), 1, 0, 0, 1), nrow = 8, byrow = TRUE),
               matrix(c(rep(0, 16), 1, 0, 0, 1), nrow = 10, byrow = TRUE),
               matrix(c(rep(0, 20), 1, 0, 0, 1), nrow = 12, byrow = TRUE))) |>
-  dplyr::mutate(smoothness = purrr::pmap(
-    list(data, best, n),
-    function(data, best, n){calc_smoothness("holes", data = data, n = n, best = best)}))
+  dplyr::mutate(basis_df = purrr::pmap(
+    list(data, best),
+    function(data, best, n){sample_bases("holes", data = data, best = best)}))
 
-holes_tidy <- smoothness_holes |> tidyr::unnest_wider(smoothness) |> unnest(measure)
+holes_tidy <- smoothness_holes |>
+  rowwise() |>
+  dplyr::mutate(smooth = calc_smoothness(basis_df)) |>
+  unnest(smooth)
 
 idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "stringy", "splines2d")
 smoothness_sine <- tibble::tibble(
@@ -29,10 +32,12 @@ smoothness_sine <- tibble::tibble(
   dplyr::bind_rows(sine_8d_tbl("MIC")) |>
   dplyr::bind_rows(sine_8d_tbl("TIC")) |>
   rowwise() |>
-  dplyr::mutate(smoothness = list(calc_smoothness(index)))
+  dplyr::mutate(basis_df = list(sample_bases(index)))
 
-
-sine_tidy <- smoothness_sine |> tidyr::unnest_wider(smoothness) |> unnest(measure)
+sine_tidy <- smoothness_sine |>
+  rowwise() |>
+  dplyr::mutate(smooth = calc_smoothness(basis_df)) |>
+  unnest(smooth)
 
 smoothness <- bind_rows(sine_tidy, holes_tidy) |>
   mutate(index = factor(index, levels = c("holes", "MIC", "TIC", "dcor2d_2",
@@ -43,7 +48,8 @@ save(smoothness, file = here::here("data", "smoothness.rda"))
 
 ################################################################################
 ################################################################################
-# squintability
+# squintability - sample bases
+# 2-3 mins
 sq_holes_basis_df <- tibble::tibble(
   n = c(6, 8, 10, 12),
   index = rep("holes", 4),
@@ -53,82 +59,62 @@ sq_holes_basis_df <- tibble::tibble(
               matrix(c(rep(0, 16), 1, 0, 0, 1), nrow = 10, byrow = TRUE),
               matrix(c(rep(0, 20), 1, 0, 0, 1), nrow = 12, byrow = TRUE))) |>
   dplyr::mutate(basis_df = purrr::pmap(
-    list(data, best, n), function(data, best, n){
-      calc_squintability("holes", data = data, n = n, best = best, return_early = TRUE)}))
+    list(data, best), function(data, best){
+      sample_bases("holes", data = data, n_basis = 50, min_proj_dist = 1.5,
+                   step_size = 0.005, best = best)}))
+save(sq_holes_basis_df, file = here::here("data/sq_holes_basis_df.rda"))
 
 idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "splines2d", "stringy")
+# about 40 mins
 sq_sine_basis_df <- tibble::tibble(
   n = 6, index = idx_names, data = list(sine1000),
   best = list(matrix(c(rep(0, 8), 1, 0, 0, 1), nrow = 6, byrow = TRUE))) |>
   dplyr::bind_rows(sine_8d_tbl("MIC")) |>
   dplyr::bind_rows(sine_8d_tbl("TIC")) |>
   dplyr::rowwise() |>
-  dplyr::mutate(basis_df = list(calc_squintability(
-    index, data = data, n = n, best = best, return_early = TRUE)
+  dplyr::mutate(basis_df = list(sample_bases(
+    idx = index, data = data, n_basis = 50, min_proj_dist = 1.5,
+    step_size = 0.005, best = best, parallel = TRUE)
   ))
+save(sq_sine_basis_df, file = here::here("data/sq_sine_basis_df.rda"))
 
-sq_basis_df <- sq_holes_basis_df |>
-  dplyr::bind_rows(sq_sine_basis_df) |>
-  unnest(basis_df) |>
-  group_by(n, index) |>
-  mutate(
-    holes = ifelse(
-      index == "holes",
-      (holes - min(holes, na.rm = TRUE))/
-        (max(holes, na.rm = TRUE) - min(holes, na.rm = TRUE)),
-      NA),
-    stringy = ifelse(
-      index == "stringy",
-      (stringy - min(stringy, na.rm = TRUE))/
-        (max(stringy, na.rm = TRUE) - min(stringy, na.rm = TRUE)),
-      NA))|>
-  nest(basis_df = c(id:stringy)) |>
-  ungroup()
-save(sq_basis_df, file = here::here("data/sq_basis_df.rda"))
-
-
-start_prms1 <- c(theta1 = 1, theta2 = 1, theta3 = 3, theta4 = 0)
-start_prms2 <- c(theta1 = 1, theta2 = 0.01, theta3 = 50, theta4 = 0)
-squintability_raw <- sq_basis_df |>
-  dplyr::mutate(start = ifelse(index == "stringy", list(start_prms2),
-                               list(start_prms1))) |>
-  dplyr::rowwise() |>
-  dplyr::mutate(res = list(ferrn:::fit_nls(basis_df, idx = index,
-                                           nls_params = list(start)))) |>
-  tidyr::unnest_wider(res) |>
-  mutate(index = factor(index, levels = c("holes", "MIC", "TIC", "dcor2d_2",
-                                          "loess2d", "splines2d", "stringy"))) |>
-  arrange(index) |>
-  select(index, n, theta1: theta4)
-
-max_dist_df <- sq_basis_df |>
+# calculate squintability
+res_holes <- sq_holes_basis_df |>
   rowwise() |>
-  mutate(max_dist = basis_df |>
-           pivot_longer(holes:stringy, names_to = "index_f",
-                        values_to = "value", values_drop_na = TRUE) |>
-           pull(dist) |>
-           max()
-         ) |>
-  select(n, index, max_dist) |>
-  ungroup()
+  mutate(res = calc_squintability(
+    basis_df, method = "nls", bin_width = 0.005, scale = TRUE,
+    other_params = list(start = c(theta1 = 1, theta2 = 1, theta3 = 3, theta4 = 0)))) |>
+  unnest(res) |>
+  select(index, n, theta1: squint)
 
-squintability <- squintability_raw |>
-  left_join(max_dist_df) |>
-  mutate(
-    dd = (1/(1 + exp(-theta3 * theta2)) - 1/(1 + exp(theta3 * (max_dist)))),
-    squint = abs((theta1 - theta4)/dd  * theta2 * theta3 / 4)) |>
-  select(-dd, -max_dist)
+
+param_tbl <- tibble(other_params =  c(
+  rep(list(start = list(theta1 = 1, theta2 = 1, theta3 = 2, theta4 = 0)), 5),
+  list(start = list(theta1 = 1, theta2 = 0, theta3 = 100, theta4 = 0)),
+  rep(list(start = list(theta1 = 1, theta2 = 1, theta3 = 2, theta4 = 0)), 2)))
+
+res_sine <- sq_sine_basis_df|>
+  bind_cols(other_params = param_tbl) |>
+  bind_cols(scale = c(FALSE, FALSE, FALSE, TRUE, FALSE, TRUE, FALSE, TRUE)) |>
+  mutate(res = calc_squintability(
+    basis_df, method = "nls", bin_width = 0.005, scale = scale,
+    other_params = list(start = other_params))) |>
+  unnest(res) |>
+  select(index, n, theta1:squint)
+
+
+squintability <- res_holes |> bind_rows(res_sine) |> select(index, n, theta1:theta4, squint)
 save(squintability, file = here::here("data", "squintability.rda"))
 ############################################################################
 ############################################################################
-sq_basis_dist_idx <- sq_basis_df |>
-  dplyr::select(basis_df, n) |>
+# TODO
+sq_basis_dist_idx <- bind_rows(sq_holes_basis_df, sq_sine_basis_df) |>
+  dplyr::select(basis_df, n, index) |>
+  rename(index_name = index) |>
   unnest(basis_df) |>
-  pivot_longer(holes:stringy, names_to = "index", values_to = "idx",
-               values_drop_na = TRUE) |>
   mutate(dist = ceiling(dist / 0.005) * 0.005,
-         index = factor(index, levels = c("holes", "MIC", "TIC", "dcor2d_2",
+         index_name = factor(index_name, levels = c("holes", "MIC", "TIC", "dcor2d_2",
                                           "loess2d", "splines2d", "stringy"))) |>
-  group_by(n, index, dist) |>
-  summarise(idx = mean(idx), .groups = "drop")
+  group_by(n, index_name, dist) |>
+  summarise(index = mean(index, na.rm = TRUE), .groups = "drop")
 save(sq_basis_dist_idx, file = here::here("data", "sq_basis_dist_idx.rda"))
