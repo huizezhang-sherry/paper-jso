@@ -8,3 +8,4 @@
 .httr-oauth
 .quarto
 data-raw
+optim_cache

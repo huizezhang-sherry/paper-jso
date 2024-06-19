@@ -42,13 +42,11 @@ author:
           country: Australia
           postal-code: 3800
 abstract: |
-  This is the abstract. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum augue turpis, dictum non malesuada a, volutpat eget velit. Nam placerat turpis purus, eu tristique ex tincidunt et. Mauris sed augue eget turpis ultrices tincidunt. Sed et mi in leo porta egestas. Aliquam non laoreet velit. Nunc quis ex vitae eros aliquet auctor nec ac libero. Duis laoreet sapien eu mi luctus, in bibendum leo molestie. Sed hendrerit diam diam, ac dapibus nisl volutpat vitae. Aliquam bibendum varius libero, eu efficitur justo rutrum at. Sed at tempus elit.
+  Projection pursuit (PP) is a dimension reduction technique that identifies low-dimensional projections in high-dimensional data by optimising a criteria function known as the PP index. The optimisation in PP can be non-smooth and requires identifying optima with a small "squint angle", detectable only from close proximity. To address these challenges, this study investigates the performance of a recent swarm-based algorithm, Jellyfish Search Optimiser (JSO), for optimising PP indexes. The performance of JSO is evaluated across various hyper-parameter settings and compared with existing optimisers. Additionally, this work proposes novel methods to quantify two properties of the PP index -- smoothness and squintability -- that capture the complexities inherent in PP optimisation problems. These two metrics are evaluated with JSO hyper-parameters to determine their effect on JSO success rate. The JSO algorithm has been implemented in the `tourr` package, while calculations for smoothness and squintability are available in the `ferrn` package. 
 keywords: 
   - projection pursuit
-  - optimization
-  - jellyfish optimiser
-  - data visualisation
-  - high-dimensional data
+  - Jellyfish Search Optimiser (JSO)
+  - Optimisation
 date: last-modified
 bibliography: bibliography.bib
 format:
@@ -80,7 +78,7 @@ editor:
     -   "hyper-parameter" rather than "hyperparameter"
 
 ```{r setup, echo = FALSE, message=FALSE, warning=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE)
 #install the latest version of ferrn from: https://github.com/huizezhang-sherry/ferrn
 library(tidyverse)
 library(ggplot2)
@@ -109,7 +107,7 @@ by optimising a variety of objective functions, namely *projection
 pursuit index (PPI)*, (@hall1989polynomial, @cook1993projection,
 @lee2010projection, @Loperfido2018, @Loperfido2020). Given
 high-dimensional data $X \in \mathcal{R}^{n }\times p$ and PPI
-\$f(\\cdot)\$, PP finds the orthonormal projection matrix
+$f(\cdot)$, PP finds the orthonormal projection matrix
 $A \in \mathcal{R}^{p \times d}$ by solving the following optimisation
 problem:
 
