@@ -145,11 +145,7 @@ have stronger search ability and faster convergence with fewer
 parameters compared to classic optimisation methods
 [@chou_novel_2021]-[@chou_recent_2022].
 
-This study aims to investigate ...
-
-The contribution of this study to the high dimensional data visualisation literature is twofold. First, the performance of JSO is studied in the context of PP guided tour.
-Second, to the best of the authors’ knowledge, this is the first attempt
-to quantitatively measure squintability and smoothness.
+The primary goal of this study is to investigate the performance of JSO in the context of the PP guided tour. A series of simulation experiments using well-recognised data sets and PPIs are conducted to yield insights regarding the behaviour of JSO under different settings and the sensitivity of hyper-parameter in the optimisation. Second, to observe the performance of JSO with different types of PPI, a collection of metrics is introduced to capture specific properties of the index including squintability and smoothness as introduced in @laa_using_2020. To the best of the author’s knowledge, this is the first attempt to quantitatively measure squintability and smoothness. Finally, the relationship between the JSO performance, hyper-parameters tuning and various properties of PPI is analysed to provide helpful guidance for practitioners that are using the guided tour for high dimensional visualisation.
 
 The rest of this paper is structured as follows. @sec-background
 introduces the PP guided tour. @sec-theory describes the details of JSO
