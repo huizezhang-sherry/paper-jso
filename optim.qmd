@@ -32,7 +32,7 @@ author:
           city: Zhuhai
           country: China
           postal-code: 519087
-  - name: Jessica Leung
+  - name: Jessica Wai Yin Leung
     email: Jessica.Leung@monash.edu
     affiliations:
         - id: 2
@@ -103,47 +103,60 @@ load(here::here("data/sim_df.rda"))
 
 # Introduction \[Nicolas and Jessica\]
 
+Projection Pursuit (PP) is a high-dimensional data visualisation
+approach that involves computing informative linear projections of data
+by optimising a variety of objective functions, namely *projection
+pursuit index (PPI)*, (@hall1989polynomial, @cook1993projection,
+@lee2010projection, @Loperfido2018, @Loperfido2020). Given
+high-dimensional data $X \in \mathcal{R}^{n }\times p$ and PPI
+\$f(\\cdot)\$, PP finds the orthonormal projection matrix
+$A \in \mathcal{R}^{p \times d}$ by solving the following optimisation
+problem:
+
+$$
+\underset{A}{\max} f(XA) \quad \text{subject to} \quad A'A = I
+$$
+
+These indices $f(\cdot)$ are characterised by the informativeness or
+“interestingness” of a projection and are often non-linear and
+non-convex. As such, an effective and efficient optimisation procedure
+is essential to enable sufficient exploration of the data landscape
+during the visualisation process and to arrive at a global optimal
+viewpoint of the data.
+
+Significant efforts have been devoted to enhancing the functionality of
+PP and facilitating a better experience in the visualisation process.
+@cook1995grand introduced the PP guided tour, which enabled interactive
+visualisation of the optimisation to visually explore high-dimensional
+data. It is implemented in the R [@R] package `tourr`[@tourr].
+@RJ-2021-105 highlighted potential problems of the optimisation routine
+implemented. While improving the quality of the optimisation solutions
+in the tour is essential, it is also important to be able to watch the
+projected data as the optimisation progresses. Therefore, it is of
+interest to integrate the guided tour with a global optimisation
+algorithm and examine the characteristics and advantages of such
+implementation.
+
 The artificial jellyfish search (JS) algorithm [@chou_novel_2021] is a
 swarm-based metaheuristic optimisation algorithm inspired by the search
-behaviour of jellyfish in the ocean. It is one of the newest swarm
+behaviour of jellyfish in the ocean. It is one of the latest swarm
 intelligence algorithms [@rajwar_exhaustive_2023], which was shown to
-have stronger search ability and faster convergence with few algorithmic
-parameters compared to classic optimization methods
+have stronger search ability and faster convergence with fewer
+parameters compared to classic optimisation methods
 [@chou_novel_2021]-[@chou_recent_2022].
 
-Effective optimisation is an important aspect of many methods employed
-for visualising high-dimensional data ($X$). Here we are concerned about
-computing informative linear projections of high-dimensional ($p$) data
-using projection pursuit (PP) (@kr69, @FT74). This involves optimising a
-function (e.g. @hall1989polynomial, @cook1993projection,
-@lee2010projection, @Loperfido2018, @Loperfido2020), called the
-projection pursuit index (PPI), that defines what is interesting or
-informative in a projection.
+This study aims to investigate ...
 
-These PPI are defined on projections ($XA$), which means that there is a
-constraint that needs to be considered when optimising. A projection of
-data is defined by a $p\times d$ orthonormal matrix $A$, and this
-imposes the constraint on the elements of $A$, that columns need have
-norm equal to 1 and the product of columns need to sum to zero.
+The contribution of this study to the high dimensional data visualisation literature is twofold. First, the performance of JSO is studied in the context of PP guided tour.
+Second, to the best of the authors’ knowledge, this is the first attempt
+to quantitatively measure squintability and smoothness.
 
-@cook1995grand introduced the PP guided tour, which enabled interactive
-visualisation of the optimisation in order to visually explore
-high-dimensional data. It is implemented in the R [@R] package `tourr`
-[@tourr]. The optimisation that is implemented is fairly basic, and
-potential problems were highlighted by @RJ-2021-105. Implementing better
-optimisation functionality is a goal, but it needs to be kept in mind
-that the guided tour also has places importance on watching the
-projected data as the optimisation progresses.
-
-Here we explore the potential for a jellyfish optimisation to be
-integrated with the guided tour. @sec-background explains the
-optimisation that is used in the current the projection pursuit guided
-tour. @sec-theory provides more details on the jellyfish optimiser and
-formalises several characteristics of projection pursuit indexes that
-are help to measure optimiser performance. @sec-simulation describes a
-simulation study on performance of the jellyfish for several types of
-data and index functions. @sec-conclusion summarises the work and
-provides suggestions for future directions.
+The rest of this paper is structured as follows. @sec-background
+introduces the PP guided tour. @sec-theory describes the details of JSO
+and introduces metrics that measure different characteristics of a PPI.
+@sec-simulation describes a simulation study on the performance of the
+JSO using well-known data sets and index functions. @sec-conclusion
+summarises the work and provides suggestions for future directions.
 
 # Projection pursuit, index functions and optimisation \[Di and Sherry\] {#sec-background}
 
@@ -693,9 +706,9 @@ non-linear least squares.
 Gaussian process (variance, range, smooth, and nugget) and the scaled
 logistic function ($\theta_1$ to $\theta_4$) for each case. The column
 "smooth" is used as the smoothness measure and the column "squint" is
-calculated as [TODO: equation reference] as squintability.
-The low squint value of MIC and TIC index is due to its convex shape of
-the index value against the projection distance, as shown in
+calculated as [TODO: equation reference] as squintability. The low
+squint value of MIC and TIC index is due to its convex shape of the
+index value against the projection distance, as shown in
 @fig-idx-proj-dist. Comparing to other concave shapes, the maximum first
 derivative happens at a smaller projection distance ($\theta_2$),
 requiring the optimiser to get closer to the optimal to see a
