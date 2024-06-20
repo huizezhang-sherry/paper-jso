@@ -250,7 +250,7 @@ squintability are available in the \texttt{ferrn} package.
     Optimisation
 \end{keyword}
 \end{frontmatter}
-    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, interior hidden, frame hidden, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, breakable, sharp corners]}{\end{tcolorbox}}\fi
+    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, enhanced, interior hidden, sharp corners, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \textbf{README}:
 
@@ -417,29 +417,28 @@ global because data can contain many different and interesting features.
 \section{The jellyfish optimiser and properties of PP indexes {[}Nicolas
 and Jessica{]}}\label{sec-theory}}
 
-The jellyfish optimiser (JSO) mimics the natural movements of jellyfish,
-which include passive and active motions driven by ocean currents and
-their swimming patterns, respectively. In the context of optimization,
-these movements are abstracted to explore the search space in a way that
-balances exploration (searching new areas) and exploitation (focusing on
+JSO mimics the natural movements of jellyfish, which include passive and
+active motions driven by ocean currents and their swimming patterns,
+respectively. In the context of optimization, these movements are
+abstracted to explore the search space in a way that balances
+exploration (searching new areas) and exploitation (focusing on
 promising areas). The algorithm aims to find the optimal solution by
-adapting the jellyfish's behaviour to navigate towards the best solution
-over iterations \citep{chou_novel_2021}.
+adapting the behaviour of jellyfish to navigate towards the best
+solution over iterations \citep{chou_novel_2021}.
 
-To understand what the jellyfish optimizer is doing in the context of
-Projection Pursuit, we first start with a current projection (the
-starting point). Then, we evaluate this projection using an index
-function, which tells us how good the current projection is. We then
-move the projection in a direction determined by the `best jelly' and
-random factors, influenced by how far along we are in the optimization
-process (the trial \(i\) and \texttt{max.tries}). Occasionally, we might
-explore completely new directions like a jellyfish might with ocean
-currents. Then, we compare new potential projections to our current one.
-If they're better, we adopt them; if not, we stick with our current
-projection. This process continues and iteratively improves the
-projection, until we reach the maximum number of trials.
+To solve the optimisation problem embedded in the PP guided tour, a
+starting projection, an index function and the maximum number of
+iterations are provided as input. Then, the current projection is
+evaluated by the index function. The projection is then moved in a
+direction determined by a random factor, influenced by how far along we
+are in the optimization process. Occasionally, we might explore
+completely new directions like a jellyfish might with ocean currents. A
+new projection is accepted if it is an improvement compared to the
+current one, rejected otherwise. This process continues and iteratively
+improves the projection, until the pre-specified maximum number of
+trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, rightrule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, toptitle=1mm, breakable, colbacktitle=quarto-callout-note-color!10!white, leftrule=.75mm, left=2mm, titlerule=0mm, colframe=quarto-callout-note-color-frame, coltitle=black, opacitybacktitle=0.6, colback=white, toprule=.15mm, bottomtitle=1mm, arc=.35mm, bottomrule=.15mm, opacityback=0]
+\begin{tcolorbox}[enhanced jigsaw, toptitle=1mm, colframe=quarto-callout-note-color-frame, titlerule=0mm, opacitybacktitle=0.6, colback=white, left=2mm, coltitle=black, bottomrule=.15mm, colbacktitle=quarto-callout-note-color!10!white, breakable, leftrule=.75mm, bottomtitle=1mm, arc=.35mm, toprule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, rightrule=.15mm, opacityback=0]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{tries}, \texttt{max\_tries}

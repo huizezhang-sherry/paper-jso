@@ -193,27 +193,14 @@ global because data can contain many different and interesting features.
 
 # The jellyfish optimiser and properties of PP indexes \[Nicolas and Jessica\] {#sec-theory}
 
-The jellyfish optimiser (JSO) mimics the natural movements of jellyfish,
-which include passive and active motions driven by ocean currents and
-their swimming patterns, respectively. In the context of optimization,
-these movements are abstracted to explore the search space in a way that
+JSO mimics the natural movements of jellyfish, which include passive and active motions driven by ocean currents and
+their swimming patterns, respectively. In the context of optimization, these movements are abstracted to explore the search space in a way that
 balances exploration (searching new areas) and exploitation (focusing on
 promising areas). The algorithm aims to find the optimal solution by
-adapting the jellyfish's behaviour to navigate towards the best solution
-over iterations [@chou_novel_2021].
+adapting the behaviour of jellyfish to navigate towards the best solution over iterations [@chou_novel_2021].
 
-To understand what the jellyfish optimizer is doing in the context of
-Projection Pursuit, we first start with a current projection (the
-starting point). Then, we evaluate this projection using an index
-function, which tells us how good the current projection is. We then
-move the projection in a direction determined by the 'best jelly' and
-random factors, influenced by how far along we are in the optimization
-process (the trial $i$ and `max.tries`). Occasionally, we might explore
-completely new directions like a jellyfish might with ocean currents.
-Then, we compare new potential projections to our current one. If
-they're better, we adopt them; if not, we stick with our current
-projection. This process continues and iteratively improves the
-projection, until we reach the maximum number of trials.
+To solve the optimisation problem embedded in the PP guided tour, a starting projection, an index function and the maximum number of iterations are provided as input. Then, the current projection is evaluated by the index function. The projection is then moved in a direction determined by a random factor, influenced by how far along we are in the optimization process. Occasionally, we might explore completely new directions like a jellyfish might with ocean currents. A new projection is accepted if it is an improvement compared to the current one, rejected otherwise.
+This process continues and iteratively improves the projection, until the pre-specified maximum number of trials is reached.
 
 ::: {.callout-note icon="false"}
 ## Algorithm: Jellyfish Optimizer Pseudo Code
