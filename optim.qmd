@@ -199,27 +199,27 @@ balances exploration (searching new areas) and exploitation (focusing on
 promising areas). The algorithm aims to find the optimal solution by
 adapting the behaviour of jellyfish to navigate towards the best solution over iterations [@chou_novel_2021].
 
-To solve the optimisation problem embedded in the PP guided tour, a starting projection, an index function and the maximum number of iterations are provided as input. Then, the current projection is evaluated by the index function. The projection is then moved in a direction determined by a random factor, influenced by how far along we are in the optimization process. Occasionally, we might explore completely new directions like a jellyfish might with ocean currents. A new projection is accepted if it is an improvement compared to the current one, rejected otherwise.
+To solve the optimisation problem embedded in the PP guided tour, a starting projection, an index function and the maximum number of iterations are provided as input. Then, the current projection is evaluated by the index function. The projection is then moved in a direction determined by a random factor, influenced by how far along we are in the optimization process. Occasionally, completely new directions may be taken like a jellyfish might with ocean currents. A new projection is accepted if it is an improvement compared to the current one, rejected otherwise.
 This process continues and iteratively improves the projection, until the pre-specified maximum number of trials is reached.
 
 ::: {.callout-note icon="false"}
 ## Algorithm: Jellyfish Optimizer Pseudo Code
 
-**Input**: `current_projections`, `index_function`, `tries`, `max_tries`
+**Input**: `current_projections`, `index_function`, `trial_id`, `max_trial`
 
 **Output**: `optimized_projection`
 
-**Initialize** `best_jelly` as the projection with the best index value
-from `current_projections`, and `current_index` as the array of index
+**Initialize** `current_best` as the projection with the best index value
+from `current_projections`, and `current_idx` as the array of index function
 values for each projection in `current_projections`
 
-**for** each try in 1 to max_tries **do**
+**for** each trial_id in 1 to max_tries **do**
 
-> Calculate $c_t$ based on the current try and max_tries
+> Calculate $c_t$ based on the current_idx and max_trial
 
 > **if** $c_t$ is greater than or equal to $0.5$ **then**
 >
-> > Define trend based on the best jelly and current projections
+> > Define trend based on the current_best and current_projections
 >
 > > Update each projection towards the trend using a random factor and
 > > orthonormalisation
@@ -228,28 +228,27 @@ values for each projection in `current_projections`
 >
 > > **if** a random number is greater than $1 - c_t$ **then**
 > >
-> > > Slightly adjust each projection with a small random factor (Type A
-> > > passive)
+> > > Slightly adjust each projection with a small random factor (passive)
 > >
 > > **else**
 > >
 > > > For each projection, compare with a random jelly and adjust
-> > > towards or away from it (Type B active)
+> > > towards or away from it (active)
 >
 > Update the orientation of each projection to maintain consistency
 >
 > Evaluate the new projections using the index function
 
 > **if** any new projection is worse than the current, revert to the
-> `current_projection` for that case
+> `current_projections` for that case
 >
 > > Determine the projection with the best index value as the new
-> > best_jelly
+> > current_best
 
-> **if** the try is the last one, print the final best projection and
+> **if** trial_id $\geq$ max_trial, print the last best projection 
 > **exit**
 
-**return** the set of projections with the updated best_jelly as the
+**return** the set of projections with the updated current_best as the
 optimized_projection
 :::
 
@@ -260,7 +259,7 @@ search process in optimization problems. These parameters are designed
 to guide the exploration and exploitation phases of the algorithm. While
 the specific implementation details can vary depending on the version of
 the algorithm or its application, we focus on two main parameters that
-are most relevant to our application: the number of jellyfish and drift.
+are most relevant to our application: the number of jellyfish and the maximum number of trials.
 
 @laa_using_2020 has proposed five criteria for assessing projection
 pursuit indexes (smoothness, squintability, flexibility, rotation

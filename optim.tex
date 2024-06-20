@@ -250,7 +250,7 @@ squintability are available in the \texttt{ferrn} package.
     Optimisation
 \end{keyword}
 \end{frontmatter}
-    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, enhanced, interior hidden, sharp corners, boxrule=0pt]}{\end{tcolorbox}}\fi
+    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, breakable, sharp corners]}{\end{tcolorbox}}\fi
 
 \textbf{README}:
 
@@ -431,36 +431,36 @@ starting projection, an index function and the maximum number of
 iterations are provided as input. Then, the current projection is
 evaluated by the index function. The projection is then moved in a
 direction determined by a random factor, influenced by how far along we
-are in the optimization process. Occasionally, we might explore
-completely new directions like a jellyfish might with ocean currents. A
-new projection is accepted if it is an improvement compared to the
-current one, rejected otherwise. This process continues and iteratively
-improves the projection, until the pre-specified maximum number of
-trials is reached.
+are in the optimization process. Occasionally, completely new directions
+may be taken like a jellyfish might with ocean currents. A new
+projection is accepted if it is an improvement compared to the current
+one, rejected otherwise. This process continues and iteratively improves
+the projection, until the pre-specified maximum number of trials is
+reached.
 
-\begin{tcolorbox}[enhanced jigsaw, toptitle=1mm, colframe=quarto-callout-note-color-frame, titlerule=0mm, opacitybacktitle=0.6, colback=white, left=2mm, coltitle=black, bottomrule=.15mm, colbacktitle=quarto-callout-note-color!10!white, breakable, leftrule=.75mm, bottomtitle=1mm, arc=.35mm, toprule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, rightrule=.15mm, opacityback=0]
+\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, colbacktitle=quarto-callout-note-color!10!white, breakable, left=2mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm, coltitle=black, toptitle=1mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, leftrule=.75mm, opacityback=0, colback=white, toprule=.15mm, bottomrule=.15mm, rightrule=.15mm, titlerule=0mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
-\texttt{tries}, \texttt{max\_tries}
+\texttt{trial\_id}, \texttt{max\_trial}
 
 \textbf{Output}: \texttt{optimized\_projection}
 
-\textbf{Initialize} \texttt{best\_jelly} as the projection with the best
-index value from \texttt{current\_projections}, and
-\texttt{current\_index} as the array of index values for each projection
-in \texttt{current\_projections}
+\textbf{Initialize} \texttt{current\_best} as the projection with the
+best index value from \texttt{current\_projections}, and
+\texttt{current\_idx} as the array of index function values for each
+projection in \texttt{current\_projections}
 
-\textbf{for} each try in 1 to max\_tries \textbf{do}
+\textbf{for} each trial\_id in 1 to max\_tries \textbf{do}
 
 \begin{quote}
-Calculate \(c_t\) based on the current try and max\_tries
+Calculate \(c_t\) based on the current\_idx and max\_trial
 \end{quote}
 
 \begin{quote}
 \textbf{if} \(c_t\) is greater than or equal to \(0.5\) \textbf{then}
 
 \begin{quote}
-Define trend based on the best jelly and current projections
+Define trend based on the current\_best and current\_projections
 \end{quote}
 
 \begin{quote}
@@ -474,15 +474,14 @@ orthonormalisation
 \textbf{if} a random number is greater than \(1 - c_t\) \textbf{then}
 
 \begin{quote}
-Slightly adjust each projection with a small random factor (Type A
-passive)
+Slightly adjust each projection with a small random factor (passive)
 \end{quote}
 
 \textbf{else}
 
 \begin{quote}
 For each projection, compare with a random jelly and adjust towards or
-away from it (Type B active)
+away from it (active)
 \end{quote}
 \end{quote}
 
@@ -493,20 +492,20 @@ Evaluate the new projections using the index function
 
 \begin{quote}
 \textbf{if} any new projection is worse than the current, revert to the
-\texttt{current\_projection} for that case
+\texttt{current\_projections} for that case
 
 \begin{quote}
 Determine the projection with the best index value as the new
-best\_jelly
+current\_best
 \end{quote}
 \end{quote}
 
 \begin{quote}
-\textbf{if} the try is the last one, print the final best projection and
-\textbf{exit}
+\textbf{if} trial\_id \(\geq\) max\_trial, print the last best
+projection \textbf{exit}
 \end{quote}
 
-\textbf{return} the set of projections with the updated best\_jelly as
+\textbf{return} the set of projections with the updated current\_best as
 the optimized\_projection
 
 \end{tcolorbox}
@@ -516,7 +515,8 @@ search process in optimization problems. These parameters are designed
 to guide the exploration and exploitation phases of the algorithm. While
 the specific implementation details can vary depending on the version of
 the algorithm or its application, we focus on two main parameters that
-are most relevant to our application: the number of jellyfish and drift.
+are most relevant to our application: the number of jellyfish and the
+maximum number of trials.
 
 \citet{laa_using_2020} has proposed five criteria for assessing
 projection pursuit indexes (smoothness, squintability, flexibility,
