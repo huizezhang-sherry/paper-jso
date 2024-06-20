@@ -250,7 +250,7 @@ squintability are available in the \texttt{ferrn} package.
     Optimisation
 \end{keyword}
 \end{frontmatter}
-    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, sharp corners, frame hidden, breakable, boxrule=0pt]}{\end{tcolorbox}}\fi
+    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[enhanced, interior hidden, frame hidden, boxrule=0pt, borderline west={3pt}{0pt}{shadecolor}, breakable, sharp corners]}{\end{tcolorbox}}\fi
 
 \textbf{README}:
 
@@ -309,17 +309,22 @@ high-dimensional data. It is implemented in the R \citep{R} package
 problems of the optimisation routine implemented. While improving the
 quality of the optimisation solutions in the tour is essential, it is
 also important to be able to watch the projected data as the
-optimisation progresses. Therefore, it is of interest to integrate the
-guided tour with a global optimisation algorithm and examine the
-characteristics and advantages of such implementation.
+optimisation progresses. As such, it is pertinent to integrate the
+guided tour with a global optimisation algorithm that is efficient in
+finding the global optimal and enables viewing of the projected data
+during the exploration process.
 
 The artificial Jellyfish Search Optimiser (JSO) \citep{chou_novel_2021}
-is a swarm-based metaheuristic optimisation algorithm inspired by the
-search behaviour of jellyfish in the ocean. It is one of the latest
-swarm intelligence algorithms \citep{rajwar_exhaustive_2023}, which was
-shown to have stronger search ability and faster convergence with fewer
-parameters compared to classic optimisation methods
-\citep{chou_novel_2021}-\citep{chou_recent_2022}.
+is a swarm-based metaheuristic designed to solve global optimisation
+problems. Inspired by the search behaviour of jellyfish in the ocean,
+JSO is one of the latest swarm intelligence algorithms
+\citep{rajwar_exhaustive_2023}, which was shown to have stronger search
+ability and faster convergence with fewer parameters compared to classic
+optimisation methods \citep{chou_novel_2021}-\citep{chou_recent_2022}.
+These practical properties makes JSO a strong candidate in integration
+with the PP guided tour. As such, it is of interest to explore the
+potential of JSO in enhancing the PP guided tour and examine the
+characteristics and advantages of such implementation.
 
 The primary goal of this study is to investigate the performance of JSO
 in the context of the PP guided tour. A series of simulation experiments
@@ -434,7 +439,7 @@ If they're better, we adopt them; if not, we stick with our current
 projection. This process continues and iteratively improves the
 projection, until we reach the maximum number of trials.
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, leftrule=.75mm, left=2mm, colbacktitle=quarto-callout-note-color!10!white, colback=white, arc=.35mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, toptitle=1mm, opacityback=0, bottomtitle=1mm, breakable, rightrule=.15mm, bottomrule=.15mm, titlerule=0mm, colframe=quarto-callout-note-color-frame, toprule=.15mm, coltitle=black]
+\begin{tcolorbox}[enhanced jigsaw, rightrule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, toptitle=1mm, breakable, colbacktitle=quarto-callout-note-color!10!white, leftrule=.75mm, left=2mm, titlerule=0mm, colframe=quarto-callout-note-color-frame, coltitle=black, opacitybacktitle=0.6, colback=white, toprule=.15mm, bottomtitle=1mm, arc=.35mm, bottomrule=.15mm, opacityback=0]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{tries}, \texttt{max\_tries}

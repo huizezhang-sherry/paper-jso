@@ -130,26 +130,18 @@ data. It is implemented in the R [@R] package `tourr`[@tourr].
 @RJ-2021-105 highlighted potential problems of the optimisation routine
 implemented. While improving the quality of the optimisation solutions
 in the tour is essential, it is also important to be able to watch the
-projected data as the optimisation progresses. Therefore, it is of
-interest to integrate the guided tour with a global optimisation
-algorithm and examine the characteristics and advantages of such
-implementation.
+projected data as the optimisation progresses. As such, it is pertinent to integrate the guided tour with a global optimisation
+algorithm that is efficient in finding the global optimal and enables viewing of the projected data during the exploration process.
 
-The artificial Jellyfish Search Optimiser (JSO) [@chou_novel_2021] is a
-swarm-based metaheuristic optimisation algorithm inspired by the search
-behaviour of jellyfish in the ocean. It is one of the latest swarm
-intelligence algorithms [@rajwar_exhaustive_2023], which was shown to
-have stronger search ability and faster convergence with fewer
-parameters compared to classic optimisation methods
-[@chou_novel_2021]-[@chou_recent_2022].
+The artificial Jellyfish Search Optimiser (JSO) [@chou_novel_2021] is a swarm-based metaheuristic designed to solve global optimisation problems.
+Inspired by the search behaviour of jellyfish in the ocean, JSO is one of the latest swarm intelligence algorithms [@rajwar_exhaustive_2023], which was shown to have stronger search ability and faster convergence with fewer parameters compared to classic optimisation methods [@chou_novel_2021]-[@chou_recent_2022]. These practical properties makes JSO a strong candidate in integration with the PP guided tour. As such, it is of interest to explore the potential of JSO in enhancing the PP guided tour and examine the characteristics and advantages of such implementation.
 
 The primary goal of this study is to investigate the performance of JSO in the context of the PP guided tour. A series of simulation experiments using well-recognised data sets and PPIs are conducted to yield insights regarding the behaviour of JSO under different settings and the sensitivity of hyper-parameter in the optimisation. Second, to observe the performance of JSO with different types of PPI, a collection of metrics is introduced to capture specific properties of the index including squintability and smoothness as introduced in @laa_using_2020. To the best of the authors’ knowledge, this is the first attempt to quantitatively measure squintability and smoothness. Finally, the relationship between the JSO performance, hyper-parameters tuning and various properties of PPI is analysed to provide helpful guidance for practitioners that are using the guided tour for high dimensional visualisation.
 
 The rest of this paper is structured as follows. @sec-background
 introduces the background of the PP guided tour and reviews existing methods in the literature. @sec-theory describes the details of JSO
 and introduces metrics that measure different properties of a PPI.
-@sec-vis visualises the behaviour of the JSO in terms of describes a simulation study on the performance of the JSO using well-known data sets and index functions.
-@sec-app displays two sets of simulation experiments comparing the JSO with the search-better optimiser and studies the impact of different PPI properties on the optimisation performance. @sec-conclusion summarises the work and provides suggestions for future directions.
+@sec-vis visualises the behaviour of the JSO in terms of describes a simulation study on the performance of the JSO using well-known data sets and index functions. @sec-app displays two sets of simulation experiments comparing the JSO with the search-better optimiser and studies the impact of different PPI properties on the optimisation performance. @sec-conclusion summarises the work and provides suggestions for future directions.
 
 # Projection pursuit, index functions and optimisation \[Di and Sherry\] {#sec-background}
 
