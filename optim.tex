@@ -256,10 +256,11 @@ squintability are available in the \texttt{ferrn} package.
   \begin{itemize}
   \tightlist
   \item
-    Use jellyfish search optimiser, or JS optimiser, not jellyfish
-    optimiser (my bad for leading the way)
+    Use jellyfish search optimiser, or JSO
   \item
     ``hyper-parameter'' rather than ``hyperparameter''
+  \item
+    PP index rather than PPI
   \end{itemize}
 \end{itemize}
 
@@ -268,13 +269,14 @@ Jessica{]}}\label{introduction-nicolas-and-jessica}
 
 Projection Pursuit (PP) is a high-dimensional data visualisation
 approach that involves computing informative linear projections of data
-by optimising a variety of objective functions, namely \emph{projection
-pursuit index (PPI)} (\citet{hall1989polynomial},
-\citet{cook1993projection}, \citet{lee2010projection},
-\citet{Loperfido2018}, \citet{Loperfido2020}). Given high-dimensional
-data \(X \in \mathbf{R}^{n }\times p\) and PPI \(f(\cdot)\), PP finds
-the orthonormal projection matrix \(A \in \mathbf{R}^{p \times d}\) by
-solving the following optimisation problem:
+by optimising a variety of objective functions, namely \emph{PP index}
+(\citet{hall1989polynomial}, \citet{cook1993projection},
+\citet{lee2010projection}, \citet{Loperfido2018},
+\citet{Loperfido2020}). Given high-dimensional data
+\(X \in \mathbf{R}^{n }\times p\) and the index function \(f(\cdot)\),
+PP finds the orthonormal projection matrix
+\(A \in \mathbf{R}^{p \times d}\) by solving the following optimisation
+problem:
 
 \[
 \underset{A}{\max } \quad f(XA) \quad \text{subject to} \quad A'A = I
@@ -314,30 +316,30 @@ potential of JSO in enhancing the PP guided tour and examine the
 characteristics and advantages of such implementation.
 
 The primary goal of this study is to investigate the performance of JSO
-in the context of the PP guided tour. A series of simulation experiments
-using well-recognised data sets and PPIs are conducted to yield insights
-regarding the behaviour of JSO under different settings and the
-sensitivity of hyper-parameter in the optimisation. Second, to observe
-the performance of JSO with different types of PPI, a collection of
-metrics is introduced to capture specific properties of the index
-including squintability and smoothness as introduced in
-\citet{laa_using_2020}. To the best of the authors' knowledge, this is
-the first attempt to quantitatively measure squintability and
-smoothness. Finally, the relationship between the JSO performance,
-hyper-parameters tuning and various properties of PPI is analysed to
-provide helpful guidance for practitioners that are using the guided
-tour for high dimensional visualisation.
+in the context of the Projection pursuit. A series of simulation
+experiments using well-recognised data sets and PP indexes are conducted
+to yield insights regarding the behaviour of JSO under different
+settings and the sensitivity of hyper-parameter in the optimisation.
+Second, to observe the performance of JSO with different types of PP
+indexes, a collection of metrics is introduced to capture specific
+properties of the index including squintability and smoothness as
+introduced in \citet{laa_using_2020}. To the best of the authors'
+knowledge, this is the first attempt to quantitatively measure
+squintability and smoothness. Finally, the relationship between the JSO
+performance, hyper-parameters tuning and various properties of PP
+indexes is analysed to provide helpful guidance for practitioners that
+are using the guided tour for high dimensional visualisation.
 
 The rest of this paper is structured as follows.
 Section~\ref{sec-background} introduces the background of the PP guided
 tour and reviews existing methods in the literature.
 Section~\ref{sec-theory} describes the details of JSO and introduces
-metrics that measure different properties of a PPI.
+metrics that measure different properties of PP indexes.
 Section~\ref{sec-vis} visualises the behaviour of the JSO in terms of
 describes a simulation study on the performance of the JSO using
 well-known data sets and index functions. Section~\ref{sec-app} displays
 two sets of simulation experiments comparing the JSO with the
-search-better optimiser and studies the impact of different PPI
+search-better optimiser and studies the impact of different PP index
 properties on the optimisation performance. Section~\ref{sec-conclusion}
 summarises the work and provides suggestions for future directions.
 
@@ -423,7 +425,7 @@ one, rejected otherwise. This process continues and iteratively improves
 the projection, until the pre-specified maximum number of trials is
 reached.
 
-\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, toprule=.15mm, bottomrule=.15mm, colframe=quarto-callout-note-color-frame, toptitle=1mm, colbacktitle=quarto-callout-note-color!10!white, titlerule=0mm, rightrule=.15mm, opacityback=0, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm, leftrule=.75mm, left=2mm, breakable, opacitybacktitle=0.6, coltitle=black, colback=white]
+\begin{tcolorbox}[enhanced jigsaw, rightrule=.15mm, coltitle=black, toptitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, left=2mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, arc=.35mm, opacityback=0, breakable, colbacktitle=quarto-callout-note-color!10!white, bottomrule=.15mm, bottomtitle=1mm, titlerule=0mm, toprule=.15mm, leftrule=.75mm, colback=white]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -631,9 +633,9 @@ The full data contains 50 simulations, recorded by the variable
 iteration ID, jellyfish ID, and time taken to find the optimum,
 respectively. The basis column records every visited basis before
 comparing with the current (last) basis. If a visited basis has a
-smaller index value than the current (last) one, the JS optimiser keeps
-the current basis for the next iteration in the search but still records
-the visited inferior basis. This data can be used to derive numerical
+smaller index value than the current (last) one, JSO will keep the
+current basis for the next iteration in the search but still records the
+visited inferior basis. This data can be used to derive numerical
 summaries and plots:
 
 \begin{itemize}
@@ -707,7 +709,7 @@ variables forms a sigmoid curve.}
 
 \section{Application {[}Di and Sherry{]}}\label{sec-app}
 
-The JS optimiser provides a new swarm-based search strategy to optimise
+The JSO provides a new swarm-based search strategy to optimise
 projection pursuit problems. Two examples are provided in this section
 to demonstrate its performance. The first example compares its
 performance with the search-better optimiser and explores how it behaves
@@ -716,11 +718,11 @@ studies the effect of optimisation properties defined in
 Section~\ref{sec-theory}, along with jellyfish hyper-parameters, on the
 outcome of the optimisation.
 
-\subsection{Performance of the JS optimiser in pipe-finding
+\subsection{Performance of JSO in pipe-finding
 problems}\label{sec-app-1}
 
-The performance of the JS optimiser is investigated in two folds: 1)
-compare it with a commonly used optimiser: the search-better optimiser
+The performance of JSO is investigated in two folds: 1) compare it with
+a commonly used optimiser: the search-better optimiser
 \citep{RJ-2021-105, laa_using_2020}, and 2) examine its success rate
 under different hyper-parameters (number of jellyfishes and maximum
 number of tries). The projection pursuit problem used is finding the
@@ -738,14 +740,14 @@ pipe shape using the holes index, investigated by
 \caption{\label{fig-proj}Projections found by the jellyfish and search
 better optimisers at each 10th quantile across 50 simulations. The
 projection pursuit problem is to find the pipe shape using the holes
-index in the 6, 8, 10, and 12-dimensional spaces. The JS optimiser uses
-100 jellyfishes and a maximum number of tries of 100. The search better
+index in the 6, 8, 10, and 12-dimensional spaces. The JSO uses 100
+jellyfishes and a maximum number of tries of 100. The search better
 optimiser uses a maximum of 1000 tries in each step of random sampling
-step before the algorithm terminates. In the 6-D data space, the JS
-optimiser always finds a clear pipe shape while the search better
-optimiser also finds the pipe shape but with a wide rim. At higher data
-dimensions, the JS optimiser finds a higher index value and a clearer
-pipe shape across all the quantiles than the search better optimiser.}
+step before the algorithm terminates. In the 6-D data space, JSO always
+finds a clear pipe shape while the search better optimiser also finds
+the pipe shape but with a wide rim. At higher data dimensions, JSO finds
+a higher index value and a clearer pipe shape across all the quantiles
+than the search better optimiser.}
 
 \end{figure}%
 
@@ -766,26 +768,25 @@ proportion of simulations reaching the optimal index value increases.}
 
 \end{figure}%
 
-Fifty simulations are conducted with both JS and the search-better
-optimiser, in four dimensions (\(d = 6, 8, 10, 12\)). The JS optimiser
-uses 100 jellyfishes and 100 maximum number of tries, while the
-search-better optimiser allows a maximum of 1000 samples at each
-iteration before the algorithm terminates. Figure~\ref{fig-proj}
-presents the final projections found by the two optimisers, broken down
-by 10th quantile, faceted by the data dimension. In the 6-dimensional
-data scenario, the JS optimiser consistently identifies a clear pipe
-shape. The search-better optimiser also finds the pipe shape but with a
-wide rim, suggesting a further polish search may be required. With
-increasing dimensions, the JS optimiser may not always identify the pipe
-shape due to random sampling, but it still presents a pipe shape in over
-50\% of cases. When compared to the search-better optimiser, the JS
-optimiser reaches higher index values and clearer pipe shapes across all
-quantiles.
+Fifty simulations are conducted with both JSO and the search-better , in
+four dimensions (\(d = 6, 8, 10, 12\)). The JSO uses 100 jellyfishes and
+100 maximum number of tries, while the search-better optimiser allows a
+maximum of 1000 samples at each iteration before the algorithm
+terminates. Figure~\ref{fig-proj} presents the final projections found
+by the two optimisers, broken down by 10th quantile, faceted by the data
+dimension. In the 6-dimensional data scenario, JSO consistently
+identifies a clear pipe shape. The search-better optimiser also finds
+the pipe shape but with a wide rim, suggesting a further polish search
+may be required. With increasing dimensions, JSO may not always identify
+the pipe shape due to random sampling, but it still presents a pipe
+shape in over 50\% of cases. When compared to the search-better
+optimiser, JSO reaches higher index values and clearer pipe shapes
+across all quantiles.
 
 In the second experiment, fifty simulations are conducted at each
 hyper-parameter combination to analyse its effects on the success rate
-of the JS optimiser. The hyper-parameters tested include: 1) 20, 50, and
-100 jellyfishes, and 2) 50 and 100 maximum number of tries. In each
+of JSO . The hyper-parameters tested include: 1) 20, 50, and 100
+jellyfishes, and 2) 50 and 100 maximum number of tries. In each
 simulation, the success rate is calculated as defined in
 Section~\ref{sec-vis}. Figure~\ref{fig-proportion} presents the
 proportion of success for each hyper-parameter combinations. As the
@@ -797,17 +798,17 @@ in high success rate, while for higher-dimensional problems (8, 10, and
 of tries is necessary for at least half of the jellyfishes to find the
 optimal projection.
 
-\subsection{Factors affecting the JS optimiser success rate:
-optimisation properties and jellyfish hyper-parameters}\label{sec-app-2}
+\subsection{Factors affecting JSO success rate: optimisation properties
+and jellyfish hyper-parameters}\label{sec-app-2}
 
 The optimisation properties, including smoothness, squintability, and
 speed, offer numerical metrics to characterise the complexity of a
 projection pursuit optimisation problem. This example investigates how
 these metrics, along with the jellyfish search hyper-parameters (the
 number of jellyfishes and the maximum number of tries), affect the
-success of the JS optimiser. Simulations are conducted to obtain the
-success rate across various projection pursuit problems, characterised
-by shape-to-find, data dimension, and index function used, as well as
+success of JSO. Simulations are conducted to obtain the success rate
+across various projection pursuit problems, characterised by
+shape-to-find, data dimension, and index function used, as well as
 different hyper-parameter combinations. Smoothness and squintability are
 calculated for each projection pursuit problem as outlined in
 Section~\ref{sec-theory}. A generalised linear model is used to
@@ -819,8 +820,8 @@ investigated in 6D and 8D spaces with six indices considered:
 \texttt{dcor2d\_2}, \texttt{loess2d}, \texttt{MIC}, \texttt{TIC},
 \texttt{spline}, and \texttt{stringy}. Combining with two jellyfish
 hyper-parameters, a total of 52 cases is produced, comprising of 24
-pipe-finding cases and 28 sine-wave finding cases. For each case, the JS
-optimiser is run fifty times and the success rate is calculated as in
+pipe-finding cases and 28 sine-wave finding cases. For each case, JSO is
+run fifty times and the success rate is calculated as in
 Section~\ref{sec-app-1}.
 
 Smoothness and squintability are computed for each case, following the
@@ -877,13 +878,13 @@ seconds, and 3) encoding the success rate for the stringy case as 0,
 since none of the 50 simulations identified the sine-wave shape. A
 generalised linear model with a binomial family and a logit link
 function is used to fit the data and Table~\ref{tbl-mod-output} presents
-the model outputs. The model suggests that the success rate of the JS
-optimiser is positively associated with the two jellyfish
-hyper-parameters, as well as with smoothness and squintability. However,
-being flagged with long runtime and an increase of data dimension will
-reduce the success rate. The variable \texttt{squintability} and
-\texttt{dimension} are significant, suggesting their importance relative
-to jellyfish hyper-parameters in the optimisation success.
+the model outputs. The model suggests that the success rate of JSO is
+positively associated with the two jellyfish hyper-parameters, as well
+as with smoothness and squintability. However, being flagged with long
+runtime and an increase of data dimension will reduce the success rate.
+The variable \texttt{squintability} and \texttt{dimension} are
+significant, suggesting their importance relative to jellyfish
+hyper-parameters in the optimisation success.
 
 \begin{table}
 
@@ -901,20 +902,20 @@ pipe-finding and sine-wave finding problems. The column ``smooth'' and
 \toprule
   & shape & index & d & variance & range & smooth & nugget & $\theta_1$ & $\theta_2$ & $\theta_3$ & $\theta_4$ & squint\\
 \midrule
-1 & pipe & holes & 6 & 0.002 & 0.371 & 2.355 & 0.221 & 1.015 & 0.860 & 3.368 & 0.018 & 0.763\\
-2 & pipe & holes & 8 & 0.000 & 0.178 & 2.189 & 0.820 & 1.014 & 0.869 & 3.264 & 0.029 & 0.740\\
-3 & pipe & holes & 10 & 0.000 & 0.107 & 2.192 & 3.027 & 1.016 & 0.885 & 3.151 & 0.022 & 0.737\\
-4 & pipe & holes & 12 & 0.000 & 0.148 & 2.295 & 1.581 & 1.011 & 0.878 & 3.345 & 0.004 & 0.779\\
-5 & sine & MIC & 6 & 0.016 & 0.092 & 2.457 & 0.083 & 0.894 & 0.571 & 1.623 & -0.024 & 0.314\\
+1 & pipe & holes & 6 & 0.002 & 0.371 & 2.355 & 0.221 & 1.015 & 0.860 & 3.368 & 0.018 & 3.053\\
+2 & pipe & holes & 8 & 0.000 & 0.178 & 2.189 & 0.820 & 1.014 & 0.869 & 3.264 & 0.029 & 2.960\\
+3 & pipe & holes & 10 & 0.000 & 0.107 & 2.192 & 3.027 & 1.016 & 0.885 & 3.151 & 0.022 & 2.948\\
+4 & pipe & holes & 12 & 0.000 & 0.148 & 2.295 & 1.581 & 1.011 & 0.878 & 3.345 & 0.004 & 3.117\\
+5 & sine & MIC & 6 & 0.016 & 0.092 & 2.457 & 0.083 & 0.894 & 0.571 & 1.623 & -0.024 & 1.257\\
 \addlinespace
-6 & sine & MIC & 8 & 0.016 & 0.081 & 2.636 & 0.084 & 0.932 & 0.328 & 1.314 & -0.030 & 0.193\\
-7 & sine & TIC & 6 & 0.124 & 0.110 & 2.444 & 0.086 & 0.951 & 0.536 & 1.719 & -0.027 & 0.330\\
-8 & sine & TIC & 8 & 0.125 & 0.099 & 2.475 & 0.085 & 0.949 & 0.564 & 1.723 & -0.028 & 0.342\\
-9 & sine & dcor2d & 6 & 0.034 & 0.167 & 2.663 & 0.114 & 0.954 & 1.039 & 2.742 & -0.019 & 0.737\\
-10 & sine & loess2d & 6 & 0.079 & 0.336 & 1.988 & 0.309 & 1.016 & 1.039 & 2.648 & 0.080 & 0.689\\
+6 & sine & MIC & 8 & 0.016 & 0.081 & 2.636 & 0.084 & 0.932 & 0.328 & 1.314 & -0.030 & 0.772\\
+7 & sine & TIC & 6 & 0.124 & 0.110 & 2.444 & 0.086 & 0.951 & 0.536 & 1.719 & -0.027 & 1.322\\
+8 & sine & TIC & 8 & 0.125 & 0.099 & 2.475 & 0.085 & 0.949 & 0.564 & 1.723 & -0.028 & 1.369\\
+9 & sine & dcor2d & 6 & 0.034 & 0.167 & 2.663 & 0.114 & 0.954 & 1.039 & 2.742 & -0.019 & 2.947\\
+10 & sine & loess2d & 6 & 0.079 & 0.336 & 1.988 & 0.309 & 1.016 & 1.039 & 2.648 & 0.080 & 2.756\\
 \addlinespace
-11 & sine & splines2d & 6 & 0.042 & 0.242 & 2.537 & 0.102 & 1.014 & 1.051 & 2.730 & -0.009 & 0.780\\
-12 & sine & stringy & 6 & 0.000 & 0.007 & 1.536 & 38.166 & 1.045 & 0.011 & 254.734 & 0.053 & 0.739\\
+11 & sine & splines2d & 6 & 0.042 & 0.242 & 2.537 & 0.102 & 1.014 & 1.051 & 2.730 & -0.009 & 3.118\\
+12 & sine & stringy & 6 & 0.000 & 0.007 & 1.536 & 38.166 & 1.045 & 0.011 & 254.734 & 0.053 & 2.957\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -935,14 +936,14 @@ for modelling.}
 \toprule
 Index & D & Smoothness & Squintability & Num. of jellyfish & Max. Num. of tries & Prop. of success & Time\\
 \midrule
-MIC & 6 & 2.457 & 0.314 & 20 & 50 & 0.12 & 2.479 secs\\
-MIC & 6 & 2.457 & 0.314 & 20 & 100 & 0.24 & 8.950 secs\\
-MIC & 6 & 2.457 & 0.314 & 50 & 50 & 0.52 & 5.651 secs\\
-MIC & 6 & 2.457 & 0.314 & 50 & 100 & 0.64 & 13.223 secs\\
-MIC & 6 & 2.457 & 0.314 & 100 & 50 & 0.76 & 19.453 secs\\
+MIC & 6 & 2.457 & 1.257 & 20 & 50 & 0.12 & 2.479 secs\\
+MIC & 6 & 2.457 & 1.257 & 20 & 100 & 0.24 & 8.950 secs\\
+MIC & 6 & 2.457 & 1.257 & 50 & 50 & 0.52 & 5.651 secs\\
+MIC & 6 & 2.457 & 1.257 & 50 & 100 & 0.64 & 13.223 secs\\
+MIC & 6 & 2.457 & 1.257 & 100 & 50 & 0.76 & 19.453 secs\\
 \addlinespace
-MIC & 8 & 2.636 & 0.193 & 20 & 50 & 0.08 & 2.566 secs\\
-MIC & 8 & 2.636 & 0.193 & 20 & 100 & 0.08 & 4.960 secs\\
+MIC & 8 & 2.636 & 0.772 & 20 & 50 & 0.08 & 2.566 secs\\
+MIC & 8 & 2.636 & 0.772 & 20 & 100 & 0.08 & 4.960 secs\\
 \bottomrule
 
 \end{longtable}
@@ -958,11 +959,11 @@ jellyfish success on optimisation properties and jellyfish
 hyper-parameters from the generalised linear model with a binomial
 family and a logit link function. The variable smoothness,
 squintability, number of jellyfish and maximum number of tries are
-positively associated with the JS optimiser success rate while data
-dimension and being flagged as long runtime are negatively associated
-with the success rate. The variable squintability and dimension are
-significant, suggesting their importance relative to jellyfish
-hyper-parameters in the optimisation success.}
+positively associated with JSO success rate while data dimension and
+being flagged as long runtime are negatively associated with the success
+rate. The variable squintability and dimension are significant,
+suggesting their importance relative to jellyfish hyper-parameters in
+the optimisation success.}
 
 \tabularnewline
 
@@ -971,7 +972,7 @@ term & estimate & std.error & statistic & p.value\\
 \midrule
 Intercept & -4.523 & 5.332 & -0.848 & 0.396\\
 Smoothness & 1.195 & 1.915 & 0.624 & 0.533\\
-Squintability & 8.241 & 2.737 & 3.011 & 0.003\\
+Squintability & 2.060 & 0.684 & 3.011 & 0.003\\
 dimension (d) & -0.628 & 0.255 & -2.462 & 0.014\\
 long time & -0.874 & 1.286 & -0.680 & 0.497\\
 \addlinespace
