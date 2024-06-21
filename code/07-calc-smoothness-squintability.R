@@ -117,4 +117,13 @@ sq_basis_dist_idx <- bind_rows(sq_holes_basis_df, sq_sine_basis_df) |>
                                           "loess2d", "splines2d", "stringy"))) |>
   group_by(n, index_name, dist) |>
   summarise(index = mean(index, na.rm = TRUE), .groups = "drop")
+
+
+sq_basis_dist_idx <- sq_basis_dist_idx |>
+  filter(index_name %in% c("holes", "TIC", "stringy")) |>
+  group_by(n, index_name) |>
+  mutate(index = (index - min(index)) / (max(index) - min(index))) |>
+  ungroup() |>
+  bind_rows(sq_basis_dist_idx |>
+              filter(!index_name %in% c("holes", "TIC", "stringy")))
 save(sq_basis_dist_idx, file = here::here("data", "sq_basis_dist_idx.rda"))

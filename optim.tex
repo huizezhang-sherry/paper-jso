@@ -110,10 +110,6 @@
 \definecolor{quarto-callout-caution-color-frame}{HTML}{fd7e14}
 \makeatother
 \makeatletter
-\makeatother
-\makeatletter
-\makeatother
-\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
 \ifdefined\contentsname
@@ -149,18 +145,10 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 \makeatletter
+\makeatother
+\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
-\makeatother
-\makeatletter
-\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
-\makeatother
-\makeatletter
-\@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
-\makeatother
-\makeatletter
-\makeatother
-\makeatletter
 \makeatother
 \journal{Journal of Multivariate Analysis}
 \ifLuaTeX
@@ -168,7 +156,8 @@
 \fi
 \usepackage[]{natbib}
 \bibliographystyle{elsarticle-num-names}
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\usepackage{bookmark}
+
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
@@ -250,8 +239,7 @@ squintability are available in the \texttt{ferrn} package.
     Optimisation
 \end{keyword}
 \end{frontmatter}
-    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, boxrule=0pt, frame hidden, borderline west={3pt}{0pt}{shadecolor}, enhanced, breakable, sharp corners]}{\end{tcolorbox}}\fi
-
+    
 \textbf{README}:
 
 \begin{itemize}
@@ -275,9 +263,8 @@ squintability are available in the \texttt{ferrn} package.
   \end{itemize}
 \end{itemize}
 
-\hypertarget{introduction-nicolas-and-jessica}{%
 \section{Introduction {[}Nicolas and
-Jessica{]}}\label{introduction-nicolas-and-jessica}}
+Jessica{]}}\label{introduction-nicolas-and-jessica}
 
 Projection Pursuit (PP) is a high-dimensional data visualisation
 approach that involves computing informative linear projections of data
@@ -354,9 +341,8 @@ search-better optimiser and studies the impact of different PPI
 properties on the optimisation performance. Section~\ref{sec-conclusion}
 summarises the work and provides suggestions for future directions.
 
-\hypertarget{sec-background}{%
 \section{Projection pursuit, index functions and optimisation {[}Di and
-Sherry{]}}\label{sec-background}}
+Sherry{]}}\label{sec-background}
 
 A tour on high-dimensional data is constructed by geodesically
 interpolating between pairs of planes. Any plane is described by an
@@ -413,9 +399,8 @@ squint angle, that can only be seen from very close by. One last aspect
 that is useful is for an optimiser to return local maxima in addition to
 global because data can contain many different and interesting features.
 
-\hypertarget{sec-theory}{%
 \section{The jellyfish optimiser and properties of PP indexes {[}Nicolas
-and Jessica{]}}\label{sec-theory}}
+and Jessica{]}}\label{sec-theory}
 
 JSO mimics the natural movements of jellyfish, which include passive and
 active motions driven by ocean currents and their swimming patterns,
@@ -438,7 +423,7 @@ one, rejected otherwise. This process continues and iteratively improves
 the projection, until the pre-specified maximum number of trials is
 reached.
 
-\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, colbacktitle=quarto-callout-note-color!10!white, breakable, left=2mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm, coltitle=black, toptitle=1mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, leftrule=.75mm, opacityback=0, colback=white, toprule=.15mm, bottomrule=.15mm, rightrule=.15mm, titlerule=0mm]
+\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, toprule=.15mm, bottomrule=.15mm, colframe=quarto-callout-note-color-frame, toptitle=1mm, colbacktitle=quarto-callout-note-color!10!white, titlerule=0mm, rightrule=.15mm, opacityback=0, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm, leftrule=.75mm, left=2mm, breakable, opacitybacktitle=0.6, coltitle=black, colback=white]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -525,8 +510,7 @@ the execution of the optimisation, here we consider the three relevant
 properties (smoothness, squintability, and speed), and propose three
 metrics to evaluate these three properties.
 
-\hypertarget{sec-smoothness}{%
-\subsection{Smoothness}\label{sec-smoothness}}
+\subsection{Smoothness}\label{sec-smoothness}
 
 If we evaluate the index function at some random points (like the random
 initialization of the jellyfish optimizer), then we can interpret these
@@ -572,8 +556,7 @@ project, we make use of the GpGp package.
 The fitted value \(\nu>0\) can be interpreted as follows: the higher
 \(\nu\), the smoother the index function.
 
-\hypertarget{sec-squintability}{%
-\subsection{Squintability}\label{sec-squintability}}
+\subsection{Squintability}\label{sec-squintability}
 
 From the literature, it is commonly understood that a large squint angle
 implies that the objective function value is close to optimal even when
@@ -605,8 +588,7 @@ TODO: add equation reference to main text line 705
 To the best of our knowledge, this is the first attempt to measure the
 notion of squintability.
 
-\hypertarget{speed}{%
-\subsection{Speed}\label{speed}}
+\subsection{Speed}\label{speed}
 
 The speed of optimizing an index function can be measured empirically by
 recording the duration of the optimisation. Alternatively, one can also
@@ -614,8 +596,7 @@ gauge the speed in terms of computational complexity of evaluating the
 index function (for instance, in big O notation, with respect to the
 sample size) of computing the index function.
 
-\hypertarget{sec-vis}{%
-\section{Visualisation of jellyfish optimiser}\label{sec-vis}}
+\section{Visualisation of jellyfish optimiser}\label{sec-vis}
 
 The data structure proposed in \citet{RJ-2021-105} is implemented for JS
 optimisers and additional information such as index function used, data
@@ -688,7 +669,9 @@ summaries and plots:
 
 \begin{figure}
 
-{\centering \includegraphics{optim_files/figure-pdf/fig-projection-1.pdf}
+\centering{
+
+\includegraphics{optim_files/figure-pdf/fig-projection-1.pdf}
 
 }
 
@@ -699,11 +682,13 @@ index. Most simulations have detected a clear sine-wave pattern, while
 the last six show a straight line with clustering at the ends.. In this
 simulation, the success rate is 0.88 (44/50).}
 
-\end{figure}
+\end{figure}%
 
 \begin{figure}
 
-{\centering \includegraphics{optim_files/figure-pdf/fig-index-value-proj-dist-1.pdf}
+\centering{
+
+\includegraphics{optim_files/figure-pdf/fig-index-value-proj-dist-1.pdf}
 
 }
 
@@ -718,10 +703,9 @@ Projection distances are binned with a bin width of 0.1, and index
 values are averaged over each bin. The relationship between the two
 variables forms a sigmoid curve.}
 
-\end{figure}
+\end{figure}%
 
-\hypertarget{sec-app}{%
-\section{Application {[}Di and Sherry{]}}\label{sec-app}}
+\section{Application {[}Di and Sherry{]}}\label{sec-app}
 
 The JS optimiser provides a new swarm-based search strategy to optimise
 projection pursuit problems. Two examples are provided in this section
@@ -732,9 +716,8 @@ studies the effect of optimisation properties defined in
 Section~\ref{sec-theory}, along with jellyfish hyper-parameters, on the
 outcome of the optimisation.
 
-\hypertarget{sec-app-1}{%
 \subsection{Performance of the JS optimiser in pipe-finding
-problems}\label{sec-app-1}}
+problems}\label{sec-app-1}
 
 The performance of the JS optimiser is investigated in two folds: 1)
 compare it with a commonly used optimiser: the search-better optimiser
@@ -746,7 +729,9 @@ pipe shape using the holes index, investigated by
 
 \begin{figure}
 
-{\centering \includegraphics{optim_files/figure-pdf/fig-proj-1.pdf}
+\centering{
+
+\includegraphics{optim_files/figure-pdf/fig-proj-1.pdf}
 
 }
 
@@ -762,11 +747,13 @@ optimiser also finds the pipe shape but with a wide rim. At higher data
 dimensions, the JS optimiser finds a higher index value and a clearer
 pipe shape across all the quantiles than the search better optimiser.}
 
-\end{figure}
+\end{figure}%
 
 \begin{figure}
 
-{\centering \includegraphics{optim_files/figure-pdf/fig-proportion-1.pdf}
+\centering{
+
+\includegraphics{optim_files/figure-pdf/fig-proportion-1.pdf}
 
 }
 
@@ -777,7 +764,7 @@ out of 50, that achieve an index value within 0.05 of the
 best-performing simulation. As the dimensionality increases, the
 proportion of simulations reaching the optimal index value increases.}
 
-\end{figure}
+\end{figure}%
 
 Fifty simulations are conducted with both JS and the search-better
 optimiser, in four dimensions (\(d = 6, 8, 10, 12\)). The JS optimiser
@@ -810,10 +797,8 @@ in high success rate, while for higher-dimensional problems (8, 10, and
 of tries is necessary for at least half of the jellyfishes to find the
 optimal projection.
 
-\hypertarget{sec-app-2}{%
 \subsection{Factors affecting the JS optimiser success rate:
-optimisation properties and jellyfish
-hyper-parameters}\label{sec-app-2}}
+optimisation properties and jellyfish hyper-parameters}\label{sec-app-2}
 
 The optimisation properties, including smoothness, squintability, and
 speed, offer numerical metrics to characterise the complexity of a
@@ -866,7 +851,9 @@ hence a small squintability measure.
 
 \begin{figure}
 
-{\centering \includegraphics{optim_files/figure-pdf/fig-idx-proj-dist-1.pdf}
+\centering{
+
+\includegraphics{optim_files/figure-pdf/fig-idx-proj-dist-1.pdf}
 
 }
 
@@ -878,7 +865,7 @@ averaged at bin width of 0.005, are scaled from 0 to 1 for comparison
 curves are convex while others are concave. The stringy curve shows an
 instantaneous jump to the optimum when aproaching the best basis.}
 
-\end{figure}
+\end{figure}%
 
 Table~\ref{tbl-mod-data} combines all the variables calculated above
 (the JS optimiser success rate, jellyfish hyper-parameters, and
@@ -898,17 +885,19 @@ reduce the success rate. The variable \texttt{squintability} and
 \texttt{dimension} are significant, suggesting their importance relative
 to jellyfish hyper-parameters in the optimisation success.
 
-\hypertarget{tbl-smoothness-squintability}{}
 \begin{table}
-\caption{\label{tbl-smoothness-squintability}Parameters estimated from the Gaussian process (including variance,
-range, smoothness, and nugget) and scaled logistic function
-(\(\theta_1\) to \(\theta_4\)) for the pipe-finding and sine-wave
-finding problems. The column ``smooth'' and ``squint'' represent the
-smoothness and squintability measures. }\tabularnewline
+
+\caption{\label{tbl-smoothness-squintability}Parameters estimated from
+the Gaussian process (including variance, range, smoothness, and nugget)
+and scaled logistic function (\(\theta_1\) to \(\theta_4\)) for the
+pipe-finding and sine-wave finding problems. The column ``smooth'' and
+``squint'' represent the smoothness and squintability measures.}
+
+\centering{
 
 \centering\begingroup\fontsize{7}{9}\selectfont
 
-\begin{tabular}{|>{}lll>{}r|rrr>{}r|rrr>{}r|>{}r|}
+\begin{tabular}{|>{}lll>{}r|rrr>{}r|rrrr>{}r|}
 \toprule
   & shape & index & d & variance & range & smooth & nugget & $\theta_1$ & $\theta_2$ & $\theta_3$ & $\theta_4$ & squint\\
 \midrule
@@ -929,13 +918,19 @@ smoothness and squintability measures. }\tabularnewline
 \bottomrule
 \end{tabular}
 \endgroup{}
-\end{table}
+
+}
+
+\end{table}%
 
 \begingroup\fontsize{7}{9}\selectfont
 
-\hypertarget{tbl-mod-data}{}
 \begin{longtable}[t]{lrrrrrrl}
-\caption{\label{tbl-mod-data}The first 7 rows of the datasets processed for modelling. }\tabularnewline
+
+\caption{\label{tbl-mod-data}The first 7 rows of the datasets processed
+for modelling.}
+
+\tabularnewline
 
 \toprule
 Index & D & Smoothness & Squintability & Num. of jellyfish & Max. Num. of tries & Prop. of success & Time\\
@@ -949,22 +944,27 @@ MIC & 6 & 2.457 & 0.314 & 100 & 50 & 0.76 & 19.453 secs\\
 MIC & 8 & 2.636 & 0.193 & 20 & 50 & 0.08 & 2.566 secs\\
 MIC & 8 & 2.636 & 0.193 & 20 & 100 & 0.08 & 4.960 secs\\
 \bottomrule
+
 \end{longtable}
+
 \endgroup{}
 
 \begingroup\fontsize{7}{9}\selectfont
 
-\hypertarget{tbl-mod-output}{}
 \begin{longtable}[t]{|>{}lrrr>{}r|}
-\caption{\label{tbl-mod-output}Model estimates of proportion of jellyfish success on optimisation
-properties and jellyfish hyper-parameters from the generalised linear
-model with a binomial family and a logit link function. The variable
-smoothness, squintability, number of jellyfish and maximum number of
-tries are positively associated with the JS optimiser success rate while
-data dimension and being flagged as long runtime are negatively
-associated with the success rate. The variable squintability and
-dimension are significant, suggesting their importance relative to
-jellyfish hyper-parameters in the optimisation success. }\tabularnewline
+
+\caption{\label{tbl-mod-output}Model estimates of proportion of
+jellyfish success on optimisation properties and jellyfish
+hyper-parameters from the generalised linear model with a binomial
+family and a logit link function. The variable smoothness,
+squintability, number of jellyfish and maximum number of tries are
+positively associated with the JS optimiser success rate while data
+dimension and being flagged as long runtime are negatively associated
+with the success rate. The variable squintability and dimension are
+significant, suggesting their importance relative to jellyfish
+hyper-parameters in the optimisation success.}
+
+\tabularnewline
 
 \toprule
 term & estimate & std.error & statistic & p.value\\
@@ -978,11 +978,12 @@ long time & -0.874 & 1.286 & -0.680 & 0.497\\
 number of jellyfish & 0.216 & 0.127 & 1.701 & 0.089\\
 maximum number of tries & 0.113 & 0.150 & 0.752 & 0.452\\
 \bottomrule
+
 \end{longtable}
+
 \endgroup{}
 
-\hypertarget{sec-conclusion}{%
-\section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}}
+\section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}
 
 
 \renewcommand\refname{References}

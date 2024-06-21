@@ -78,7 +78,7 @@ editor:
     -   "hyper-parameter" rather than "hyperparameter"
 
 ```{r setup, echo = FALSE, message=FALSE, warning=FALSE}
-knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE, cache = TRUE)
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 #install the latest version of ferrn from: https://github.com/huizezhang-sherry/ferrn
 library(tidyverse)
 library(ggplot2)
@@ -692,8 +692,8 @@ measure.
 #| fig.cap = "Index values versus projection distance for the 12 pipe/sine-wave finding problem, after the binning procedure for calculating the squintability measure. The index values, averaged at bin width of 0.005, are scaled from 0 to 1 for comparison (holes, TIC, and stringy). The `MIC` and `TIC` index curves are convex while others are concave. The stringy curve shows an instantaneous jump to the optimum when aproaching the best basis." 
 sq_basis_dist_idx |>
   ggplot(aes(x = dist, y = index, group = index_name)) +
-  geom_point() +
-  facet_nested_wrap(~index + n, nrow = 3, labeller = label_both) + 
+  geom_point(size = 0.5) +
+  facet_nested_wrap(~index_name + n, nrow = 3, labeller = label_both) + 
   xlab("projection distance") + ylab("index value") 
 ```
 
@@ -731,7 +731,7 @@ dt |>
       "$\\theta_1$", "$\\theta_2$", "$\\theta_3$", "$\\theta_4$", "squint"),
     booktabs = T, escape = FALSE, row.names = TRUE) |> 
   column_spec(1, border_left = TRUE) |> 
-  column_spec(c(4, 8, 12, 13), border_right = TRUE) |> 
+  column_spec(c(4, 8, 13), border_right = TRUE) |> 
   kable_styling(font_size = 7) 
 ```
 
