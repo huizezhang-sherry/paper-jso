@@ -491,9 +491,8 @@ Alternatively, one can estimate (@eq-squintability) in a nonparametric
 way, for example by fitting $f$ using kernel regression, then
 numerically estimate the angle at which $-f'$ attains its highest value.
 
-```{=tex}
 \textcolor{orange}{See whether further details are needed for the nonparametric approach.}
-```
+
 TODO: add equation reference to main text line 705
 
 To the best of our knowledge, this is the first attempt to measure the
@@ -866,24 +865,31 @@ broom::tidy(mod1) |>
   kable_styling(font_size = 7) 
 ```
 
-
-@tbl-mod-data combines all the variables calculated above (the JSO success rate, JSO hyper-parameters, and optimisation
-properties) into one table. Three preprocessing steps are applied to the
-data: 1) scaling the JSO hyper-parameters by a factor of 10 for
-interpretation, 2) creating a new binary variable `long_time` to
-indicate cases with an average run time over 30 seconds, and 3) encoding
-the success rate for the stringy case as 0, because upon visual inspection of the final projection, none of the 50
-simulations identified the sine-wave shape. A generalised linear model
-with a binomial family and a logit link function is used to fit the data
-and @tbl-mod-output presents the model outputs. The model suggests that
-the JSO success rate is positively associated with the two JSO
-hyper-parameters, as well as with the optimisation properties -- smoothness and squintability. Specifically, using 10 more jellyfish and 10 more tries will increase the odd ratio of success by `r round(100 * (exp(broom::tidy(mod1)$estimate[6])-1), 2)`% and `r round(100 * (exp(broom::tidy(mod1)$estimate[7])-1), 2)`%, respectively. However,
-being flagged with long runtime and an increase of data dimension will
-reduce the success rate by `r round(exp(broom::tidy(mod1)$estimate[5]) * 100, 2)`% and `r round(exp(broom::tidy(mod1)$estimate[4]) * 100, 2)`%, respectively.
-The variable `squintability` and `dimension`
-are significant, suggesting their importance relative to JSO
-hyper-parameters in the optimisation success. Users can increase the 
-number of jellyfish and the number of tries to improve the success rate, until JSO exceeds a 30-second runtime.
+@tbl-mod-data combines all the variables calculated above (the JSO
+success rate, JSO hyper-parameters, and optimisation properties) into
+one table. Three preprocessing steps are applied to the data: 1) scaling
+the JSO hyper-parameters by a factor of 10 for interpretation, 2)
+creating a new binary variable `long_time` to indicate cases with an
+average run time over 30 seconds, and 3) encoding the success rate for
+the stringy case as 0, because upon visual inspection of the final
+projection, none of the 50 simulations identified the sine-wave shape. A
+generalised linear model with a binomial family and a logit link
+function is used to fit the data and @tbl-mod-output presents the model
+outputs. The model suggests that the JSO success rate is positively
+associated with the two JSO hyper-parameters, as well as with the
+optimisation properties -- smoothness and squintability. Specifically,
+using 10 more jellyfish and 10 more tries will increase the odd ratio of
+success by `r round(100 * (exp(broom::tidy(mod1)$estimate[6])-1), 2)`%
+and `r round(100 * (exp(broom::tidy(mod1)$estimate[7])-1), 2)`%,
+respectively. However, being flagged with long runtime and an increase
+of data dimension will reduce the success rate by
+`r round(exp(broom::tidy(mod1)$estimate[5]) * 100, 2)`% and
+`r round(exp(broom::tidy(mod1)$estimate[4]) * 100, 2)`%, respectively.
+The variable `squintability` and `dimension` are significant, suggesting
+their importance relative to JSO hyper-parameters in the optimisation
+success. Users can increase the number of jellyfish and the number of
+tries to improve the success rate, until JSO exceeds a 30-second
+runtime.
 
 # Conclusion \[Di and Sherry\] {#sec-conclusion}
 
