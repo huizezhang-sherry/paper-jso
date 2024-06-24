@@ -414,6 +414,12 @@ In this subsection, a metric to capture the notion of squintability is
 proposed, and two approaches to compute this metric numerically are
 detailed.
 
+Let $A \in \mathbf{R}^{p \times 2}$ be the 2D projection basis and $A^*$ the optimal basis achieving the maximum index value for a given projection pursuit problem defined by the shape to find, data dimension, and the index function $f(.)$. The projection distance $d(A, A^*)$, is defined as the Frobenius norm $\lVert . \rVert _F$, between the squared difference of these two bases: 
+
+$$d(A, A^*) = \lVert M \rVert _F = \sum_{ij} M_{ij}^2, \text{ where } M = AA^\prime - A^*A^{*\prime}$$ {#eq-proj-dist}
+
+The index value $f(XA)$ is defined as described in the introduction. 
+
 ```{=tex}
 \textcolor{orange}{Here we need to add a precise, mathematical
 definition of the $x$ and $y$ variables ("angle distance" to optimal?
@@ -493,18 +499,16 @@ numerically estimate the angle at which $-f'$ attains its highest value.
 
 \textcolor{orange}{See whether further details are needed for the nonparametric approach.}
 
-TODO: add equation reference to main text line 705
-
 To the best of our knowledge, this is the first attempt to measure the
 notion of squintability.
 
-## Speed
+<!-- ## Speed -->
 
-The speed of optimizing an index function can be measured empirically by
-recording the duration of the optimisation. Alternatively, one can also
-gauge the speed in terms of computational complexity of evaluating the
-index function (for instance, in big O notation, with respect to the
-sample size) of computing the index function.
+<!-- The speed of optimizing an index function can be measured empirically by -->
+<!-- recording the duration of the optimisation. Alternatively, one can also -->
+<!-- gauge the speed in terms of computational complexity of evaluating the -->
+<!-- index function (for instance, in big O notation, with respect to the -->
+<!-- sample size) of computing the index function. -->
 
 # Visualisation of jellyfish optimiser {#sec-vis}
 
@@ -790,7 +794,8 @@ non-linear least squares.
 Gaussian process (variance, range, smooth, and nugget) and the scaled
 logistic function ($\theta_1$ to $\theta_4$) for each case. The column
 "smooth" is used as the smoothness measure and the column "squint" is
-calculated as \[TODO: equation reference\] as squintability. The low
+calculated as equation
+(@eq-squintability-parametric) as squintability. The low
 squint value of MIC and TIC index is due to its convex shape of the
 index value against the projection distance, as shown in
 @fig-idx-proj-dist. Comparing to other concave shapes, the maximum first

@@ -428,7 +428,7 @@ one, rejected otherwise. This process continues and iteratively improves
 the projection, until the pre-specified maximum number of trials is
 reached.
 
-\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-note-color!10!white, arc=.35mm, opacityback=0, bottomrule=.15mm, toprule=.15mm, bottomtitle=1mm, left=2mm, rightrule=.15mm, coltitle=black, titlerule=0mm, toptitle=1mm, opacitybacktitle=0.6, leftrule=.75mm, colframe=quarto-callout-note-color-frame, title={Algorithm: Jellyfish Optimizer Pseudo Code}, breakable, colback=white]
+\begin{tcolorbox}[enhanced jigsaw, leftrule=.75mm, rightrule=.15mm, bottomrule=.15mm, colback=white, bottomtitle=1mm, arc=.35mm, opacityback=0, opacitybacktitle=0.6, toprule=.15mm, colbacktitle=quarto-callout-note-color!10!white, left=2mm, breakable, coltitle=black, toptitle=1mm, titlerule=0mm, colframe=quarto-callout-note-color-frame, title={Algorithm: Jellyfish Optimizer Pseudo Code}]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -574,6 +574,17 @@ In this subsection, a metric to capture the notion of squintability is
 proposed, and two approaches to compute this metric numerically are
 detailed.
 
+Let \(A \in \mathbf{R}^{p \times 2}\) be the 2D projection basis and
+\(A^*\) the optimal basis achieving the maximum index value for a given
+projection pursuit problem defined by the shape to find, data dimension,
+and the index function \(f(.)\). The projection distance \(d(A, A^*)\),
+is defined as the Frobenius norm \(\lVert . \rVert _F\), between the
+squared difference of these two bases:
+
+\begin{equation}\phantomsection\label{eq-proj-dist}{d(A, A^*) = \lVert M \rVert _F = \sum_{ij} M_{ij}^2, \text{ where } M = AA^\prime - A^*A^{*\prime}}\end{equation}
+
+The index value \(f(XA)\) is defined as described in the introduction.
+
 \textcolor{orange}{Here we need to add a precise, mathematical
 definition of the $x$ and $y$ variables ("angle distance" to optimal?
 and PP index values) used in the figures of this Section.}
@@ -654,18 +665,8 @@ value.
 
 \textcolor{orange}{See whether further details are needed for the nonparametric approach.}
 
-TODO: add equation reference to main text line 705
-
 To the best of our knowledge, this is the first attempt to measure the
 notion of squintability.
-
-\subsection{Speed}\label{speed}
-
-The speed of optimizing an index function can be measured empirically by
-recording the duration of the optimisation. Alternatively, one can also
-gauge the speed in terms of computational complexity of evaluating the
-index function (for instance, in big O notation, with respect to the
-sample size) of computing the index function.
 
 \section{Visualisation of jellyfish optimiser}\label{sec-vis}
 
@@ -910,14 +911,15 @@ Table~\ref{tbl-smoothness-squintability} presents the parameters
 estimated from the Gaussian process (variance, range, smooth, and
 nugget) and the scaled logistic function (\(\theta_1\) to \(\theta_4\))
 for each case. The column ``smooth'' is used as the smoothness measure
-and the column ``squint'' is calculated as {[}TODO: equation
-reference{]} as squintability. The low squint value of MIC and TIC index
-is due to its convex shape of the index value against the projection
-distance, as shown in Figure~\ref{fig-idx-proj-dist}. Comparing to other
-concave shapes, the maximum first derivative happens at a smaller
-projection distance (\(\theta_2\)), requiring the optimiser to get
-closer to the optimal to see a significant change in the index value,
-hence a small squintability measure.
+and the column ``squint'' is calculated as equation
+(\ref{eq-squintability-parametric}) as squintability. The low squint
+value of MIC and TIC index is due to its convex shape of the index value
+against the projection distance, as shown in
+Figure~\ref{fig-idx-proj-dist}. Comparing to other concave shapes, the
+maximum first derivative happens at a smaller projection distance
+(\(\theta_2\)), requiring the optimiser to get closer to the optimal to
+see a significant change in the index value, hence a small squintability
+measure.
 
 \begin{figure}
 
