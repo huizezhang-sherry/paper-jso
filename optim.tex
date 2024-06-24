@@ -246,7 +246,7 @@ squintability are available in the \texttt{ferrn} package.
 \begin{itemize}
 \item
   British English (``American or British usage is accepted, but not a
-  mixture of these'')*
+  mixture of these'')
 \item
   No ``we'' - always third person
 \item
@@ -261,89 +261,86 @@ squintability are available in the \texttt{ferrn} package.
   \item
     ``hyper-parameter'' rather than ``hyperparameter''
   \item
-    PP index rather than PPI
+    PP index rather than PPI, plural PP indexes
+  \item
+    datasets rather than data sets
   \end{itemize}
 \end{itemize}
 
 \section{Introduction {[}Nicolas and
 Jessica{]}}\label{introduction-nicolas-and-jessica}
 
-Projection Pursuit (PP) is a high-dimensional data visualisation
-approach that involves computing informative linear projections of data
-by optimising a variety of objective functions, namely \emph{PP index}
-(\citet{hall1989polynomial}, \citet{cook1993projection},
+Projection Pursuit (PP) (\citet{kr69}, \citet{FT74}) is a dimension
+reduction technique aimed at identifying informative linear projections
+of data. The method involves optimising a objective function known as PP
+index (\citet{hall1989polynomial}, \citet{cook1993projection},
 \citet{lee2010projection}, \citet{Loperfido2018},
-\citet{Loperfido2020}). Given high-dimensional data
-\(X \in \mathbf{R}^{n\times p}\) and the index function \(f(\cdot)\), PP
+\citet{Loperfido2020}), which defines the criteria for what constitutes
+interesting or informative projections. Given high-dimensional data
+\(X \in \mathbf{R}^{n\times p}\) and an index function \(f(\cdot)\), PP
 finds the orthonormal projection matrix
-\(A \in \mathbf{R}^{p \times d}\) by solving the following optimisation
-problem:
+\(A \in \mathbf{R}^{p \times d}\) that maximises the index value of the
+projection, \(Y = XA\):
 
 \begin{equation}\phantomsection\label{eq-optimization}{
 \underset{A}{\max } \quad f(XA) \quad \text{subject to} \quad A'A = I
 }\end{equation}
 
-These indices \(f(\cdot)\) are characterised by the informativeness or
-``interestingness'' of a projection and are often non-linear and
-non-convex. As such, an effective and efficient optimisation procedure
-is essential to enable sufficient exploration of the data landscape
-during the visualisation process and to arrive at a global optimal
-viewpoint of the data.
+The index functions can be non-linear and non-convex, hence an effective
+and efficient optimisation procedure is essential to explore the data
+landscape and achieving a globally optimal viewpoint of the data.
 
 Significant efforts have been devoted to enhancing the functionality of
 PP and facilitating a better experience in the visualisation process.
-\citet{cook1995grand} introduced the PP guided tour, which enabled
-interactive visualisation of the optimisation to visually explore
-high-dimensional data. It is implemented in the R \citep{R} package
-\texttt{tourr}\citep{tourr}. \citet{RJ-2021-105} highlighted potential
-problems of the optimisation routine implemented. While improving the
-quality of the optimisation solutions in the tour is essential, it is
-also important to be able to watch the projected data as the
-optimisation progresses. As such, it is pertinent to integrate the
-guided tour with a global optimisation algorithm that is efficient in
-finding the global optimal and enables viewing of the projected data
+\citet{cook1995grand} introduces the PP guided tour, which enabled
+interactive visualisation of the optimisation in order to visually
+explore the high-dimensional data. It is implemented in the R \citep{R}
+package \texttt{tourr} \citep{tourr}. \citet{RJ-2021-105} highlighted
+potential problems of the optimisation routine implemented. While
+improving the quality of the optimisation solutions in the tour is
+essential, it is also important to be able to watch the projected data
+as the optimisation progresses. As such, it is pertinent to integrate
+the guided tour with a global optimisation algorithm that is efficient
+in finding the global optimal and enables viewing of the projected data
 during the exploration process.
 
-The artificial Jellyfish Search Optimiser (JSO) \citep{chou_novel_2021}
-is a swarm-based metaheuristic designed to solve global optimisation
-problems. Inspired by the search behaviour of jellyfish in the ocean,
-JSO is one of the latest swarm intelligence algorithms
-\citep{rajwar_exhaustive_2023}, which was shown to have stronger search
-ability and faster convergence with fewer parameters compared to classic
-optimisation methods \citep{chou_novel_2021}-\citep{chou_recent_2022}.
-These practical properties makes JSO a strong candidate in integration
-with the PP guided tour. As such, it is of interest to explore the
-potential of JSO in enhancing the PP guided tour and examine the
-characteristics and advantages of such implementation.
+This study explores the potential for a Jellyfish Search Optimiser (JSO)
+\citep{chou_novel_2021} -\citep{chou_recent_2022} to be integrated with
+projection pursuit guided tour. JSO, inspired by the search behaviour of
+jellyfish in the ocean, is a swarm-based metaheuristic designed to solve
+global optimisation problems. Compared to traditional methods, JSO
+demonstrated stronger search ability and faster convergence, and
+requires fewer tuning parameters. These practical advantages make JSO as
+a promising candidate for enhancing PP optimisation. As such, the study
+aims to explore JSO's potential in enhancing projection pursuit and
+examines the characteristics and advantages of such implementation.
 
 The primary goal of this study is to investigate the performance of JSO
-in the context of the Projection pursuit. A series of simulation
-experiments using well-recognised data sets and PP indexes are conducted
-to yield insights regarding the behaviour of JSO under different
-settings and the sensitivity of hyper-parameter in the optimisation.
-Second, to observe the performance of JSO with different types of PP
-indexes, a collection of metrics is introduced to capture specific
-properties of the index including squintability and smoothness as
-introduced in \citet{laa_using_2020}. To the best of the authors'
-knowledge, this is the first attempt to quantitatively measure
-squintability and smoothness in this context. Finally, the relationship
-between the JSO performance, hyper-parameters tuning and various
-properties of PP indexes is analysed to provide helpful guidance for
-practitioners that are using the guided tour for high dimensional
-visualisation.
+in PP optimisation. A series of simulation experiments using
+well-recognised datasets and various PP indexes are conducted to yield
+insights regarding the behaviour of JSO under different settings and its
+sensitivity to hyper-parameter. Second, to observe the performance of
+JSO with different types of PP indexes, metrics are introduced to
+capture specific properties of the index including squintability and
+smoothness as introduced in \citet{laa_using_2020}. To the best of the
+authors' knowledge, this is the first attempt to quantitatively measure
+squintability and smoothness within this context. Finally, the
+relationship between the JSO performance, hyper-parameters tuning and
+various properties of PP indexes is analysed to provide helpful guidance
+for practitioners using projection pursuit.
 
 The rest of this paper is structured as follows.
-Section~\ref{sec-background} introduces the background of the PP guided
-tour and reviews existing methods in the literature.
-Section~\ref{sec-theory} describes the details of JSO and introduces
-metrics that measure different properties of PP indexes.
-Section~\ref{sec-vis} visualises the behaviour of the JSO in terms of
-describes a simulation study on the performance of the JSO using
-well-known data sets and index functions. Section~\ref{sec-app} displays
-two sets of simulation experiments comparing the JSO with the
-search-better optimiser and studies the impact of different PP index
-properties on the optimisation performance. Section~\ref{sec-conclusion}
-summarises the work and provides suggestions for future directions.
+Section~\ref{sec-background} introduces the background of PP guided tour
+and reviews existing optimisers and index functions in the literature.
+Section~\ref{sec-theory} details JSO and introduces metrics that measure
+different properties of PP indexes. Section~\ref{sec-vis} outlines the
+data structures, numerical summaries, and visualisations used in the
+simulation studies conducted in Section~\ref{sec-app} to assess JSO's
+perforamnce. Section~\ref{sec-app} presents two sets of simulation
+experiments, comparing JSO with another optimiser, search better, and
+studies the impact of different PP index properties on the optimisation
+performance. Section~\ref{sec-conclusion} summarises the work and
+provides suggestions for future directions.
 
 \section{Projection pursuit, index functions and optimisation {[}Di and
 Sherry{]}}\label{sec-background}
@@ -428,7 +425,7 @@ one, rejected otherwise. This process continues and iteratively improves
 the projection, until the pre-specified maximum number of trials is
 reached.
 
-\begin{tcolorbox}[enhanced jigsaw, leftrule=.75mm, rightrule=.15mm, bottomrule=.15mm, colback=white, bottomtitle=1mm, arc=.35mm, opacityback=0, opacitybacktitle=0.6, toprule=.15mm, colbacktitle=quarto-callout-note-color!10!white, left=2mm, breakable, coltitle=black, toptitle=1mm, titlerule=0mm, colframe=quarto-callout-note-color-frame, title={Algorithm: Jellyfish Optimizer Pseudo Code}]
+\begin{tcolorbox}[enhanced jigsaw, leftrule=.75mm, breakable, bottomrule=.15mm, toprule=.15mm, opacityback=0, titlerule=0mm, coltitle=black, bottomtitle=1mm, toptitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colframe=quarto-callout-note-color-frame, rightrule=.15mm, left=2mm, arc=.35mm, colback=white, opacitybacktitle=0.6, colbacktitle=quarto-callout-note-color!10!white]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
