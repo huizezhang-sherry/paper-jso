@@ -124,8 +124,7 @@ and advantages of such implementation.-->
 The primary goal of the study reported here is to investigate the performance of JSO in PP optimisation for the guided tour. It is of interest to assess how quickly and closely the optimiser reaches a gobal optima, for various PP indexes that may have differing complexities. To observe the performance of JSO with different types of PP indexes, metrics are introduced to capture specific properties of the index including squintability and smoothness as introduced in @laa_using_2020. Metrics for squintability and smoothness are precisely defined here, something that is new for the field.  A series of simulation experiments using specially structured datasets and various PP indexes are conducted to assess the behaviour of JSO under different settings and its sensitivity to hyper-parameter choices.  The relationship between the JSO performance, hyper-parameter tuning and properties of PP
 indexes is analysed to provide guidance for practitioners using projection pursuit, and developers of new indexes.
 
-The paper is structured as follows. @sec-background introduces the background of PP guided tour and reviews existing optimisers and index functions in the literature. @sec-theory details JSO and introduces metrics that measure different properties of PP indexes. @sec-vis outlines the data structures, numerical summaries, and visualisations used in the simulation studies conducted in @sec-app to assess JSO's performance. @sec-app presents two sets of simulation experiments, comparing JSO with another optimiser, search better, and studies the impact of different PP index properties on the optimisation
-performance. @sec-conclusion summarises the work and provides suggestions for future directions.
+The paper is structured as follows. @sec-background introduces the background of PP guided tour and reviews existing optimisers and index functions in the literature. @sec-theory details JSO and introduces metrics that measure different properties of PP indexes. @sec-vis outlines the data structures, numerical summaries, and visualisations used in the simulation studies conducted in @sec-app to assess JSO's performance. @sec-app presents two sets of simulation experiments, comparing JSO permformance improvements relative to an existing optimiser, and studies the impact of different PP index properties on the optimisation performance. @sec-conclusion summarises the work and provides suggestions for future directions.
 
 # Projection pursuit, tours, index functions and optimisation \[Di and Sherry\] {#sec-background}
 
@@ -575,19 +574,15 @@ optimisation.
 
 ## Performance of JSO in pipe-finding problems {#sec-app-1}
 
-The performance of JSO is investigated in two folds: 1) compare it with
-a commonly used optimiser: the search-better optimiser [@RJ-2021-105;
-@laa_using_2020], and 2) examine its success rate under different
-hyper-parameters (number of jellyfishes and maximum number of tries).
-The projection pursuit problem used is finding the pipe shape using the
-holes index, investigated by @laa_using_2020.
+The performance of JSO is investigated in two folds: 1) compare it with a commonly used optimiser: the search-better optimiser (SBO) [@RJ-2021-105;
+@laa_using_2020], and 2) examine its success rate under different hyper-parameters (number of jellyfishes and maximum number of tries). The projection pursuit problem used is finding the pipe shape using the holes index, investigated by @laa_using_2020.
 
 ```{r}
 #| fig.height = 7.5,
 #| fig.width = 10,
 #| label = fig-proj,
 #| fig.align = "center",
-#| fig.cap = "Projections found by the jellyfish and search better optimisers at each 10th quantile across 50 simulations. The projection pursuit problem is to find the pipe shape using the holes index in the 6, 8, 10, and 12-dimensional spaces. The JSO uses 100 jellyfishes and a maximum number of tries of 100. The search better optimiser uses a maximum of 1000 tries in each step of random sampling step before the algorithm terminates. In the 6-D data space, JSO always finds a clear pipe shape while the search better optimiser also finds the pipe shape but with a wide rim. At higher data dimensions, JSO finds a higher index value and a clearer pipe shape across all the quantiles than the search better optimiser."
+#| fig.cap = "Projections found by the JSO and SBO at each 10th quantile across 50 simulations. The projection pursuit problem is to find the pipe shape using the holes index in the 6, 8, 10, and 12-dimensional spaces. The JSO uses 100 jellyfishes and a maximum number of tries of 100. The SBO uses a maximum of 1000 tries in each step of random sampling step before the algorithm terminates. In the 6-D data space, JSO always finds a clear pipe shape while the SBO also finds the pipe shape but with a wide rim. At higher data dimensions, JSO finds a higher index value and a clearer pipe shape across all the quantiles than the SBO."
 
 aaa <- map_dfr(
   list(pipe1000, pipe1000_8d, pipe1000_10d, pipe1000_12d), 
@@ -640,7 +635,7 @@ p2 <- bbb |>
         axis.text = element_blank(), axis.title = element_blank(),
         panel.grid = element_blank())
 
-(p1 + ggtitle("The jellyfish search optimiser"))/(p2 + ggtitle("The search better optimiser"))
+(p1 + ggtitle("a. JSO"))/(p2 + ggtitle("b. SBO"))
 ```
 
 ```{r}
@@ -675,19 +670,8 @@ pipe_res |>
 
 ```
 
-Fifty simulations are conducted with both JSO and the search better optimal, in
-four dimensions ($d = 6, 8, 10, 12$). JSO uses 100 jellyfishes and
-100 maximum number of tries, while the search-better optimiser allows a
-maximum of 1000 samples at each iteration before the algorithm
-terminates. @fig-proj presents the final projections found by the two
-optimisers, broken down by 10th quantile, faceted by the data dimension.
-In the 6-dimensional data scenario, JSO consistently identifies a clear
-pipe shape. The search better optimiser also finds the pipe shape but
-with a wide rim, suggesting a further polish search may be required.
-With increasing dimensions, JSO may not always identify the pipe shape
-due to random sampling, but it still presents a pipe shape in over 50%
-of cases. When compared to the search better optimiser, JSO reaches
-higher index values and clearer pipe shapes across all quantiles.
+Fifty simulations are conducted with both JSO and the SBO, in four dimensions ($d = 6, 8, 10, 12$). JSO uses 100 jellyfishes and 100 maximum number of tries, while the SBO allows a maximum of 1000 samples at each iteration before the algorithm terminates. @fig-proj presents the final projections found by the two optimisers, broken down by 10th quantile, faceted by the data dimension. In the 6-dimensional data scenario, JSO consistently identifies a clear pipe shape. The SBO also finds the pipe shape but with a wide rim, suggesting a further polish search may be required. With increasing dimensions, JSO may not always identify the pipe shape due to random sampling, but it still presents a pipe shape in over 50%
+of cases. When compared to the SBO JSO reaches higher index values and clearer pipe shapes across all quantiles.
 
 In the second experiment, fifty simulations are conducted at each
 hyper-parameter combination to analyse its effects on the JSO success
