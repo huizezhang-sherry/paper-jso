@@ -362,7 +362,8 @@ target planes (projections) which have high PP index values, as provided
 by the optimiser. The geodesic interpolation means that the viewer sees
 a continuous sequence of projections of the data, so they can watch
 patterns of interest forming as the function is optimised. There are
-five optimisation methods implemented in the \texttt{tourr} package:
+five (unsophisticated) optimisation methods implemented in the
+\texttt{tourr} package:
 
 \begin{itemize}
 \tightlist
@@ -432,7 +433,7 @@ one, rejected otherwise. This process continues and iteratively improves
 the projection, until the pre-specified maximum number of trials is
 reached.
 
-\begin{tcolorbox}[enhanced jigsaw, leftrule=.75mm, rightrule=.15mm, opacitybacktitle=0.6, toprule=.15mm, coltitle=black, colback=white, arc=.35mm, colbacktitle=quarto-callout-note-color!10!white, colframe=quarto-callout-note-color-frame, bottomrule=.15mm, opacityback=0, title={Algorithm: Jellyfish Optimizer Pseudo Code}, breakable, toptitle=1mm, bottomtitle=1mm, titlerule=0mm, left=2mm]
+\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, colbacktitle=quarto-callout-note-color!10!white, toprule=.15mm, toptitle=1mm, bottomrule=.15mm, breakable, colback=white, colframe=quarto-callout-note-color-frame, leftrule=.75mm, coltitle=black, opacitybacktitle=0.6, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm, titlerule=0mm, left=2mm, opacityback=0, rightrule=.15mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -567,12 +568,16 @@ The fitted value \(\nu>0\) can be interpreted as follows: the higher
 
 \subsection{Squintability}\label{sec-squintability}
 
-From the literature, it is commonly understood that a large squint angle
-implies that the objective function value is close to optimal even when
-we are not very close to the perfect view to see the structure. A small
-squint angle means that index function value improves substantially only
-when we are very close to the perfect view. As such, low squintability
-implies rapid improvement in the index value when near the perfect view.
+Based on the use in existing literature, it is commonly understood that
+a large squint angle implies that the objective function value is close
+to optimal even when we are not very close to the perfect view to see
+the structure. A small squint angle means that index function value
+improves substantially only when we are very close to the perfect view.
+As such, low squintability implies rapid improvement in the index value
+when near the perfect view. For PP, a small squint angle is considered
+to be undesirable because it means that the optimiser needs to be very
+close to be able to ``see'' the optima. Thus, it could be difficult for
+the optimiser to find the optima.
 
 In this subsection, a metric to capture the notion of squintability is
 proposed, and two approaches to compute this metric numerically are

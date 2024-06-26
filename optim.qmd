@@ -130,31 +130,13 @@ The paper is structured as follows. @sec-background introduces the background of
 
 <!-- Need to assume that the special issue will have the general introduction to PP, so the focus here will be on background needed for this paper, tours, guidance using PP, optimisation, visualisation, ... -->
 
-A tour on high-dimensional data is constructed by geodesically
-interpolating between pairs of planes. Any plane is described by an
-orthonormal basis, $A_t$, where $t$ represents time in the sequence. The
-term "geodesic" refers to maintaining the orthonormality constraint so
-that each view shown is correctly a projection of the data. The PP
-guided tour operates by geodesically interpolating to target planes
-(projections) which have high PP index values, as provided by the
-optimiser. The geodesic interpolation means that the viewer sees a
-continuous sequence of projections of the data, so they can watch
-patterns of interest forming as the function is optimised. There are
-five optimisation methods implemented in the `tourr` package:
+A tour on high-dimensional data is constructed by geodesically interpolating between pairs of planes. Any plane is described by an orthonormal basis, $A_t$, where $t$ represents time in the sequence. The term "geodesic" refers to maintaining the orthonormality constraint so that each view shown is correctly a projection of the data. The PP guided tour operates by geodesically interpolating to target planes (projections) which have high PP index values, as provided by the optimiser. The geodesic interpolation means that the viewer sees a continuous sequence of projections of the data, so they can watch patterns of interest forming as the function is optimised. There are five (unsophisticated) optimisation methods implemented in the `tourr` package:
 
--   `search_geodesic()`: provides a pseudo-derivative optimisation. It
-    searches locally for the best direction, based on differencing the
-    index values for very close projections. Then it follows the
-    direction along the geodesic path between planes, stopping when the
-    next index value fails to increase.
--   `search_better()`: is a brute-force optimisation searching randomly
-    for projections with higher index values.
--   `search_better_random()`: is essentially simulated annealing
-    [@Bertsimas93] where the search space is reduced as the optimisation
-    progresses.
+-   `search_geodesic()`: provides a pseudo-derivative optimisation. It searches locally for the best direction, based on differencing the index values for very close projections. Then it follows the direction along the geodesic path between planes, stopping when the next index value fails to increase.
+-   `search_better()`: is a brute-force optimisation searching randomly for projections with higher index values.
+-   `search_better_random()`: is essentially simulated annealing [@Bertsimas93] where the search space is reduced as the optimisation progresses.
 -   `search_posse()`: implements the algorithm described in @posse95.
--   `search_polish()`: is a very localised search, to take tiny steps to
-    get closer to the local maximum.
+-   `search_polish()`: is a very localised search, to take tiny steps to get closer to the local maximum.
 
 There are several PP index functions available: `holes()` and `cmass()`
 [@cook1993projection]; `lda_pp()` [@lee2005projection]; `pda_pp()`
@@ -354,16 +336,10 @@ $\nu$, the smoother the index function.
 
 ## Squintability {#sec-squintability}
 
-From the literature, it is commonly understood that a large squint angle
-implies that the objective function value is close to optimal even when
-we are not very close to the perfect view to see the structure. A small
-squint angle means that index function value improves substantially only
-when we are very close to the perfect view. As such, low squintability
-implies rapid improvement in the index value when near the perfect view.
+Based on the use in existing literature, it is commonly understood that a large squint angle implies that the objective function value is close to optimal even when
+we are not very close to the perfect view to see the structure. A small squint angle means that index function value improves substantially only when we are very close to the perfect view. As such, low squintability implies rapid improvement in the index value when near the perfect view. For PP, a small squint angle is considered to be undesirable because it means that the optimiser needs to be very close to be able to "see" the optima. Thus, it could be difficult for the optimiser to find the optima.
 
-In this subsection, a metric to capture the notion of squintability is
-proposed, and two approaches to compute this metric numerically are
-detailed.
+In this subsection, a metric to capture the notion of squintability is proposed, and two approaches to compute this metric numerically are detailed.
 
 Let $A \in \mathbf{R}^{p \times 2}$ be the 2D projection basis and $A^*$ the optimal basis achieving the maximum index value for a given projection pursuit problem defined by the shape to find, data dimension, and the index function $f(.)$. The projection distance $d(A, A^*)$, is defined as the Frobenius norm $\lVert . \rVert _F$, between the squared difference of these two bases: 
 
