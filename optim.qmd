@@ -42,7 +42,7 @@ author:
           country: Australia
           postal-code: 3800
 abstract: |
-  Projection pursuit (PP) is a dimension reduction technique that identifies low-dimensional projections in high-dimensional data by optimising a criteria function known as the PP index. The optimisation in PP can be non-smooth and requires identifying optima with a small "squint angle", detectable only from close proximity. To address these challenges, this study investigates the performance of a recent swarm-based algorithm, Jellyfish Search Optimiser (JSO), for optimising PP indexes. The performance of JSO is evaluated across various hyper-parameter settings and compared with existing optimisers. Additionally, this work proposes novel methods to quantify two properties of the PP index -- smoothness and squintability -- that capture the complexities inherent in PP optimisation problems. These two metrics are evaluated with JSO hyper-parameters to determine their effect on JSO success rate. The JSO algorithm has been implemented in the `tourr` package, while calculations for smoothness and squintability are available in the `ferrn` package. 
+  The projection pursuit (PP) guided tour interactively optimizes a criteria function known as the PP index, to explore high-dimensional data by revealing interesting projections. The optimisation in PP can be non-trivial, involving non-smooth functions and optima with small a "squint angle", detectable only from close proximity. To address these challenges, this study investigates the performance of a recently introduced swarm-based algorithm, Jellyfish Search Optimiser (JSO), for optimising PP indexes. The performance of JSO is evaluated across various hyper-parameter settings and compared with existing optimisers. Additionally, this work proposes novel methods to quantify two properties of the PP index -- smoothness and squintability -- that capture the complexities inherent in PP optimisation problems. These two metrics are evaluated with JSO hyper-parameters to determine their effect on JSO success rate. The JSO algorithm has been implemented in the `tourr` package, while functions to calculate  smoothness and squintability of indexes are available in the `ferrn` package. 
 keywords: 
   - projection pursuit
   - Jellyfish Search Optimiser (JSO)
@@ -134,45 +134,18 @@ to integrate the guided tour with a global optimisation algorithm that
 is efficient in finding the global optimal and enables viewing of the
 projected data during the exploration process.
 
-This study explores the potential for a Jellyfish Search Optimiser 
-(JSO) to be integrated with projection 
-pursuit guided tour. JSO [@chou_novel_2021] -[@rajwar_exhaustive_2023], 
-inspired by the search behaviour of jellyfish 
-in the ocean, is a swarm-based metaheuristic designed to solve global
-optimisation problems. Compared to traditional methods, JSO 
-demonstrated stronger search ability and faster convergence, and 
-requires fewer tuning parameters. These
-practical advantages make JSO as a promising candidate for enhancing
-PP optimisation. As such, the study aims to explore JSO's potential
-in enhancing projection pursuit and examines the characteristics
+This study explores the potential for a Jellyfish Search Optimiser (JSO) to be integrated with the projection pursuit guided tour. JSO [@chou_novel_2021] -[@rajwar_exhaustive_2023], inspired by the search behaviour of jellyfish in the ocean, is a swarm-based metaheuristic designed to solve global optimisation problems. Compared to traditional methods, JSO demonstrated stronger search ability and faster convergence, and requires fewer tuning parameters. These practical advantages make JSO as a promising candidate for enhancing PP optimisation. As such, the study aims to explore JSO's potential in enhancing projection pursuit and examines the characteristics
 and advantages of such implementation.
 
-The primary goal of this study is to investigate the performance of JSO
-in PP optimisation. A series of simulation
-experiments using well-recognised datasets and various PP indexes are conducted
-to yield insights regarding the behaviour of JSO under different
-settings and its sensitivity to hyper-parameter.
-Second, to observe the performance of JSO with different types of PP
-indexes, metrics are introduced to capture specific
-properties of the index including squintability and smoothness as
-introduced in @laa_using_2020. To the best of the authors' knowledge,
-this is the first attempt to quantitatively measure squintability and
-smoothness within this context. Finally, the relationship between the JSO
-performance, hyper-parameters tuning and various properties of PP
+The primary goal of this study is to investigate the performance of JSO in PP optimisation. A series of simulation experiments using well-recognised datasets and various PP indexes are conducted to yield insights regarding the behaviour of JSO under different settings and its sensitivity to hyper-parameter. Second, to observe the performance of JSO with different types of PP indexes, metrics are introduced to capture specific
+properties of the index including squintability and smoothness as introduced in @laa_using_2020. To the best of the authors' knowledge, this is the first attempt to quantitatively measure squintability and
+smoothness within this context. Finally, the relationship between the JSO performance, hyper-parameters tuning and various properties of PP
 indexes is analysed to provide helpful guidance for practitioners using projection pursuit.
 
-The rest of this paper is structured as follows. @sec-background
-introduces the background of PP guided tour and reviews existing
-optimisers and index functions in the literature. @sec-theory details JSO and
-introduces metrics that measure different properties of PP indexes.
-@sec-vis outlines the data structures, numerical summaries, and visualisations used in the simulation studies conducted in @sec-app to assess JSO's perforamnce.
-@sec-app presents two sets of simulation
-experiments, comparing JSO with another optimiser, search better, and
-studies the impact of different PP index properties on the optimisation
-performance. @sec-conclusion summarises the work and provides
-suggestions for future directions.
+The rest of this paper is structured as follows. @sec-background introduces the background of PP guided tour and reviews existing optimisers and index functions in the literature. @sec-theory details JSO and introduces metrics that measure different properties of PP indexes. @sec-vis outlines the data structures, numerical summaries, and visualisations used in the simulation studies conducted in @sec-app to assess JSO's performance. @sec-app presents two sets of simulation experiments, comparing JSO with another optimiser, search better, and studies the impact of different PP index properties on the optimisation
+performance. @sec-conclusion summarises the work and provides suggestions for future directions.
 
-# Projection pursuit, index functions and optimisation \[Di and Sherry\] {#sec-background}
+# Projection pursuit, tours, index functions and optimisation \[Di and Sherry\] {#sec-background}
 
 <!-- Need to assume that the special issue will have the general introduction to PP, so the focus here will be on background needed for this paper, tours, guidance using PP, optimisation, visualisation, ... -->
 
