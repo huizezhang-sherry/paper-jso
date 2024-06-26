@@ -439,10 +439,7 @@ notion of squintability.
 
 # Visualisation of jellyfish optimiser {#sec-vis}
 
-The data structure proposed in @RJ-2021-105 is implemented for JSO. 
-An example data collected from finding the sine-wave structure
-in 6D data using a spline index function (`splines2d`) is
-printed below:
+The data structure proposed in @RJ-2021-105 is used here for assessing JSO. A sample for the sine-wave structure in 6D data using a spline index function (`splines2d`) is printed below:
 
 ```{r}
 dplyr::glimpse(sim_sine_6d_spline_head |> select(-id, -info)) 
@@ -807,5 +804,8 @@ tries to improve the success rate, until JSO exceeds a 30-second
 runtime.
 
 # Conclusion \[Di and Sherry\] {#sec-conclusion}
+
+- Summarise the result of the simulation: JSO immense improvement on current methods, ...
+- JSO for a guided tour, what changes are needed? Do we follow one tentacle, do we perform off-line and then pull tentacles out to watch, how does it integrate with ferrn
 
 # References
