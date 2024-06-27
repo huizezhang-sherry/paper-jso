@@ -110,6 +110,10 @@
 \definecolor{quarto-callout-caution-color-frame}{HTML}{fd7e14}
 \makeatother
 \makeatletter
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
 \ifdefined\contentsname
@@ -145,10 +149,18 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 \makeatletter
-\makeatother
-\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\makeatletter
+\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
+\makeatother
+\makeatletter
+\@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
 \makeatother
 \journal{Journal of Multivariate Analysis}
 \ifLuaTeX
@@ -156,8 +168,7 @@
 \fi
 \usepackage[]{natbib}
 \bibliographystyle{elsarticle-num-names}
-\usepackage{bookmark}
-
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
@@ -243,7 +254,8 @@ package.
     exploratory data analysis
 \end{keyword}
 \end{frontmatter}
-    
+    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, boxrule=0pt, frame hidden, sharp corners, enhanced]}{\end{tcolorbox}}\fi
+
 \textbf{README}:
 
 \begin{itemize}
@@ -270,8 +282,9 @@ package.
   \end{itemize}
 \end{itemize}
 
+\hypertarget{introduction-nicolas-and-jessica}{%
 \section{Introduction {[}Nicolas and
-Jessica{]}}\label{introduction-nicolas-and-jessica}
+Jessica{]}}\label{introduction-nicolas-and-jessica}}
 
 Projection Pursuit (PP) (\citet{kr69}, \citet{FT74}) is a dimension
 reduction technique aimed at identifying informative linear projections
@@ -285,9 +298,9 @@ index function \(f(\cdot)\), PP finds the orthonormal basis
 \(A \in \mathbf{R}^{p \times d}\) that maximises the index value of the
 projection, \(Y = XA\):
 
-\begin{equation}\phantomsection\label{eq-optimization}{
+\begin{equation}\protect\hypertarget{eq-optimization}{}{
 \underset{A}{\max } \quad f(XA) \quad \text{subject to} \quad A'A = I
-}\end{equation}
+}\label{eq-optimization}\end{equation}
 
 The index functions can be non-linear and non-convex, hence an effective
 and efficient optimisation procedure is essential to explore the data
@@ -349,8 +362,9 @@ existing optimiser, and studies the impact of different PP index
 properties on the optimisation performance. Section~\ref{sec-conclusion}
 summarises the work and provides suggestions for future directions.
 
+\hypertarget{sec-background}{%
 \section{Projection pursuit, tours, index functions and optimisation
-{[}Di and Sherry{]}}\label{sec-background}
+{[}Di and Sherry{]}}\label{sec-background}}
 
 A tour on high-dimensional data is constructed by geodesically
 interpolating between pairs of planes. Any plane is described by an
@@ -409,8 +423,9 @@ by. One last aspect that is useful is for an optimiser to return local
 maxima in addition to global because data can contain many different and
 interesting features.
 
+\hypertarget{sec-theory}{%
 \section{The jellyfish optimiser and properties of PP indexes {[}Nicolas
-and Jessica{]}}\label{sec-theory}
+and Jessica{]}}\label{sec-theory}}
 
 JSO mimics the natural movements of jellyfish, which include passive and
 active motions driven by ocean currents and their swimming patterns,
@@ -433,7 +448,7 @@ one, rejected otherwise. This process continues and iteratively improves
 the projection, until the pre-specified maximum number of trials is
 reached.
 
-\begin{tcolorbox}[enhanced jigsaw, colback=white, toprule=.15mm, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, rightrule=.15mm, toptitle=1mm, coltitle=black, leftrule=.75mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, opacityback=0, breakable, colframe=quarto-callout-note-color-frame, opacitybacktitle=0.6, left=2mm, bottomtitle=1mm, arc=.35mm, bottomrule=.15mm]
+\begin{tcolorbox}[enhanced jigsaw, colback=white, opacitybacktitle=0.6, left=2mm, toprule=.15mm, colbacktitle=quarto-callout-note-color!10!white, coltitle=black, titlerule=0mm, bottomtitle=1mm, bottomrule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, opacityback=0, arc=.35mm, breakable, rightrule=.15mm, toptitle=1mm, colframe=quarto-callout-note-color-frame, leftrule=.75mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -516,27 +531,32 @@ maximum number of trials.
 \citet{laa_using_2020} has proposed five criteria for assessing
 projection pursuit indexes (smoothness, squintability, flexibility,
 rotation invariance, and speed). Since not all the properties affects
-the execution of the optimisation, here we consider the three relevant
-properties (smoothness, squintability, and speed), and propose three
-metrics to evaluate these three properties.
+the execution of the optimisation, we choose to focus here on the first
+two properties, namely \emph{smoothness} (Section~\ref{sec-smoothness})
+and \emph{squintability} (Section~\ref{sec-squintability}), and propose
+two metrics to evaluate them.
 
-\subsection{Smoothness}\label{sec-smoothness}
+\hypertarget{sec-smoothness}{%
+\subsection{Smoothness}\label{sec-smoothness}}
 
-If we evaluate the index function at some random points (like the random
-initialization of the jellyfish optimizer), then we can interpret these
-random index values as a random field, indexed by a space parameter: the
-random projection angle. This analogy suggests to use this random
-training sample to fit a spatial model, a simple one being a (spatial)
-Gaussian process.
+This subsection proposes a metric for the smoothness of a projection
+pursuit index.
 
-How can we define a measure of smoothness from this? The distribution of
-a Gaussian process is fully determined by its mean function and
-covariance function. The way the covariance function is defined is where
-smoothness comes into play: if an index is very smooth, then two close
-projection angles should produce close index values (strong
-correlation); by contrast, if an index is not smooth, then two close
-projection angles might give very different index values (fast decay of
-correlations with respect to distance between angles).
+If a PP index function is evaluated at some random points, as is done at
+the initialization stage of the jellyfish search optimization, then
+these random index values can be interpreted as a random field, indexed
+by a space parameter, namely the random projection angle. This analogy
+suggests to use this random training sample to fit a spatial model, a
+simple one being a (spatial) Gaussian process.
+
+The distribution of a Gaussian process is fully determined by its mean
+function and covariance function. The smoothness property comes into
+play in the definition of the covariance function: if a PP index is very
+smooth, then two close projection angles should produce close index
+values (strong correlation); by contrast, if a PP index is not very
+smooth, then two close projection angles might give very different index
+values (fast decay of correlations with respect to distance between
+angles).
 
 Popular covariance functions are parametric positive semi-definite
 functions, some of which have a parameter to capture the smoothness of
@@ -544,44 +564,48 @@ the Gaussian field. In particular, consider the Matérn class of
 covariance functions, defined by
 
 \[
-K(u):=\frac{(\sqrt{2\nu}u)^{\nu}}{\Gamma(\nu)2^{\nu-1}}\mathcal{K}_{\nu}(\sqrt{2\nu}u)
+K(u):=\frac{(\sqrt{2\nu}u)^{\nu}}{\Gamma(\nu)2^{\nu-1}}\mathcal{K}_{\nu}(\sqrt{2\nu}u)\ ,
 \]
 
 where \(\nu>0\) is the smoothness parameter and where
 \(\mathcal{K}_\nu\) is the modified Bessel function. The Matérn
 covariance function can be expressed analytically when \(\nu\) is a
 half-integer, the most popular values in the literature being \(1/2\),
-\(3/2\) and \(5/2\) . The parameter \(\nu\), called smoothness
-parameter, controls the decay of the covariance function. As such, it is
-an appropriate measure of smoothness of a random field.
+\(3/2\) and \(5/2\) . The parameter \(\nu\), called \emph{smoothness
+parameter}, controls the decay of the covariance function. As such, it
+is an appropriate measure of smoothness of a random field.
 
-In our context, we suggest to use this parameter as a measure of the
-smoothness of the index function by fitting a Gaussian process prior
+In our context, we suggest to use this parameter \(\nu\) as a measure of
+the smoothness of the index function by fitting a Gaussian process prior
 with Matérn covariance on a dataset generated by random evaluations of
-the index function, as in the initial stage of the jellyfish random
-search. There exist several R packages, such as GpGp or ExaGeoStatR, to
-fit the hyperparameters of a GP covariance function on data. In this
+the index function, as done at the initialization stage of the jellyfish
+search optimization. There exist several R packages, such as GpGp
+\citep{guinness2021gpgp} or ExaGeoStatR \citep{abdulah2023large}, to fit
+the hyperparameters of a GP covariance function on data. In this
 project, we make use of the GpGp package.
 
-The fitted value \(\nu>0\) can be interpreted as follows: the higher
-\(\nu\), the smoother the index function.
+After fitting the smoothness parameter \(\nu>0\), its value can be
+interpreted as follows: the higher \(\nu\), the smoother the index
+function.
 
-\subsection{Squintability}\label{sec-squintability}
-
-Based on the use in existing literature, it is commonly understood that
-a large squint angle implies that the objective function value is close
-to optimal even when we are not very close to the perfect view to see
-the structure. A small squint angle means that index function value
-improves substantially only when we are very close to the perfect view.
-As such, low squintability implies rapid improvement in the index value
-when near the perfect view. For PP, a small squint angle is considered
-to be undesirable because it means that the optimiser needs to be very
-close to be able to ``see'' the optima. Thus, it could be difficult for
-the optimiser to find the optima.
+\hypertarget{sec-squintability}{%
+\subsection{Squintability}\label{sec-squintability}}
 
 In this subsection, a metric to capture the notion of squintability is
 proposed, and two approaches to compute this metric numerically are
 detailed.
+
+In the existing literature, it is commonly understood that a large
+squint angle implies that the objective function value is close to
+optimal even when we are not very close to the perfect view to see the
+structure. A small squint angle means that the PP index value improves
+substantially only when we are very close to the perfect view. As such,
+low squintability implies rapid improvement in the index value when near
+the perfect view. For PP, a small squint angle is considered to be
+undesirable because it means that the optimiser needs to be very close
+to be able to ``see'' the optima. Thus, it could be difficult for the
+optimiser to find the optima. We now propose a mathematical formulation
+of this intuition.
 
 Let \(A \in \mathbf{R}^{p \times 2}\) be the 2D projection basis and
 \(A^*\) the optimal basis achieving the maximum index value for a given
@@ -590,49 +614,45 @@ and the index function \(f(.)\). The projection distance \(d(A, A^*)\),
 is defined as the Frobenius norm \(\lVert . \rVert _F\), between the
 squared difference of these two bases:
 
-\begin{equation}\phantomsection\label{eq-proj-dist}{d(A, A^*) = \lVert M \rVert _F = \sum_{ij} M_{ij}^2, \text{ where } M = AA^\prime - A^*A^{*\prime}}\end{equation}
+\begin{equation}\protect\hypertarget{eq-proj-dist}{}{d(A, A^*) = \lVert M \rVert _F = \sum_{ij} M_{ij}^2, \text{ where } M = AA^\prime - A^*A^{*\prime}\ .}\label{eq-proj-dist}\end{equation}
 
 The index value \(f(XA)\) is defined as described in the introduction.
+We now focus our attention to how the index value \(f(XA)\) changes with
+respect to the projection distance \(d(A, A^*)\), over the course of the
+JSO.
 
-\textcolor{orange}{Here we need to add a precise, mathematical
-definition of the $x$ and $y$ variables ("angle distance" to optimal?
-and PP index values) used in the figures of this Section.}
+It is expected that for a PP index with high squint angle, the
+optimization (\ref{eq-optimization}) should make substantial progress
+early on. Conversely, for a PP index with low squint angle, it might
+take a long while for the optimization to make substantial progress, as
+the candidate projections would need to be very close to the optimal one
+for the structure of the index function to be visible enough to be
+amenable to efficient optimization. This observation suggests that the
+extreme values of \(f'\) (the ones for which \(f''=0\), assuming that
+\(f\) is twice differentiable), and the projection distances for which
+these values are attained, should play an important role in the
+mathematical definition of squintability. Noticing that \(f\) is
+expected to be a decreasing function, we propose the following
+squintability metric:
 
-{[}We generate random points that is beyond 1.5 projection distance and
-interpolate. Then we fit a kernel or use nonlinear least squares.{]}
-
-Let \(f\) represent the average PP index value with respect to the
-projection angle distance to optimal, over the course of the JSO. It is
-expected that for a PP index with high squint angle, the optimization
-(\ref{eq-optimization}) should make substantial progress early on.
-Conversely, for a PP index with low squint angle, it might take a long
-while for the optimization to make substantial progress, as the
-candidate projections would need to be very close to the optimal one for
-the structure of the index function to be visible enough to be amenable
-to efficient optimization. This observation suggests that the extreme
-values of \(f'\) (the ones for which \(f''=0\), assuming that \(f\) is
-twice differentiable), and the angles for which these values are
-attained, should play an important role in the mathematical definition
-of squintability. Noticing that \(f\) is expected to be a decreasing
-function, we propose the following squintability metric:
-
-\begin{equation}\phantomsection\label{eq-squintability}{
-\varsigma:=-4\min_{x}f'(x)\times\underset{x}{\arg\min}f'(x)
-}\end{equation}
+\begin{equation}\protect\hypertarget{eq-squintability}{}{
+\varsigma:=-4\min_{x}f'(x)\times\underset{x}{\arg\min}f'(x)\ .
+}\label{eq-squintability}\end{equation}
 
 On the one hand, \(-\min_{x}f'(x)\) represents the largest value of the
 gradient of \(-f\). On the other hand, \(\underset{x}{\arg\min}f'(x)\)
-represents the angle value at which this largest gradient is attained.
-Based on the above discussion, it is expected that these two values
-should be both high in the case of high squintability (fast increase in
-\(f\) early on), and both low in the case of low squintability (any
-substantial increase in \(f\) happens very late, close to the optimal
-angle). This suggest that their product (\ref{eq-squintability}) should
-provide a sensible measure of squintability. The multiplicative constant
-\(4\), which can be deemed arbitrary, does not change the interpretation
-of the squintability metric \(\varsigma\); it is here to adjust the
-range of values of \(\varsigma\) and simplify the explicit formula for
-\(\varsigma\) obtained later on.
+represents the projection distance at which this largest gradient is
+attained. Based on the above discussion, it is expected that these two
+values should be both high in the case of high squintability (fast
+increase in \(f\) early on), and both low in the case of low
+squintability (any substantial increase in \(f\) happens very late,
+close to the optimal angle). This suggest that their product
+(\ref{eq-squintability}) should provide a sensible measure of
+squintability. The multiplicative constant \(4\), which can be deemed
+arbitrary, does not change the interpretation of the squintability
+metric \(\varsigma\); it is here to adjust the range of values of
+\(\varsigma\) and simplify the explicit formula for \(\varsigma\)
+obtained later on.
 
 To compute the squintability metric (\ref{eq-squintability}) in
 practice, several approaches are possible. The first one is to propose a
@@ -640,17 +660,17 @@ parametric model for \(f\), and use it to obtain an explicit formula for
 \(\varsigma\). Numerical experiments suggest a scaled sigmoid shape as
 described below. Define
 
-\begin{equation}\phantomsection\label{eq-logistic}{
+\begin{equation}\protect\hypertarget{eq-logistic}{}{
 \ell(x):=\frac{1}{1+\exp(\theta_{3}(x-\theta_{2}))}\ ,
-}\end{equation}
+}\label{eq-logistic}\end{equation}
 
 which is a decreasing logistic function depending on two parameters
 \(\theta_2\) and \(\theta_3\) , such that
 \(\ell(\theta_{2})=\frac{1}{2}\). Then, define
 
-\begin{equation}\phantomsection\label{eq-parametric}{
+\begin{equation}\protect\hypertarget{eq-parametric}{}{
 f(x)=(\theta_{1}-\theta_{4})\frac{\ell(x)-\ell(x_{\max})}{\ell(0)-\ell(x_{\max})}+\theta_{4}\ ,
-}\end{equation}
+}\label{eq-parametric}\end{equation}
 
 which depends on three additional parameters, \(\theta_1\), \(\theta_2\)
 , and \(x_{\max}\), such that \(f(0)=\theta_1\) and
@@ -658,9 +678,9 @@ which depends on three additional parameters, \(\theta_1\), \(\theta_2\)
 (\ref{eq-parametric}), the squintability metric (\ref{eq-squintability})
 can be shown to be equal to
 
-\begin{equation}\phantomsection\label{eq-squintability-parametric}{
-\varsigma=\frac{(\theta_{1}-\theta_{4})\theta_{2}\theta_{3}}{\ell(0)-\ell(x_{\max})}
-}\end{equation}
+\begin{equation}\protect\hypertarget{eq-squintability-parametric}{}{
+\varsigma=\frac{(\theta_{1}-\theta_{4})\theta_{2}\theta_{3}}{\ell(0)-\ell(x_{\max})}\ .
+}\label{eq-squintability-parametric}\end{equation}
 
 In practice, the parameters of this model (\ref{eq-parametric}) can be
 estimated numerically, for example by non-linear least squares, and then
@@ -672,12 +692,11 @@ nonparametric way, for example by fitting \(f\) using kernel regression,
 then numerically estimate the angle at which \(-f'\) attains its highest
 value.
 
-\textcolor{orange}{See whether further details are needed for the nonparametric approach.}
+To the best of our knowledge, this is the first attempt to measure
+mathematically the notion of squintability.
 
-To the best of our knowledge, this is the first attempt to measure the
-notion of squintability.
-
-\section{Visualisation of jellyfish optimiser}\label{sec-vis}
+\hypertarget{sec-vis}{%
+\section{Visualisation of jellyfish optimiser}\label{sec-vis}}
 
 The data structure proposed in \citet{RJ-2021-105} is used here for
 assessing JSO. A sample for the sine-wave structure in 6D data using a
@@ -752,9 +771,7 @@ derive numerical summaries and plots:
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{optim_files/figure-pdf/fig-projection-1.pdf}
+{\centering \includegraphics{optim_files/figure-pdf/fig-projection-1.pdf}
 
 }
 
@@ -765,13 +782,11 @@ Most simulations have detected a clear sine-wave pattern, while the last
 six show a straight line with clustering at the ends. In this
 simulation, the success rate is 0.88 (44/50).}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{optim_files/figure-pdf/fig-index-value-proj-dist-1.pdf}
+{\centering \includegraphics{optim_files/figure-pdf/fig-index-value-proj-dist-1.pdf}
 
 }
 
@@ -786,9 +801,10 @@ Projection distances are binned with a bin width of 0.1, and index
 values are averaged over each bin. The relationship between the two
 variables forms a sigmoid curve.}
 
-\end{figure}%
+\end{figure}
 
-\section{Application {[}Di and Sherry{]}}\label{sec-app}
+\hypertarget{sec-app}{%
+\section{Application {[}Di and Sherry{]}}\label{sec-app}}
 
 The JSO provides a new swarm-based search strategy to optimise
 projection pursuit problems. Two examples are provided in this section
@@ -799,8 +815,9 @@ second example studies the effect of optimisation properties defined in
 Section~\ref{sec-theory}, along with JSO hyper-parameters, on the
 outcome (success rate) of the optimisation.
 
+\hypertarget{sec-app-1}{%
 \subsection{Performance of JSO in pipe-finding
-problems}\label{sec-app-1}
+problems}\label{sec-app-1}}
 
 The performance of JSO is investigated in two folds: 1) compare it with
 a commonly used optimiser: the search-better optimiser (SBO)
@@ -812,9 +829,7 @@ pipe shape using the holes index, investigated by
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{optim_files/figure-pdf/fig-proj-1.pdf}
+{\centering \includegraphics{optim_files/figure-pdf/fig-proj-1.pdf}
 
 }
 
@@ -829,13 +844,11 @@ pipe shape but with a wide rim. At higher data dimensions, JSO finds a
 higher index value and a clearer pipe shape across all the quantiles
 than the SBO.}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{optim_files/figure-pdf/fig-proportion-1.pdf}
+{\centering \includegraphics{optim_files/figure-pdf/fig-proportion-1.pdf}
 
 }
 
@@ -846,7 +859,7 @@ out of 50, that achieve an index value within 0.05 of the
 best-performing simulation. As the dimensionality increases, the
 proportion of simulations reaching the optimal index value increases.}
 
-\end{figure}%
+\end{figure}
 
 Fifty simulations are conducted with both JSO and the SBO, in four
 dimensions (\(d = 6, 8, 10, 12\)). JSO uses 100 jellyfishes and 100
@@ -877,8 +890,9 @@ in high success rate, while for higher-dimensional problems (8, 10, and
 of tries is necessary for at least half of the jellyfishes to find the
 projection close to the optimal.
 
+\hypertarget{sec-app-2}{%
 \subsection{Factors affecting JSO success rate: optimisation properties
-and jellyfish hyper-parameters}\label{sec-app-2}
+and jellyfish hyper-parameters}\label{sec-app-2}}
 
 The optimisation properties, including smoothness, squintability, and
 speed, offer numerical metrics to characterise the complexity of
@@ -932,9 +946,7 @@ measure.
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{optim_files/figure-pdf/fig-idx-proj-dist-1.pdf}
+{\centering \includegraphics{optim_files/figure-pdf/fig-idx-proj-dist-1.pdf}
 
 }
 
@@ -946,17 +958,15 @@ averaged at bin width of 0.005, are scaled from 0 to 1 for comparison
 curves are convex while others are concave. The stringy curve shows an
 instantaneous jump to the optimum when aproaching the best basis.}
 
-\end{figure}%
+\end{figure}
 
+\hypertarget{tbl-smoothness-squintability}{}
 \begin{table}
-
-\caption{\label{tbl-smoothness-squintability}Parameters estimated from
-the Gaussian process (including variance, range, smoothness, and nugget)
-and scaled logistic function (\(\theta_1\) to \(\theta_4\)) for the
-pipe-finding and sine-wave finding problems. The column ``smooth'' and
-``squint'' represent the smoothness and squintability measures.}
-
-\centering{
+\caption{\label{tbl-smoothness-squintability}Parameters estimated from the Gaussian process (including variance,
+range, smoothness, and nugget) and scaled logistic function
+(\(\theta_1\) to \(\theta_4\)) for the pipe-finding and sine-wave
+finding problems. The column ``smooth'' and ``squint'' represent the
+smoothness and squintability measures. }\tabularnewline
 
 \centering\begingroup\fontsize{7}{9}\selectfont
 
@@ -981,19 +991,13 @@ pipe-finding and sine-wave finding problems. The column ``smooth'' and
 \bottomrule
 \end{tabular}
 \endgroup{}
-
-}
-
-\end{table}%
+\end{table}
 
 \begingroup\fontsize{7}{9}\selectfont
 
+\hypertarget{tbl-mod-data}{}
 \begin{longtable}[t]{lrrrrrrl}
-
-\caption{\label{tbl-mod-data}The first 7 rows of the datasets processed
-for modelling.}
-
-\tabularnewline
+\caption{\label{tbl-mod-data}The first 7 rows of the datasets processed for modelling. }\tabularnewline
 
 \toprule
 Index & D & Smoothness & Squintability & Num. of jellyfish & Max. Num. of tries & Prop. of success & Time\\
@@ -1007,27 +1011,22 @@ MIC & 6 & 2.457 & 1.257 & 100 & 50 & 0.76 & 19.453 secs\\
 MIC & 8 & 2.636 & 0.772 & 20 & 50 & 0.08 & 2.566 secs\\
 MIC & 8 & 2.636 & 0.772 & 20 & 100 & 0.08 & 4.960 secs\\
 \bottomrule
-
 \end{longtable}
-
 \endgroup{}
 
 \begingroup\fontsize{7}{9}\selectfont
 
+\hypertarget{tbl-mod-output}{}
 \begin{longtable}[t]{|>{}lrrr>{}r|}
-
-\caption{\label{tbl-mod-output}Model estimates of proportion of
-jellyfish success on optimisation properties and jellyfish
-hyper-parameters from the generalised linear model with a binomial
-family and a logit link function. The variable smoothness,
-squintability, number of jellyfish and maximum number of tries are
-positively associated with JSO success rate while data dimension and
-being flagged as long runtime are negatively associated with the success
-rate. The variable squintability and dimension are significant,
-suggesting their importance relative to jellyfish hyper-parameters in
-the optimisation success.}
-
-\tabularnewline
+\caption{\label{tbl-mod-output}Model estimates of proportion of jellyfish success on optimisation
+properties and jellyfish hyper-parameters from the generalised linear
+model with a binomial family and a logit link function. The variable
+smoothness, squintability, number of jellyfish and maximum number of
+tries are positively associated with JSO success rate while data
+dimension and being flagged as long runtime are negatively associated
+with the success rate. The variable squintability and dimension are
+significant, suggesting their importance relative to jellyfish
+hyper-parameters in the optimisation success. }\tabularnewline
 
 \toprule
 term & estimate & std.error & statistic & p.value\\
@@ -1041,9 +1040,7 @@ long time & -0.874 & 1.286 & -0.680 & 0.497\\
 number of jellyfish & 0.216 & 0.127 & 1.701 & 0.089\\
 maximum number of tries & 0.113 & 0.150 & 0.752 & 0.452\\
 \bottomrule
-
 \end{longtable}
-
 \endgroup{}
 
 Table~\ref{tbl-mod-data} combines all the variables calculated above
@@ -1069,7 +1066,8 @@ optimisation success. Users should consider increasing the number of
 jellyfish and the number of tries to improve the success rate, until JSO
 exceeds a 30-second runtime.
 
-\section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}
+\hypertarget{sec-conclusion}{%
+\section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}}
 
 \begin{itemize}
 \tightlist
