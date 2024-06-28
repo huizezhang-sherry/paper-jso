@@ -433,47 +433,48 @@ notion of squintability.
 <!-- index function (for instance, in big O notation, with respect to the -->
 <!-- sample size) of computing the index function. -->
 
-# Visualisation of jellyfish optimiser {#sec-vis}
+# Simulation details {#sec-vis}
 
-The JSO provides a new swarm-based search strategy to optimise
-projection pursuit problems. This section outlines two simulation setups
-to demonstrate the performance of JSO. In the first example, the 
-performance of JSO is compared with an exist optimiser, Creeping Random Search (CRS), and explores how JSO behaves
-with different combinations of hyper-parameters. The second example
-studies the effect of optimisation properties defined in @sec-theory,
-along with JSO hyper-parameters, on the outcome (success rate) of the
+JSO provides a new swarm-based search strategy for optimising
+projection pursuit problems. This section describes the setups for two simulations
+to demonstrate JSO's performance. The first simulation compares JSO's 
+performance with an exist optimiser, Creeping Random Search (CRS), and explores how JSO behaves
+with different hyper-parameters combinations. The second simulation
+studies the effect of optimisation properties (smoothness and squintability),
+along with JSO hyper-parameters, on the success rate of the
 optimisation.
 
-The data structure proposed in @RJ-2021-105 is used here for assessing JSO. A sample for the sine-wave structure in 6D data using a spline index function (`splines2d`) is printed below:
+## Performance of JSO in pipe-finding problems {#sec-app-1}
+
+The performance of JSO is investigated in two folds: 1) compare it with a commonly used optimiser: the search-better optimiser (SBO) [@RJ-2021-105;
+@laa_using_2020], and 2) examine its success rate under two hyper-parameters (number of jellyfishes and maximum number of tries). The projection pursuit problem used is finding the pipe shape using the holes index, investigated by @laa_using_2020. Fifty simulations are conducted with both JSO and the SBO, in four dimensions ($d = 6, 8, 10, 12$). JSO uses 100 jellyfishes and 100 maximum number of tries, while the SBO allows a maximum of 1000 samples at each iteration before the algorithm terminates. The results of the simulation are collected using the data structure proposed in @RJ-2021-105 is used here for assessing JSO. A sample for the sine-wave structure in 6D data using a spline index function (`splines2d`) is printed below:
 
 ```{r}
 dplyr::glimpse(sim_sine_6d_spline_head |> select(-id, -info)) 
 ```
 
-The JSO hyper-parameters used are 50 jellyfishes (`n_jellies`) and
-a maximum of 50 tries (`max_tries`). The full data contains 50
+In this simulation, 50 jellyfishes (`n_jellies`) and
+a maximum of 50 tries (`max_tries`) are used. The full data contains 50
 simulations, indexed by the variable `sim`, with the associated `seed`s. 
 Recorded in columns `basis`, `index_val`, `tries`, `loop` and
 `time`, are the sampled projection basis, index value,
 iteration ID, jellyfish ID, and computational time
-respectively. The basis column records every visited basis before
-comparing with the current (last) basis. If a visited basis has a
-smaller index value than the current (last) one, JSO will keep the
-current basis for the next iteration in the search but still records the
-visited inferior basis. 
+respectively. 
 
-## Performance of JSO in pipe-finding problems {#sec-app-1}
-
-The performance of JSO is investigated in two folds: 1) compare it with a commonly used optimiser: the search-better optimiser (SBO) [@RJ-2021-105;
-@laa_using_2020], and 2) examine its success rate under different hyper-parameters (number of jellyfishes and maximum number of tries). The projection pursuit problem used is finding the pipe shape using the holes index, investigated by @laa_using_2020. Fifty simulations are conducted with both JSO and the SBO, in four dimensions ($d = 6, 8, 10, 12$). JSO uses 100 jellyfishes and 100 maximum number of tries, while the SBO allows a maximum of 1000 samples at each iteration before the algorithm terminates. 
+<!-- The basis column records every visited basis before -->
+<!-- comparing with the current (last) basis. If a visited basis has a -->
+<!-- smaller index value than the current (last) one, JSO will keep the -->
+<!-- current basis for the next iteration in the search but still records the -->
+<!-- visited inferior basis.  -->
 
 In the second experiment, fifty simulations are conducted at each
-hyper-parameter combination to analyse its effects on the JSO success
-rate. The hyper-parameters tested include: 1) 20, 50, and 100
-jellyfishes, and 2) 50 and 100 maximum number of tries. The success 
+hyper-parameter combination below to analyse its effects on the JSO success
+rate: number of jellyfish: 20, 50, and 100, and  maximum number of 
+tries: 50 and 100). The success 
 rate is defined as the proportion of
 simulations that achieves a final index value within 0.05 of the best
-index value found among all 50 simulations. In the dataset above,
+index value found among all 50 simulations. @fig-success-rate illustrates 
+the calculation based on the projection found by the above simulation. Here
 the optimal index value is
 `r sim_sine_6d_spline_best |> pull(index_val) |> max() |> round(3) -> aa; aa`.
 Out of the 50 simulations,
@@ -490,6 +491,31 @@ in a success rate of
 <!-- pursuit problem, plotting the projections found in each simulation -->
 <!-- or by each jellyfish can help identify these local optima. -->
 
+```{r}
+#| label: fig-success-rate
+#| fig.cap: "Illustration of success rate calculation: The best projections identified by the JSO in 50 simulations are sorted by their index values. The highest index value found across all simulation is 0.999. Out of the 50 simulations, 44 achieved an index value within 0.05 of the best, resulting in a success rate of 0.88 (44/50)."
+# proj_dt <- map_dfr(sim_sine_6d_spline_best |> pull(basis), 
+#               ~as_tibble(as.matrix(sine1000) %*% .x), .id = "sim") |> 
+#   mutate(sim = as.numeric(sim)) |> 
+#   left_join(sim_sine_6d_spline_best |> select(sim, index_val), by = "sim")
+# 
+# idx_val_sorted <- proj_dt |> pull(index_val) |> unique() |> sort()
+# proj_dt |> 
+#   #filter(index_val %in% c(idx_val_sorted[1:12], idx_val_sorted[39:50])) |>
+#   ggplot(aes(x = V1, y = V2)) + 
+#   geom_point(size = 0.5) + 
+#   geom_text(aes(label = round(index_val, 3)), x = 0, y = 3.7, 
+#             size = 8) +
+#   xlim(-4, 4) + ylim(-4, 4) +
+#   facet_wrap(~fct_reorder(as.factor(sim), -index_val), ncol = 10) + 
+#   theme_bw() +
+#   theme(aspect.ratio = 1, axis.ticks = element_blank(),
+#         axis.text = element_blank(), axis.title = element_blank(),
+#         panel.grid = element_blank(), strip.background = element_blank(),
+#         strip.text = element_blank())
+knitr::include_graphics(here::here("figures", "success-rate.png"))
+```
+
 
 ## Factors affecting JSO success rate: optimisation properties and jellyfish hyper-parameters {#sec-app-2}
 
@@ -503,8 +529,7 @@ sine-wave finding cases. For each case, JSO is run fifty times and the
 success rate is calculated.
 
 Smoothness and squintability are computed for each case, following the
-procedures outlined in @sec-smoothness and @sec-squintability and illustrated in @fig-smoothness and  @fig-squintability. To
-calculate smoothness, three hundred random bases are simulated. Index
+procedures outlined in @sec-smoothness and @sec-squintability and illustrated in @fig-smoothness and  @fig-squintability. For smoothness, three hundred random bases are simulated. Index
 values and projection distance (to the optimal basis) are calculated for
 each random basis before fitting into a Gaussian process model to obtain 
 the smoothness measure. For
@@ -516,6 +541,15 @@ measure is then calculated from fitting a 4-parameter scaled logistic
 function of index value against projection distance, estimated by
 non-linear least squares.
 
+Combining with the success rate calculated for each case, the dataset is fitted using 
+a generalised linear model with a binomial family and a logit link
+function with three pre-processing steps are applied: 1) scaling
+the JSO hyper-parameters by a factor of 10 for interpretation, 2)
+creating a new binary variable `long_time` to indicate cases with an
+average run time over 30 seconds, and 3) encoding the success rate for
+the stringy case as 0, because upon visual inspection of the final
+projection, none of the 50 simulations identified the sine-wave shape. 
+
 <!-- **Projection distance**: The projection distance between projection -->
 <!-- bases and the optimal best basis (or the empirical best basis if -->
 <!-- the optimal is unknown) measures how close a visited basis is to  -->
@@ -524,42 +558,27 @@ non-linear least squares.
 <!-- bases visited reveals how the index value changes as the basis -->
 <!-- approaches the optimal basis, helping to calculate the squintability -->
 <!-- measure. -->
-    
-
-
-```{r eval = FALSE}
-#| label: fig-projection
-#| fig.height: 6
-#| fig.width: 10
-#| fig.cap: Best projections found by the JSO in each of the 50 simulations, sorted by index values. The projection pursuit problem is to detect the 6D sine-wave structure using the spline index. Most simulations have detected a clear sine-wave pattern, while the last six show a straight line with clustering at the ends. In this simulation, the success rate is 0.88 (44/50).
-proj_dt <- map_dfr(sim_sine_6d_spline_best |> pull(basis), 
-              ~as_tibble(as.matrix(sine1000) %*% .x), .id = "sim") |> 
-  mutate(sim = as.numeric(sim)) |> 
-  left_join(sim_sine_6d_spline_best |> select(sim, index_val), by = "sim")
-
-proj_dt |>
-  ggplot(aes(x = V1, y = V2)) + 
-  geom_point(size = 0.1) + 
-  geom_text(aes(label = round(index_val, 3)), x = 0, y = 3.7, 
-            size = 3) +
-  xlim(-4, 4) + ylim(-4, 4) +
-  facet_wrap(~fct_reorder(as.factor(sim), -index_val), ncol = 10) + 
-  theme_bw() +
-  theme(aspect.ratio = 1, axis.ticks = element_blank(),
-        axis.text = element_blank(), axis.title = element_blank(),
-        panel.grid = element_blank())
-```
+  
 
 ```{r}
 #| label: fig-smoothness
-#| fig.cap: "Illustration of steps to calculate smoothness. "
+#| out.width: 100%
+#| fig.cap: "Illustration of steps to calculate smoothness. For a given projection pursuit problem defined by the shape to find, data dimension and the index function, sample random bases given the orthonormality contraint. Calculate the projection distance and the index value for each random basis. Fit a Gaussian process model to the index values against the projection distances to obtain the smoothness measure. "
+# basis_smoothness <- sample_bases(idx = "splines2d", n_basis = 1000)
+# basis_smoothness |>
+#    ggplot(aes(x = dist, y = index)) +
+#    geom_point() + 
+#    labs(x = "Projection distance", y = "Index value") + 
+#    theme_bw() +   
+#   theme(axis.text = element_text(size = 20), axis.title = element_text(size = 30))
 knitr::include_graphics(here::here("figures", "smoothness.png"))
 ```
 
 
 ```{r}
 #| label: fig-squintability
-#| fig.cap: "Illustration of steps to calculate squintability. For all the bases, calculate the projection distance to the optimal basis and the corresponding index value. Bin the index value by the projection distance, then claculate the average index value for each bin. Fit the scaled sigmoid function from Equation @eq-squintability to the binned index values against the projection distance using non-linear least square. Use Equation @eq-parametric to calculate the squintability measure from the estimated $\\theta_1$ to $\\theta_4$. "
+#| out.width: 100%
+#| fig.cap: "Illustration of steps to calculate squintability. For a given projection pursuit problem defined by the shape to find, data dimension and the index function, sample random bases given the orthonormality and projection distance contraint. Interpolate the sampled bases to the optimal basis and calculate the projection distance and the index value for each interpolated basis. Bin the index value by the projection distance, then claculate the average index value for each bin. Fit the scaled sigmoid function from Equation @eq-squintability to the binned index values against the projection distance using non-linear least square. Use Equation @eq-parametric to calculate the squintability measure from the estimated $\\theta_1$ to $\\theta_4$. "
 # p1 <- sim_sine_6d_spline_projdist |> 
 #   ggplot(aes(x = proj_dist, y = index_val)) +
 #   geom_point(size = 0.1, alpha = 0.5) + 
@@ -582,10 +601,10 @@ knitr::include_graphics(here::here("figures", "smoothness.png"))
 #   theme_bw() + 
 #   theme(axis.text = element_text(size = 20), axis.title = element_text(size = 30))
 knitr::include_graphics(here::here("figures", "squintability.png"))
-
-
 ```
 
+
+\newpage
 
 # Results \[Di and Sherry\] {#sec-app}
 
@@ -792,14 +811,7 @@ broom::tidy(mod1) |>
 
 @tbl-mod-data combines all the variables calculated above (JSO
 success rate, hyper-parameters, and optimisation properties) into
-one table. Three pre-processing steps are applied to the data: 1) scaling
-the JSO hyper-parameters by a factor of 10 for interpretation, 2)
-creating a new binary variable `long_time` to indicate cases with an
-average run time over 30 seconds, and 3) encoding the success rate for
-the stringy case as 0, because upon visual inspection of the final
-projection, none of the 50 simulations identified the sine-wave shape. A
-generalised linear model with a binomial family and a logit link
-function is used to fit the data and @tbl-mod-output presents the model
+one table. @tbl-mod-output presents the model
 outputs. The model suggests that JSO success rate is positively
 associated with the two hyper-parameters, as well as with the
 optimisation properties -- smoothness and squintability. Specifically,

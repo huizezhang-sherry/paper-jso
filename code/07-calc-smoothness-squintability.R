@@ -27,7 +27,7 @@ holes_tidy <- smoothness_holes |>
 
 idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "stringy", "splines2d")
 smoothness_sine <- tibble::tibble(
-  n = 6, index = idx_names, data = list(sine1000),
+  n = 6, index = idx_names[6], data = list(sine1000),
   best = list(matrix(c(rep(0, 8), 1, 0, 0, 1), nrow = 6, byrow = TRUE))) |>
   dplyr::bind_rows(sine_8d_tbl("MIC")) |>
   dplyr::bind_rows(sine_8d_tbl("TIC")) |>
