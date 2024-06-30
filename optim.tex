@@ -306,10 +306,10 @@ Here we mathematically define metrics for squintability and smoothness,
 which is new for the field. A series of simulation experiments using
 specially structured datasets and various PP indexes are conducted to
 assess the behaviour of JSO under different settings and its sensitivity
-to hyper-parameter choices. The relationship between the JSO
-performance, hyper-parameter tuning and properties of PP indexes is
-analysed to provide guidance for practitioners using projection pursuit,
-and developers of new indexes.
+to hyper-parameter choices (number of jellies and maximum number of
+tries). The relationship between the JSO performance, hyper-parameter
+tuning and properties of PP indexes is analysed to provide guidance for
+practitioners using projection pursuit, and developers of new indexes.
 
 The paper is structured as follows. Section~\ref{sec-background}
 introduces the background of PP guided tour and reviews existing
@@ -408,7 +408,7 @@ one, rejected otherwise. This process continues and iteratively improves
 the projection, until the pre-specified maximum number of trials is
 reached.
 
-\begin{tcolorbox}[enhanced jigsaw, left=2mm, colback=white, opacityback=0, leftrule=.75mm, bottomtitle=1mm, arc=.35mm, colbacktitle=quarto-callout-note-color!10!white, title={Algorithm: Jellyfish Optimizer Pseudo Code}, toptitle=1mm, colframe=quarto-callout-note-color-frame, rightrule=.15mm, coltitle=black, breakable, bottomrule=.15mm, titlerule=0mm, toprule=.15mm, opacitybacktitle=0.6]
+\begin{tcolorbox}[enhanced jigsaw, toptitle=1mm, bottomtitle=1mm, bottomrule=.15mm, rightrule=.15mm, colbacktitle=quarto-callout-note-color!10!white, titlerule=0mm, leftrule=.75mm, coltitle=black, opacitybacktitle=0.6, title={Algorithm: Jellyfish Optimizer Pseudo Code}, breakable, opacityback=0, colback=white, left=2mm, toprule=.15mm, arc=.35mm, colframe=quarto-callout-note-color-frame]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -652,14 +652,11 @@ value.
 
 \section{Simulation details}\label{sec-sim-deets}
 
-JSO provides a new swarm-based search strategy for optimising projection
-pursuit problems. This section describes the setups for two simulations
-to demonstrate JSO's performance. The first simulation compares JSO's
-performance with an exist optimiser, Creeping Random Search (CRS), and
-explores how JSO behaves with different hyper-parameters combinations.
-The second simulation studies the effect of optimisation properties
-(smoothness and squintability), along with JSO hyper-parameters, on the
-success rate of the optimisation.
+The JSO performance is compared with the existing Creeping Random Search
+(CRS) currently used in guided tour, and explores how JSO behaves with
+different hyper-parameters combinations. A second simulation studies the
+effect of index properties (smoothness and squintability), along with
+JSO hyper-parameters, on the success rate of the JSO performance.
 
 \subsection{Performance of JSO in pipe-finding
 problems}\label{sec-app-1}
@@ -702,7 +699,7 @@ simulations, indexed by the variable \texttt{sim}, with the associated
 \texttt{seed}s. Recorded in columns \texttt{basis}, \texttt{index\_val},
 \texttt{tries}, \texttt{loop} and \texttt{time}, are the sampled
 projection basis, index value, iteration ID, jellyfish ID, and
-computational time respectively.
+computational time, respectively.
 
 In the second experiment, fifty simulations are conducted at each
 hyper-parameter combination below to analyse its effects on the JSO
@@ -711,7 +708,7 @@ of tries: 50 and 100). The success rate is defined as the proportion of
 simulations that achieves a final index value within 0.05 of the best
 index value found among all 50 simulations.
 Figure~\ref{fig-success-rate} illustrates the calculation based on the
-projection found by the above simulation. Here the optimal index value
+projection found by the above simulation. Here, the optimal index value
 is 0.999. Out of the 50 simulations, 44 achieved an index value within
 {[}0.949, 0.999{]}, resulting in a success rate of 0.88.
 
@@ -732,8 +729,8 @@ rate of 0.88 (44/50).}
 
 \end{figure}%
 
-\subsection{Factors affecting JSO success rate: optimisation properties
-and jellyfish hyper-parameters}\label{sec-app-2}
+\subsection{Factors affecting JSO success rate: index properties and
+jellyfish hyper-parameters}\label{sec-app-2}
 
 In addition to the pipe-finding problem, a new shape, sine wave, is
 investigated in 6D and 8D spaces with six indexes considered:
@@ -816,8 +813,8 @@ Section~\ref{sec-sim-deets} are analysed based on the final projections
 across two optimisers (JSO and CRS) and the success rate across JSO
 hyper-parameters. Smoothness and squintability are calculated across a
 collection of pipe-finding and sine-wave finding problems to construct
-the relationship between success rate, JSO hyper-parameters, and
-optimisation properties.
+the relationship between success rate, JSO hyper-parameters, and index
+properties.
 
 \subsection{Performance of JSO in pipe-finding
 problems}\label{sec-app-1}
@@ -886,41 +883,41 @@ proportion of simulations reaching the optimal index value increases.}
 
 \end{figure}%
 
-\subsection{Factors affecting JSO success rate: optimisation properties
-and jellyfish hyper-parameters}\label{sec-app-2}
+\subsection{Factors affecting JSO success rate: index properties and
+jellyfish hyper-parameters}\label{sec-app-2}
 
-The optimisation properties, including smoothness and squintability,
-offer numerical metrics to characterise the complexity of projection
-pursuit optimisation problems. Table~\ref{tbl-smoothness-squintability}
-presents the parameters estimated from the Gaussian process (variance,
-range, smooth, and nugget) and the scaled logistic function
-(\(\theta_1\) to \(\theta_4\)) for calculating both metrics for each
-case considered in the simulation. The column ``smooth'' is used as the
-smoothness metric and the column ``squint'' is calculated as equation
+The index properties, including smoothness and squintability, offer
+numerical metrics to characterise the complexity of projection pursuit
+optimisation problems. Table~\ref{tbl-smoothness-squintability} presents
+the parameters estimated from the Gaussian process (variance, range,
+smooth, and nugget) and the scaled logistic function (\(\theta_1\) to
+\(\theta_4\)) for calculating both metrics for each case considered in
+the simulation. The column ``smooth'' is used as the smoothness metric
+and the column ``squint'' is calculated as equation
 \ref{eq-squintability-parametric} as the squintability metric.
 Table~\ref{tbl-mod-output} presents the results of fitting a generalised
 linear model with a binomial family and a logit link function to the
 data in Table~\ref{tbl-mod-data}, where all the three components
-(success rate, JS hyper-parameters, and optimisation properties) are
-combined. The model suggests that JSO success rate is positively
-associated with the two hyper-parameters, as well as with the
-optimisation properties: smoothness and squintability. Specifically,
-using 10 more jellyfishes and 10 more tries increases the odd ratio of
-success by 24.11\% and 11.93\%, respectively. However, being flagged
-with long runtime and an increase of data dimension reduce the success
-rate by 41.72\% and 53.36\%, respectively. The variable
-\texttt{squintability} and \texttt{dimension} are significant,
-suggesting their importance relative to JSO hyper-parameters in the
-optimisation success. In defining a projection pursuit problem, factors
-such as the shape-to-find, the index function used, and the data
-dimension, determine the optimisation properties like smoothness and
-squintability. These metrics can then be compared across different
-problems to understand their relative complexity. The results suggest
-that squintability has a more significant influence than smoothness on
-the success rate of JSO. Once the characteristics of the projection
-pursuit problem are fully understood, increasing JSO hyper-parameters
-can enhance the search effectiveness, however, it is also important to
-consider the resulting increase in computational complexity.
+(success rate, JS hyper-parameters, and index properties) are combined.
+The model suggests that JSO success rate is positively associated with
+the two hyper-parameters, as well as with the index properties:
+smoothness and squintability. Specifically, using 10 more jellyfishes
+and 10 more tries increases the odd ratio of success by 24.11\% and
+11.93\%, respectively. However, being flagged with long runtime and an
+increase of data dimension reduce the success rate by 41.72\% and
+53.36\%, respectively. The variable \texttt{squintability} and
+\texttt{dimension} are significant, suggesting their importance relative
+to JSO hyper-parameters in the optimisation success. In defining a
+projection pursuit problem, factors such as the shape-to-find, the index
+function used, and the data dimension, determine the properties like
+smoothness and squintability. These metrics can then be compared across
+different problems to understand their relative complexity. The results
+suggest that squintability has a more significant influence than
+smoothness on the success rate of JSO. Once the characteristics of the
+projection pursuit problem are fully understood, increasing JSO
+hyper-parameters can enhance the search effectiveness, however, it is
+also important to consider the resulting increase in computational
+complexity.
 
 \begin{table}
 
@@ -989,15 +986,14 @@ MIC & 8 & 2.64 & 0.77 & 20 & 100 & 0.08 & 4.96\\
 \begin{table}
 
 \caption{\label{tbl-mod-output}Model estimates of proportion of
-jellyfish success on optimisation properties and jellyfish
-hyper-parameters from the generalised linear model with a binomial
-family and a logit link function. The variable smoothness,
-squintability, number of jellyfish and maximum number of tries are
-positively associated with JSO success rate while data dimension and
-being flagged as long runtime are negatively associated with the success
-rate. The variable squintability and dimension are significant,
-suggesting their importance relative to jellyfish hyper-parameters in
-the optimisation success.}
+jellyfish success on index properties and jellyfish hyper-parameters
+from the generalised linear model with a binomial family and a logit
+link function. The variable smoothness, squintability, number of
+jellyfish and maximum number of tries are positively associated with JSO
+success rate while data dimension and being flagged as long runtime are
+negatively associated with the success rate. The variable squintability
+and dimension are significant, suggesting their importance relative to
+jellyfish hyper-parameters in the optimisation success.}
 
 \centering{
 
@@ -1024,39 +1020,35 @@ Max. tries & 0.11 & 0.15 & 0.75 & 0.45\\
 
 \section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}
 
-\begin{itemize}
-\tightlist
-\item
-  Summarise the result of the simulation: JSO immense improvement on
-  current methods, \ldots{}
-\item
-  JSO for a guided tour, what changes are needed? Do we follow one
-  tentacle, do we perform off-line and then pull tentacles out to watch,
-  how does it integrate with ferrn
-\end{itemize}
+This paper has presented new metrics to mathematically define desirable
+features of PP indexes, squintability and smoothness, and used these to
+assess the performance of the new jellyfish search optimiser. The
+metrics will be generally useful for characterising PP indexes, and halp
+with developing nex indexes.
 
-Main findings:
+In the comparison of the JSO against the currently used CRS, as expected
+the JSO vastly out-performs CRS, and provides a high probability of
+finding the global optima. The JSO obtains the maximum more cleanly,
+with a slightly higher index value, and plot of the projected data
+showing the structure more clearly.
 
-\begin{itemize}
-\item
-  JSO tends to obtian a clearer projection and higher index value when
-  searching higher dimension spaces than CRS (and other current
-  optimisers) - Figure 4
-\item
-  Increasing JS hyper-parameter enhances its performance, but the
-  computational time required for the optimisation can quickly become
-  intensive, especially when evaluating the index function (such as
-  scagnostic indexes) multiple times across numerous iterations. -
-  Figure 5
-\item
-  Smoothness and squintability can be calculated and compared across
-  different problems to understand their relative complexity. Once a
-  projection pursuit problem is fully characterised (by the
-  shape-to-find, the index function used, and the data dimension),
-  increasing JSO hyper-parameters can enhance the search effectiveness,
-  however, the resulting increase in computational complexity will also
-  need to be considered. - modelling
-\end{itemize}
+The JSO performance is affected by the hyper-parameters, with a higher
+chance of reaching the global optima when more jellies are used and the
+maximum number of tries is increased. However, it comes at a
+computational cost, as expected. The performance declines if the
+projection dimension increases and if the PP index has low
+squintability. The higher the squintability the better chance the JSO
+can find the optima. However, interestingly smoothness does not affect
+the JSO performance.
+
+The new JSO is integrated with the current implementation of the
+projection pursuit guided tour in the \texttt{tourr} package, and can be
+further examined using PP optimisation diagnostics in the \texttt{ferrn}
+package. Using the JSO is a little different than the current CRS,
+because it runs many paths. The recommended approach is to conduct the
+optimisation off-line, and then use the guided tour to follow selected
+jellies. The tools for this are available in the \texttt{tourr} package,
+too.
 
 
 \renewcommand\refname{References}
