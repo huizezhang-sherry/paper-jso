@@ -104,7 +104,7 @@ Significant efforts have been devoted to enhancing the functionality of PP, impr
 Here, the potential for a Jellyfish Search Optimiser (JSO) to be integrated with the projection pursuit guided tour is explored. JSO [@chou_novel_2021] -[@rajwar_exhaustive_2023], inspired by the search behaviour of jellyfish in the ocean, is a swarm-based metaheuristic designed to solve global optimisation problems. Compared to traditional methods, JSO demonstrated stronger search ability and faster convergence, and requires fewer tuning parameters. These practical advantages make JSO a promising candidate for enhancing PP optimisation. <!--The study reported here explores JSO's potential in enhancing projection pursuit and examines the characteristics
 and advantages of such implementation.-->
 
-The primary goal of the study reported here is to investigate the performance of JSO in PP optimisation for the guided tour. It is of interest to assess how quickly and closely the optimiser reaches a gobal optima, for various PP indexes that may have differing complexities. To observe the performance of JSO with different types of PP indexes, metrics are introduced to capture specific properties of the index including squintability and smoothness as introduced in @laa_using_2020. Metrics for squintability and smoothness are precisely defined here, something that is new for the field.  A series of simulation experiments using specially structured datasets and various PP indexes are conducted to assess the behaviour of JSO under different settings and its sensitivity to hyper-parameter choices.  The relationship between the JSO performance, hyper-parameter tuning and properties of PP
+The primary goal of the study reported here is to investigate the performance of JSO in PP optimisation for the guided tour. It is of interest to assess how quickly and closely the optimiser reaches a gobal optima, for various PP indexes that may have differing complexities. To observe the performance of JSO with different types of PP indexes, metrics are introduced to capture specific properties of the index including squintability (based on @barnett1981interpreting's squint angle) and smoothness as introduced in @laa_using_2020. Here we mathematically define metrics for squintability and smoothness, which is new for the field.  A series of simulation experiments using specially structured datasets and various PP indexes are conducted to assess the behaviour of JSO under different settings and its sensitivity to hyper-parameter choices.  The relationship between the JSO performance, hyper-parameter tuning and properties of PP
 indexes is analysed to provide guidance for practitioners using projection pursuit, and developers of new indexes.
 
 The paper is structured as follows. @sec-background introduces the background of PP guided tour and reviews existing optimisers and index functions in the literature. @sec-theory details JSO and introduces metrics that measure different properties of PP indexes. @sec-sim-deets outlines the data structures, numerical summaries, and visualisations used in the simulation studies conducted in @sec-app to assess JSO's performance. @sec-sim-res presents two sets of simulation experiments, comparing JSO permformance improvements relative to an existing optimiser, and studies the impact of different PP index properties on the optimisation performance. @sec-conclusion summarises the work and provides suggestions for future directions.
@@ -130,15 +130,9 @@ dimension, and implemented because they are relatively easy to optimise.
 A goal is to be able to incorporate more complex PP indexes, for example
 based on scagnostics (@scag, @WW08).
 
-An initial investigation of PP indexes, and the potential for
-scagnostics is described in @laa_using_2020. To be useful here an
-optimiser needs to be able to handle index functions which are possibly
-not very smooth. In addition, because data structures might be
-relatively fine, the optimiser needs to be able to find maxima that
-occur with a small squint angle, that can only be seen from very close
-by. One last aspect that is useful is for an optimiser to return local
-maxima in addition to global because data can contain many different and
-interesting features.
+An initial investigation of PP indexes, and the potential for scagnostics is described in @laa_using_2020. To be useful here an optimiser needs to be able to handle index functions which are possibly
+not very smooth. In addition, because data structures might be relatively fine, the optimiser needs to be able to find maxima that occur with a small squint angle, that can only be seen from very close
+by. One last aspect that is useful is for an optimiser to return local maxima in addition to global because data can contain many different and interesting features.
 
 # The jellyfish optimiser and properties of PP indexes \[Nicolas and Jessica\] {#sec-theory}
 
@@ -225,11 +219,8 @@ the algorithm or its application, we focus on two main parameters that
 are most relevant to our application: the number of jellyfish and the
 maximum number of trials.
 
-@laa_using_2020 has proposed five criteria for assessing projection
-pursuit indexes (smoothness, squintability, flexibility, rotation
-invariance, and speed). Since not all the properties affects the
-execution of the optimisation, we choose to focus here on the first two properties, 
-namely *smoothness* (@sec-smoothness) and *squintability* (@sec-squintability), and propose two metrics to evaluate them.
+@laa_using_2020 has proposed five criteria for assessing projection pursuit indexes (smoothness, squintability, flexibility, rotation invariance, and speed). Since not all the properties affects the
+execution of the optimisation, we choose to focus here on the first two properties, namely *smoothness* (@sec-smoothness) and *squintability* (@sec-squintability), and propose two metrics to evaluate them.
 
 
 ## Smoothness {#sec-smoothness}
@@ -300,7 +291,7 @@ $$
 where $\nu>0$ is the smoothness parameter and where $\mathcal{K}_\nu$ is
 the modified Bessel function. The Matérn covariance function can be
 expressed analytically when $\nu$ is a half-integer, the most popular
-values in the literature being $1/2$, $3/2$ and $5/2$ . The parameter
+values in the literature being $1/2$, $3/2$ and $5/2$. The parameter
 $\nu$, called *smoothness parameter*, controls the decay of the covariance
 function. As such, it is an appropriate measure of smoothness of a
 random field.
@@ -316,8 +307,7 @@ After fitting the smoothness parameter $\nu>0$, its value can be interpreted as 
 
 ## Squintability {#sec-squintability}
 
-
-In this subsection, a metric to capture the notion of squintability is proposed, and two approaches to compute this metric numerically are detailed.
+Squintability has been a useful concept. Here, it is defined mathematically and two approaches to compute this metric numerically, are described.
 
 In the existing literature, it is commonly understood that a large squint angle implies that the objective function value is close to optimal even when
 we are not very close to the perfect view to see the structure. A small squint angle means that the PP index value improves substantially only when we are very close to the perfect view. As such, low squintability implies rapid improvement in the index value when near the perfect view. For PP, a small squint angle is considered to be undesirable because it means that the optimiser needs to be very close to be able to "see" the optima. Thus, it could be difficult for the optimiser to find the optima. We now propose a mathematical formulation of this intuition.
@@ -336,77 +326,44 @@ interpolate. Then we fit a kernel or use nonlinear least squares.\]
 -->
 ```
 
-It is expected that for a PP index with high squint angle, the optimization
-(@eq-optimization) should make substantial progress early on.
-Conversely, for a PP index with low squint angle, it might take a long
-while for the optimization to make substantial progress, as the
-candidate projections would need to be very close to the optimal one for
-the structure of the index function to be visible enough to be amenable
-to efficient optimization. This observation suggests that the extreme
-values of $f'$ (the ones for which $f''=0$, assuming that $f$ is twice
-differentiable), and the projection distances for which these values are attained,
-should play an important role in the mathematical definition of
-squintability. Noticing that $f$ is expected to be a decreasing
-function, we propose the following squintability metric:
+It is expected that for a PP index with high squint angle, the optimization (@eq-optimization) should make substantial progress early on. Conversely, for a PP index with low squint angle, it might take a long
+while for the optimization to make substantial progress, as the candidate projections would need to be very close to the optimal one for the structure of the index function to be visible enough to be amenable to efficient optimization. This observation suggests that the extreme values of $f'$ (the ones for which $f''=0$, assuming that $f$ is twice differentiable), and the projection distances for which these values are attained, should play an important role in the mathematical definition of squintability. Noticing that $f$ is expected to be a decreasing function, we propose the following squintability metric:
 
 $$
 \varsigma:=-4\min_{x}f'(x)\times\underset{x}{\arg\min}f'(x)\ .
 $$ {#eq-squintability}
 
-On the one hand, $-\min_{x}f'(x)$ represents the largest value of the
-gradient of $-f$. On the other hand, $\underset{x}{\arg\min}f'(x)$
-represents the projection distance at which this largest gradient is attained.
-Based on the above discussion, it is expected that these two values
-should be both high in the case of high squintability (fast increase in
-$f$ early on), and both low in the case of low squintability (any
-substantial increase in $f$ happens very late, close to the optimal
-angle). This suggest that their product (@eq-squintability) should
-provide a sensible measure of squintability. The multiplicative constant
-$4$, which can be deemed arbitrary, does not change the interpretation
-of the squintability metric $\varsigma$; it is here to adjust the range
-of values of $\varsigma$ and simplify the explicit formula for
-$\varsigma$ obtained later on.
+On the one hand, $-\min_{x}f'(x)$ represents the largest value of the gradient of $-f$. On the other hand, $\underset{x}{\arg\min}f'(x)$ represents the projection distance at which this largest gradient is attained. Based on the above discussion, it is expected that these two values should be both high in the case of high squintability (fast increase in $f$ early on), and both low in the case of low squintability (any substantial increase in $f$ happens very late, close to the optimal angle). This suggest that their product (@eq-squintability) should provide a sensible measure of squintability. The multiplicative constant $4$, which can be deemed arbitrary, does not change the interpretation of the squintability metric $\varsigma$; it is here to adjust the range of values of $\varsigma$ and simplify the explicit formula for $\varsigma$ obtained later on.
 
-To compute the squintability metric (@eq-squintability) in practice,
-several approaches are possible. The first one is to propose a
-parametric model for $f$, and use it to obtain an explicit formula for
-$\varsigma$. Numerical experiments suggest a scaled sigmoid shape as
+To compute the squintability metric (@eq-squintability) in practice, several approaches are possible. The first one is to propose a parametric model for $f$, and use it to obtain an explicit formula for $\varsigma$. Numerical experiments suggest a scaled sigmoid shape as
 described below. Define
 
 $$
 \ell(x):=\frac{1}{1+\exp(\theta_{3}(x-\theta_{2}))}\ ,
 $$ {#eq-logistic}
 
-which is a decreasing logistic function depending on two parameters
-$\theta_2$ and $\theta_3$ , such that $\ell(\theta_{2})=\frac{1}{2}$.
-Then, define
+which is a decreasing logistic function depending on two parameters $\theta_2$ and $\theta_3$, such that $\ell(\theta_{2})=\frac{1}{2}$. Then, define
 
 $$
 f(x)=(\theta_{1}-\theta_{4})\frac{\ell(x)-\ell(x_{\max})}{\ell(0)-\ell(x_{\max})}+\theta_{4}\ ,
 $$ {#eq-parametric}
 
-which depends on three additional parameters, $\theta_1$, $\theta_2$ ,
-and $x_{\max}$, such that $f(0)=\theta_1$ and $f(x_{\max})=\theta_4$.
-Under the parametric model (@eq-parametric), the squintability metric
-(@eq-squintability) can be shown to be equal to
+which depends on three additional parameters, $\theta_1$, $\theta_2$, and $x_{\max}$, such that $f(0)=\theta_1$ and $f(x_{\max})=\theta_4$. Under the parametric model (@eq-parametric), the squintability metric (@eq-squintability) can be shown to be equal to
 
 $$
 \varsigma=\frac{(\theta_{1}-\theta_{4})\theta_{2}\theta_{3}}{\ell(0)-\ell(x_{\max})}\ .
 $$ {#eq-squintability-parametric}
 
-In practice, the parameters of this model (@eq-parametric) can be
-estimated numerically, for example by non-linear least squares, and then
+In practice, the parameters of this model (@eq-parametric) can be estimated numerically, for example by non-linear least squares, and then
 used to evaluate $\varsigma$ as in equation
 (@eq-squintability-parametric).
 
-Alternatively, one can estimate (@eq-squintability) in a nonparametric
-way, for example by fitting $f$ using kernel regression, then
-numerically estimate the angle at which $-f'$ attains its highest value.
+Alternatively, one can estimate (@eq-squintability) in a nonparametric way, for example by fitting $f$ using kernel regression, then numerically estimate the angle at which $-f'$ attains its highest value.
 
 <!-- \textcolor{orange}{See whether further details are needed for the nonparametric approach.} -->
 
-To the best of our knowledge, this is the first attempt to measure mathematically the
-notion of squintability.
+<!--To the best of our knowledge, -->
+
 
 <!-- ## Speed -->
 
@@ -757,7 +714,7 @@ dt <- tibble(shape = c(rep("pipe", 4), rep("sine", 8)), smoothness) |>
   mutate(index = ifelse(index == "dcor2d_2", "dcor2d", index)) 
 dt |> 
   knitr::kable(
-    digits = 3, format = "latex", 
+    digits = 2, format = "latex", 
     col.names = c(
       "shape", "index", "d",
       "variance", "range", "smooth", "nugget",
@@ -765,36 +722,44 @@ dt |>
     booktabs = T, escape = FALSE, row.names = TRUE) |> 
   column_spec(1, border_left = TRUE) |> 
   column_spec(c(4, 8, 13), border_right = TRUE) |> 
-  kable_styling(font_size = 7) 
+  kable_styling(font_size = 10) 
 ```
 
 ```{r}
 #| label: tbl-mod-data
 #| tbl-cap: The first 7 rows of the datasets processed for modelling. 
 sim_df |> 
-  dplyr::select(index, d, smoothness, squintability, n_jellies, max_tries, 
-                -I_max, P_J, time) |> 
+  dplyr::select(index, d, smoothness, 
+    squintability, n_jellies, max_tries, 
+    -I_max, P_J, time) |> 
+  mutate(time = as.numeric(time)) |>
   arrange(index, d, n_jellies, max_tries) |> 
   head(7) |> 
-  kable(digits = 3,
-        col.names = c("Index", "D", "Smoothness", "Squintability", 
-                      "Num. of jellyfish", "Max. Num. of tries", 
-                      "Success rate", "Time"), 
-        linesep = "", 
+  kable(digits = 2, format = "latex", 
+        col.names = c("Index", "D", 
+          "Smoothness", "Squintability", 
+          "N. jellyfish", 
+          "Max. tries", 
+          "Success rate", "Time (sec)"),
+        linesep = "",
         booktabs = T) |> 
-  kable_styling(latex_options = "hold_position", font_size = 7)
+  kable_styling(#latex_options = "hold_position",
+    font_size = 10)
 ```
 
 ```{r}
 #| label: tbl-mod-output
 #| tbl-cap: Model estimates of proportion of jellyfish success on optimisation properties and jellyfish hyper-parameters from the generalised linear model with a binomial family and a logit link function. The variable smoothness, squintability, number of jellyfish and maximum number of tries are positively associated with JSO success rate while data dimension and being flagged as long runtime are negatively associated with the success rate. The variable squintability and dimension are significant, suggesting their importance relative to jellyfish hyper-parameters in the optimisation success.
 broom::tidy(mod1) |> 
-  mutate(term = c("Intercept", "Smoothness", "Squintability", "dimension (d)", 
-                  "long time", "number of jellyfish", "maximum number of tries")) |>
-  kable(digits = 3, linesep = "") |> 
+  mutate(term = c("Intercept", "Smoothness",
+   "Squintability", "Dimension (d)", 
+   "Long time", "N. jellyfish", 
+   "Max. tries")) |>
+  kable(digits = 2, format = "latex", 
+    linesep = "", booktabs = T) |> 
   column_spec(c(1,5), border_right = TRUE) |> 
   column_spec(1, border_left = TRUE) |> 
-  kable_styling(font_size = 7) 
+  kable_styling(font_size = 10) 
 ```
 
 

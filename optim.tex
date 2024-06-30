@@ -300,15 +300,16 @@ interest to assess how quickly and closely the optimiser reaches a gobal
 optima, for various PP indexes that may have differing complexities. To
 observe the performance of JSO with different types of PP indexes,
 metrics are introduced to capture specific properties of the index
-including squintability and smoothness as introduced in
-\citet{laa_using_2020}. Metrics for squintability and smoothness are
-precisely defined here, something that is new for the field. A series of
-simulation experiments using specially structured datasets and various
-PP indexes are conducted to assess the behaviour of JSO under different
-settings and its sensitivity to hyper-parameter choices. The
-relationship between the JSO performance, hyper-parameter tuning and
-properties of PP indexes is analysed to provide guidance for
-practitioners using projection pursuit, and developers of new indexes.
+including squintability (based on \citet{barnett1981interpreting}'s
+squint angle) and smoothness as introduced in \citet{laa_using_2020}.
+Here we mathematically define metrics for squintability and smoothness,
+which is new for the field. A series of simulation experiments using
+specially structured datasets and various PP indexes are conducted to
+assess the behaviour of JSO under different settings and its sensitivity
+to hyper-parameter choices. The relationship between the JSO
+performance, hyper-parameter tuning and properties of PP indexes is
+analysed to provide guidance for practitioners using projection pursuit,
+and developers of new indexes.
 
 The paper is structured as follows. Section~\ref{sec-background}
 introduces the background of PP guided tour and reviews existing
@@ -407,7 +408,7 @@ one, rejected otherwise. This process continues and iteratively improves
 the projection, until the pre-specified maximum number of trials is
 reached.
 
-\begin{tcolorbox}[enhanced jigsaw, left=2mm, opacityback=0, toprule=.15mm, opacitybacktitle=0.6, coltitle=black, breakable, colframe=quarto-callout-note-color-frame, colback=white, arc=.35mm, bottomtitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, toptitle=1mm, titlerule=0mm, rightrule=.15mm, leftrule=.75mm, bottomrule=.15mm, colbacktitle=quarto-callout-note-color!10!white]
+\begin{tcolorbox}[enhanced jigsaw, left=2mm, colback=white, opacityback=0, leftrule=.75mm, bottomtitle=1mm, arc=.35mm, colbacktitle=quarto-callout-note-color!10!white, title={Algorithm: Jellyfish Optimizer Pseudo Code}, toptitle=1mm, colframe=quarto-callout-note-color-frame, rightrule=.15mm, coltitle=black, breakable, bottomrule=.15mm, titlerule=0mm, toprule=.15mm, opacitybacktitle=0.6]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -529,7 +530,7 @@ where \(\nu>0\) is the smoothness parameter and where
 \(\mathcal{K}_\nu\) is the modified Bessel function. The Matérn
 covariance function can be expressed analytically when \(\nu\) is a
 half-integer, the most popular values in the literature being \(1/2\),
-\(3/2\) and \(5/2\) . The parameter \(\nu\), called \emph{smoothness
+\(3/2\) and \(5/2\). The parameter \(\nu\), called \emph{smoothness
 parameter}, controls the decay of the covariance function. As such, it
 is an appropriate measure of smoothness of a random field.
 
@@ -548,9 +549,9 @@ function.
 
 \subsection{Squintability}\label{sec-squintability}
 
-In this subsection, a metric to capture the notion of squintability is
-proposed, and two approaches to compute this metric numerically are
-detailed.
+Squintability has been a useful concept. Here, it is defined
+mathematically and two approaches to compute this metric numerically,
+are described.
 
 In the existing literature, it is commonly understood that a large
 squint angle implies that the objective function value is close to
@@ -622,15 +623,15 @@ described below. Define
 }\end{equation}
 
 which is a decreasing logistic function depending on two parameters
-\(\theta_2\) and \(\theta_3\) , such that
+\(\theta_2\) and \(\theta_3\), such that
 \(\ell(\theta_{2})=\frac{1}{2}\). Then, define
 
 \begin{equation}\phantomsection\label{eq-parametric}{
 f(x)=(\theta_{1}-\theta_{4})\frac{\ell(x)-\ell(x_{\max})}{\ell(0)-\ell(x_{\max})}+\theta_{4}\ ,
 }\end{equation}
 
-which depends on three additional parameters, \(\theta_1\), \(\theta_2\)
-, and \(x_{\max}\), such that \(f(0)=\theta_1\) and
+which depends on three additional parameters, \(\theta_1\),
+\(\theta_2\), and \(x_{\max}\), such that \(f(0)=\theta_1\) and
 \(f(x_{\max})=\theta_4\). Under the parametric model
 (\ref{eq-parametric}), the squintability metric (\ref{eq-squintability})
 can be shown to be equal to
@@ -648,9 +649,6 @@ Alternatively, one can estimate (\ref{eq-squintability}) in a
 nonparametric way, for example by fitting \(f\) using kernel regression,
 then numerically estimate the angle at which \(-f'\) attains its highest
 value.
-
-To the best of our knowledge, this is the first attempt to measure
-mathematically the notion of squintability.
 
 \section{Simulation details}\label{sec-sim-deets}
 
@@ -934,24 +932,24 @@ pipe-finding and sine-wave finding problems. The column ``smooth'' and
 
 \centering{
 
-\centering\begingroup\fontsize{7}{9}\selectfont
+\centering\begingroup\fontsize{10}{12}\selectfont
 
 \begin{tabular}{|>{}lll>{}r|rrr>{}r|rrrr>{}r|}
 \toprule
   & shape & index & d & variance & range & smooth & nugget & $\theta_1$ & $\theta_2$ & $\theta_3$ & $\theta_4$ & squint\\
 \midrule
-1 & pipe & holes & 6 & 0.002 & 0.371 & 2.355 & 0.221 & 1.015 & 0.860 & 3.368 & 0.018 & 3.053\\
-2 & pipe & holes & 8 & 0.000 & 0.178 & 2.189 & 0.820 & 1.014 & 0.869 & 3.264 & 0.029 & 2.960\\
-3 & pipe & holes & 10 & 0.000 & 0.107 & 2.192 & 3.027 & 1.016 & 0.885 & 3.151 & 0.022 & 2.948\\
-4 & pipe & holes & 12 & 0.000 & 0.148 & 2.295 & 1.581 & 1.011 & 0.878 & 3.345 & 0.004 & 3.117\\
-5 & sine & MIC & 6 & 0.016 & 0.092 & 2.457 & 0.083 & 0.894 & 0.571 & 1.623 & -0.024 & 1.257\\
-6 & sine & MIC & 8 & 0.016 & 0.081 & 2.636 & 0.084 & 0.932 & 0.328 & 1.314 & -0.030 & 0.772\\
-7 & sine & TIC & 6 & 0.124 & 0.110 & 2.444 & 0.086 & 0.951 & 0.536 & 1.719 & -0.027 & 1.322\\
-8 & sine & TIC & 8 & 0.125 & 0.099 & 2.475 & 0.085 & 0.949 & 0.564 & 1.723 & -0.028 & 1.369\\
-9 & sine & dcor2d & 6 & 0.034 & 0.167 & 2.663 & 0.114 & 0.954 & 1.039 & 2.742 & -0.019 & 2.947\\
-10 & sine & loess2d & 6 & 0.079 & 0.336 & 1.988 & 0.309 & 1.016 & 1.039 & 2.648 & 0.080 & 2.756\\
-11 & sine & splines2d & 6 & 0.042 & 0.242 & 2.537 & 0.102 & 1.014 & 1.051 & 2.730 & -0.009 & 3.118\\
-12 & sine & stringy & 6 & 0.000 & 0.007 & 1.536 & 38.166 & 1.045 & 0.011 & 254.734 & 0.053 & 2.957\\
+1 & pipe & holes & 6 & 0.00 & 0.37 & 2.36 & 0.22 & 1.02 & 0.86 & 3.37 & 0.02 & 3.05\\
+2 & pipe & holes & 8 & 0.00 & 0.18 & 2.19 & 0.82 & 1.01 & 0.87 & 3.26 & 0.03 & 2.96\\
+3 & pipe & holes & 10 & 0.00 & 0.11 & 2.19 & 3.03 & 1.02 & 0.88 & 3.15 & 0.02 & 2.95\\
+4 & pipe & holes & 12 & 0.00 & 0.15 & 2.29 & 1.58 & 1.01 & 0.88 & 3.34 & 0.00 & 3.12\\
+5 & sine & MIC & 6 & 0.02 & 0.09 & 2.46 & 0.08 & 0.89 & 0.57 & 1.62 & -0.02 & 1.26\\
+6 & sine & MIC & 8 & 0.02 & 0.08 & 2.64 & 0.08 & 0.93 & 0.33 & 1.31 & -0.03 & 0.77\\
+7 & sine & TIC & 6 & 0.12 & 0.11 & 2.44 & 0.09 & 0.95 & 0.54 & 1.72 & -0.03 & 1.32\\
+8 & sine & TIC & 8 & 0.12 & 0.10 & 2.47 & 0.09 & 0.95 & 0.56 & 1.72 & -0.03 & 1.37\\
+9 & sine & dcor2d & 6 & 0.03 & 0.17 & 2.66 & 0.11 & 0.95 & 1.04 & 2.74 & -0.02 & 2.95\\
+10 & sine & loess2d & 6 & 0.08 & 0.34 & 1.99 & 0.31 & 1.02 & 1.04 & 2.65 & 0.08 & 2.76\\
+11 & sine & splines2d & 6 & 0.04 & 0.24 & 2.54 & 0.10 & 1.01 & 1.05 & 2.73 & -0.01 & 3.12\\
+12 & sine & stringy & 6 & 0.00 & 0.01 & 1.54 & 38.17 & 1.05 & 0.01 & 254.73 & 0.05 & 2.96\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -960,35 +958,35 @@ pipe-finding and sine-wave finding problems. The column ``smooth'' and
 
 \end{table}%
 
-\begingroup\fontsize{7}{9}\selectfont
-
-\begin{longtable}[t]{lrrrrrrl}
+\begin{table}
 
 \caption{\label{tbl-mod-data}The first 7 rows of the datasets processed
 for modelling.}
 
-\tabularnewline
+\centering{
 
+\centering\begingroup\fontsize{10}{12}\selectfont
+
+\begin{tabular}{lrrrrrrr}
 \toprule
-Index & D & Smoothness & Squintability & Num. of jellyfish & Max. Num. of tries & Success rate & Time\\
+Index & D & Smoothness & Squintability & N. jellyfish & Max. tries & Success rate & Time (sec)\\
 \midrule
-MIC & 6 & 2.457 & 1.257 & 20 & 50 & 0.12 & 2.479 secs\\
-MIC & 6 & 2.457 & 1.257 & 20 & 100 & 0.24 & 8.950 secs\\
-MIC & 6 & 2.457 & 1.257 & 50 & 50 & 0.52 & 5.651 secs\\
-MIC & 6 & 2.457 & 1.257 & 50 & 100 & 0.64 & 13.223 secs\\
-MIC & 6 & 2.457 & 1.257 & 100 & 50 & 0.76 & 19.453 secs\\
-\addlinespace
-MIC & 8 & 2.636 & 0.772 & 20 & 50 & 0.08 & 2.566 secs\\
-MIC & 8 & 2.636 & 0.772 & 20 & 100 & 0.08 & 4.960 secs\\
+MIC & 6 & 2.46 & 1.26 & 20 & 50 & 0.12 & 2.48\\
+MIC & 6 & 2.46 & 1.26 & 20 & 100 & 0.24 & 8.95\\
+MIC & 6 & 2.46 & 1.26 & 50 & 50 & 0.52 & 5.65\\
+MIC & 6 & 2.46 & 1.26 & 50 & 100 & 0.64 & 13.22\\
+MIC & 6 & 2.46 & 1.26 & 100 & 50 & 0.76 & 19.45\\
+MIC & 8 & 2.64 & 0.77 & 20 & 50 & 0.08 & 2.57\\
+MIC & 8 & 2.64 & 0.77 & 20 & 100 & 0.08 & 4.96\\
 \bottomrule
-
-\end{longtable}
-
+\end{tabular}
 \endgroup{}
 
-\begingroup\fontsize{7}{9}\selectfont
+}
 
-\begin{longtable}[t]{|>{}lrrr>{}r|}
+\end{table}%
+
+\begin{table}
 
 \caption{\label{tbl-mod-output}Model estimates of proportion of
 jellyfish success on optimisation properties and jellyfish
@@ -1001,24 +999,28 @@ rate. The variable squintability and dimension are significant,
 suggesting their importance relative to jellyfish hyper-parameters in
 the optimisation success.}
 
-\tabularnewline
+\centering{
 
+\centering\begingroup\fontsize{10}{12}\selectfont
+
+\begin{tabular}{|>{}lrrr>{}r|}
 \toprule
 term & estimate & std.error & statistic & p.value\\
 \midrule
-Intercept & -4.523 & 5.332 & -0.848 & 0.396\\
-Smoothness & 1.195 & 1.915 & 0.624 & 0.533\\
-Squintability & 2.060 & 0.684 & 3.011 & 0.003\\
-dimension (d) & -0.628 & 0.255 & -2.462 & 0.014\\
-long time & -0.874 & 1.286 & -0.680 & 0.497\\
-\addlinespace
-number of jellyfish & 0.216 & 0.127 & 1.701 & 0.089\\
-maximum number of tries & 0.113 & 0.150 & 0.752 & 0.452\\
+Intercept & -4.52 & 5.33 & -0.85 & 0.40\\
+Smoothness & 1.19 & 1.92 & 0.62 & 0.53\\
+Squintability & 2.06 & 0.68 & 3.01 & 0.00\\
+Dimension (d) & -0.63 & 0.26 & -2.46 & 0.01\\
+Long time & -0.87 & 1.29 & -0.68 & 0.50\\
+N. jellyfish & 0.22 & 0.13 & 1.70 & 0.09\\
+Max. tries & 0.11 & 0.15 & 0.75 & 0.45\\
 \bottomrule
-
-\end{longtable}
-
+\end{tabular}
 \endgroup{}
+
+}
+
+\end{table}%
 
 \section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}
 
