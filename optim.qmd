@@ -42,7 +42,7 @@ author:
           country: Australia
           postal-code: 3800
 abstract: |
-  The projection pursuit (PP) guided tour interactively optimises a criteria function known as the PP index, to explore high-dimensional data by revealing interesting projections. The optimisation in PP can be non-trivial, involving non-smooth functions and optima with small a "squint angle", detectable only from close proximity. To address these challenges, this study investigates the performance of a recently introduced swarm-based algorithm, Jellyfish Search Optimiser (JSO), for optimising PP indexes. The performance of JSO for visualising data is evaluated across various hyper-parameter settings and compared with existing optimisers. Additionally, this work proposes novel methods to quantify two properties of the PP index -- smoothness and squintability -- that capture the complexities inherent in PP optimisation problems. These two metrics are evaluated with JSO hyper-parameters to determine their effect on JSO success rate. The JSO algorithm has been implemented in the `tourr` package, while functions to calculate  smoothness and squintability of indexes are available in the `ferrn` package. 
+  The projection pursuit (PP) guided tour interactively optimises a criteria function known as the PP index, to explore high-dimensional data by revealing interesting projections. The optimisation in PP can be non-trivial, involving non-smooth functions and optima with small a "squint angle", detectable only from close proximity. To address these challenges, this study investigates the performance of a recently introduced swarm-based algorithm, Jellyfish Search Optimiser (JSO), for optimising PP indexes. The performance of JSO for visualising data is evaluated across various hyper-parameter settings and compared with existing optimisers. Additionally, this work proposes novel methods to quantify two properties of the PP index -- smoothness and squintability -- that capture the complexities inherent in PP optimisation problems. These two metrics are evaluated with JSO hyper-parameters to determine their effects on JSO success rate. The JSO algorithm has been implemented in the `tourr` package and functions to calculate  smoothness and squintability of indexes are available in the `ferrn` package. 
 keywords: 
   - projection pursuit
   - jellyfish search optimiser (JSO)
@@ -88,7 +88,7 @@ load(here::here("data/sq_basis_dist_idx.rda"))
 load(here::here("data/sim_df.rda"))
 ```
 
-# Introduction \[Nicolas and Jessica\]
+# Introduction 
 
 Projection Pursuit (PP) (@kr69, @FT74) is a dimension reduction technique aimed at identifying informative linear projections of data. The method involves optimising a objective function known as the PP index
 (e.g. @hall1989polynomial, @cook1993projection, @lee2010projection, @Loperfido2018, @Loperfido2020), which defines the criteria for what constitutes  interesting or informative projections. Given high-dimensional data $X \in \mathbf{R}^{n\times p}$ and an index function $f(\cdot)$, PP finds the orthonormal basis $A \in \mathbf{R}^{p \times d}$ that maximises the index value of the projection, $Y = XA$: 
@@ -106,9 +106,9 @@ and advantages of such implementation.-->
 
 The primary goal of the study reported here is to investigate the performance of JSO in PP optimisation for the guided tour. It is of interest to assess how quickly and closely the optimiser reaches a gobal optima, for various PP indexes that may have differing complexities. To observe the performance of JSO with different types of PP indexes, metrics are introduced to capture specific properties of the index including squintability (based on @barnett1981interpreting's squint angle) and smoothness as introduced in @laa_using_2020. Here we mathematically define metrics for squintability and smoothness, which is new for the field.  A series of simulation experiments using specially structured datasets and various PP indexes are conducted to assess the behaviour of JSO under different settings and its sensitivity to hyper-parameter choices (number of jellies and maximum number of tries).  The relationship between the JSO performance, hyper-parameter tuning and properties of PP indexes is analysed to provide guidance for practitioners using projection pursuit, and developers of new indexes.
 
-The paper is structured as follows. @sec-background introduces the background of PP guided tour and reviews existing optimisers and index functions in the literature. @sec-theory details JSO and introduces metrics that measure different properties of PP indexes. @sec-sim-deets outlines the data structures, numerical summaries, and visualisations used in the simulation studies conducted in @sec-app to assess JSO's performance. @sec-sim-res presents two sets of simulation experiments, comparing JSO permformance improvements relative to an existing optimiser, and studies the impact of different PP index properties on the optimisation performance. @sec-conclusion summarises the work and provides suggestions for future directions.
+The paper is structured as follows. @sec-background introduces the background of PP guided tour and reviews existing optimisers and index functions in the literature. @sec-theory details JSO and introduces metrics that measure different properties of PP indexes. @sec-sim-deets details two simulation experiments to assess JSO's performance: one comparing JSO's permformance improvements relative to an existing optimiser, Creeping Random Search (CRS), and the other studying the impact of different PP index properties on optimisation performance. @sec-sim-res presents the results. @sec-conclusion summarises the work and provides suggestions for future directions.
 
-# Projection pursuit, tours, index functions and optimisation \[Di and Sherry\] {#sec-background}
+# Projection pursuit, tours, index functions and optimisation {#sec-background}
 
 <!-- Need to assume that the special issue will have the general introduction to PP, so the focus here will be on background needed for this paper, tours, guidance using PP, optimisation, visualisation, ... -->
 
@@ -133,7 +133,7 @@ An initial investigation of PP indexes, and the potential for scagnostics is des
 not very smooth. In addition, because data structures might be relatively fine, the optimiser needs to be able to find maxima that occur with a small squint angle, that can only be seen from very close
 by. One last aspect that is useful is for an optimiser to return local maxima in addition to global because data can contain many different and interesting features.
 
-# The jellyfish optimiser and properties of PP indexes \[Nicolas and Jessica\] {#sec-theory}
+# The jellyfish optimiser and properties of PP indexes {#sec-theory}
 
 JSO mimics the natural movements of jellyfish, which include passive and
 active motions driven by ocean currents and their swimming patterns,
@@ -501,11 +501,9 @@ knitr::include_graphics(here::here("figures", "smoothness.png"))
 knitr::include_graphics(here::here("figures", "squintability.png"))
 ```
 
-# Results \[Di and Sherry\] {#sec-sim-res}
+# Results {#sec-sim-res}
 
 The results from the two simulations described in @sec-sim-deets are analysed based on the final projections across two optimisers (JSO and CRS) and the success rate across JSO hyper-parameters. Smoothness and squintability are calculated across a collection of pipe-finding and sine-wave finding problems to construct the relationship between success rate, JSO hyper-parameters, and index properties. 
-
-## Performance of JSO in pipe-finding problems {#sec-app-1}
 
 The final projections found by the two optimisers (JSO and CRS) are presented in @fig-proj, broken down by 10th quantile, faceted by the data dimension. The JSO uses 100 jellyfishes and a maximum number of tries of 100. The CRS uses a maximum of 1000 tries in each step of random sampling step before the algorithm terminates. In the 6-dimensional data scenario, JSO consistently identifies a clear pipe shape. The CRS also finds the pipe shape but with a wide rim, suggesting a further polish search may be required. With increasing dimensions, JSO may not always identify the pipe shape due to random sampling, but it still presents a pipe shape in over 50% of cases. When compared to the CRS, JSO reaches higher index values and clearer pipe shapes across all quantiles. This suggests JSO can be more effective when searching higher dimension spaces, which may be preferred by users. 
 
@@ -605,9 +603,6 @@ pipe_res |>
 
 ```
 
-## Factors affecting JSO success rate: index properties and jellyfish hyper-parameters {#sec-app-2}
-
-
 ```{r}
 sim_df2 <- sim_df |>   
   mutate(n_jellies = n_jellies/10,
@@ -706,10 +701,7 @@ broom::tidy(mod1) |>
   kable_styling(font_size = 10) 
 ```
 
-
-
-
-# Conclusion \[Di and Sherry\] {#sec-conclusion}
+# Conclusion {#sec-conclusion}
 
 This paper has presented new metrics to mathematically define desirable features of PP indexes, squintability and smoothness, and used these to assess the performance of the new jellyfish search optimiser. The metrics will be generally useful for characterising PP indexes, and halp with developing nex indexes.
 
@@ -732,5 +724,11 @@ Main findings:
   
   - Smoothness and squintability can be calculated and compared across different problems to understand their relative complexity. Once a projection pursuit problem is fully characterised (by the shape-to-find, the index function used, and the data dimension), increasing JSO hyper-parameters can enhance the search effectiveness, however, the resulting increase in computational complexity will also need to be considered. - modelling
 -->
+
+# Acknowledgement
+
+The article is created using Quarto [@Allaire_Quarto_2022] in R [@R].
+The source code for reproducing the work reported in this paper can be found at: <https://github.com/huizezhang-sherry/paper-optim>. Nicolas Langrené acknowledges the partial support of the Guangdong Provincial Key Laboratory IRADS (2022B1212010006, R0400001-22) and the UIC Start-up Research Fund UICR0700041-22. 
+
 
 # References

@@ -227,10 +227,10 @@ existing optimisers. Additionally, this work proposes novel methods to
 quantify two properties of the PP index -- smoothness and squintability
 -- that capture the complexities inherent in PP optimisation problems.
 These two metrics are evaluated with JSO hyper-parameters to determine
-their effect on JSO success rate. The JSO algorithm has been implemented
-in the \texttt{tourr} package, while functions to calculate smoothness
-and squintability of indexes are available in the \texttt{ferrn}
-package.
+their effects on JSO success rate. The JSO algorithm has been
+implemented in the \texttt{tourr} package and functions to calculate
+smoothness and squintability of indexes are available in the
+\texttt{ferrn} package.
 \end{abstract}
 
 
@@ -244,8 +244,7 @@ package.
 \end{keyword}
 \end{frontmatter}
     
-\section{Introduction {[}Nicolas and
-Jessica{]}}\label{introduction-nicolas-and-jessica}
+\section{Introduction}\label{introduction}
 
 Projection Pursuit (PP) (\citet{kr69}, \citet{FT74}) is a dimension
 reduction technique aimed at identifying informative linear projections
@@ -315,17 +314,17 @@ The paper is structured as follows. Section~\ref{sec-background}
 introduces the background of PP guided tour and reviews existing
 optimisers and index functions in the literature.
 Section~\ref{sec-theory} details JSO and introduces metrics that measure
-different properties of PP indexes. Section~\ref{sec-sim-deets} outlines
-the data structures, numerical summaries, and visualisations used in the
-simulation studies conducted in \textbf{?@sec-app} to assess JSO's
-performance. Section~\ref{sec-sim-res} presents two sets of simulation
-experiments, comparing JSO permformance improvements relative to an
-existing optimiser, and studies the impact of different PP index
-properties on the optimisation performance. Section~\ref{sec-conclusion}
-summarises the work and provides suggestions for future directions.
+different properties of PP indexes. Section~\ref{sec-sim-deets} details
+two simulation experiments to assess JSO's performance: one comparing
+JSO's permformance improvements relative to an existing optimiser,
+Creeping Random Search (CRS), and the other studying the impact of
+different PP index properties on optimisation performance.
+Section~\ref{sec-sim-res} presents the results.
+Section~\ref{sec-conclusion} summarises the work and provides
+suggestions for future directions.
 
-\section{Projection pursuit, tours, index functions and optimisation
-{[}Di and Sherry{]}}\label{sec-background}
+\section{Projection pursuit, tours, index functions and
+optimisation}\label{sec-background}
 
 A tour on high-dimensional data is constructed by geodesically
 interpolating between pairs of planes. Any plane is described by an
@@ -384,8 +383,8 @@ by. One last aspect that is useful is for an optimiser to return local
 maxima in addition to global because data can contain many different and
 interesting features.
 
-\section{The jellyfish optimiser and properties of PP indexes {[}Nicolas
-and Jessica{]}}\label{sec-theory}
+\section{The jellyfish optimiser and properties of PP
+indexes}\label{sec-theory}
 
 JSO mimics the natural movements of jellyfish, which include passive and
 active motions driven by ocean currents and their swimming patterns,
@@ -408,7 +407,7 @@ one, rejected otherwise. This process continues and iteratively improves
 the projection, until the pre-specified maximum number of trials is
 reached.
 
-\begin{tcolorbox}[enhanced jigsaw, toptitle=1mm, bottomtitle=1mm, bottomrule=.15mm, rightrule=.15mm, colbacktitle=quarto-callout-note-color!10!white, titlerule=0mm, leftrule=.75mm, coltitle=black, opacitybacktitle=0.6, title={Algorithm: Jellyfish Optimizer Pseudo Code}, breakable, opacityback=0, colback=white, left=2mm, toprule=.15mm, arc=.35mm, colframe=quarto-callout-note-color-frame]
+\begin{tcolorbox}[enhanced jigsaw, titlerule=0mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, colbacktitle=quarto-callout-note-color!10!white, toptitle=1mm, arc=.35mm, colback=white, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomtitle=1mm, leftrule=.75mm, coltitle=black, bottomrule=.15mm, toprule=.15mm, opacityback=0, left=2mm, rightrule=.15mm, breakable]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -716,7 +715,7 @@ is 0.999. Out of the 50 simulations, 44 achieved an index value within
 
 \centering{
 
-\includegraphics[width=4.49in,height=\textheight]{figures/success-rate.png}
+\includegraphics[width=4.52in,height=\textheight]{figures/success-rate.png}
 
 }
 
@@ -806,7 +805,7 @@ to \(\theta_4\).}
 
 \end{figure}%
 
-\section{Results {[}Di and Sherry{]}}\label{sec-sim-res}
+\section{Results}\label{sec-sim-res}
 
 The results from the two simulations described in
 Section~\ref{sec-sim-deets} are analysed based on the final projections
@@ -815,9 +814,6 @@ hyper-parameters. Smoothness and squintability are calculated across a
 collection of pipe-finding and sine-wave finding problems to construct
 the relationship between success rate, JSO hyper-parameters, and index
 properties.
-
-\subsection{Performance of JSO in pipe-finding
-problems}\label{sec-app-1}
 
 The final projections found by the two optimisers (JSO and CRS) are
 presented in Figure~\ref{fig-proj}, broken down by 10th quantile,
@@ -882,9 +878,6 @@ best-performing simulation. As the dimensionality increases, the
 proportion of simulations reaching the optimal index value increases.}
 
 \end{figure}%
-
-\subsection{Factors affecting JSO success rate: index properties and
-jellyfish hyper-parameters}\label{sec-app-2}
 
 The index properties, including smoothness and squintability, offer
 numerical metrics to characterise the complexity of projection pursuit
@@ -1018,7 +1011,7 @@ Max. tries & 0.11 & 0.15 & 0.75 & 0.45\\
 
 \end{table}%
 
-\section{Conclusion {[}Di and Sherry{]}}\label{sec-conclusion}
+\section{Conclusion}\label{sec-conclusion}
 
 This paper has presented new metrics to mathematically define desirable
 features of PP indexes, squintability and smoothness, and used these to
@@ -1049,6 +1042,16 @@ because it runs many paths. The recommended approach is to conduct the
 optimisation off-line, and then use the guided tour to follow selected
 jellies. The tools for this are available in the \texttt{tourr} package,
 too.
+
+\section{Acknowledgement}\label{acknowledgement}
+
+The article is created using Quarto \citep{Allaire_Quarto_2022} in R
+\citep{R}. The source code for reproducing the work reported in this
+paper can be found at:
+\url{https://github.com/huizezhang-sherry/paper-optim}. Nicolas Langrené
+acknowledges the partial support of the Guangdong Provincial Key
+Laboratory IRADS (2022B1212010006, R0400001-22) and the UIC Start-up
+Research Fund UICR0700041-22.
 
 
 \renewcommand\refname{References}
