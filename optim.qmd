@@ -761,7 +761,7 @@ dt |>
     col.names = c(
       "shape", "index", "d",
       "variance", "range", "smooth", "nugget",
-      "$\\theta_1$", "$\\theta_2$", "$\\theta_3$", "$\\theta_4$", "squint"),
+      "$\\theta_1$", "$\\theta_2$", "$\\theta_3$", "$\\theta_4$", "squint"), linesep = "",
     booktabs = T, escape = FALSE, row.names = TRUE) |> 
   column_spec(1, border_left = TRUE) |> 
   column_spec(c(4, 8, 13), border_right = TRUE) |> 
@@ -780,6 +780,7 @@ sim_df |>
         col.names = c("Index", "D", "Smoothness", "Squintability", 
                       "Num. of jellyfish", "Max. Num. of tries", 
                       "Success rate", "Time"), 
+        linesep = "", 
         booktabs = T) |> 
   kable_styling(latex_options = "hold_position", font_size = 7)
 ```
@@ -790,7 +791,7 @@ sim_df |>
 broom::tidy(mod1) |> 
   mutate(term = c("Intercept", "Smoothness", "Squintability", "dimension (d)", 
                   "long time", "number of jellyfish", "maximum number of tries")) |>
-  kable(digits = 3) |> 
+  kable(digits = 3, linesep = "") |> 
   column_spec(c(1,5), border_right = TRUE) |> 
   column_spec(1, border_left = TRUE) |> 
   kable_styling(font_size = 7) 
