@@ -407,7 +407,7 @@ one, rejected otherwise. This process continues and iteratively improves
 the projection, until the pre-specified maximum number of trials is
 reached.
 
-\begin{tcolorbox}[enhanced jigsaw, leftrule=.75mm, colframe=quarto-callout-note-color-frame, toptitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, titlerule=0mm, opacityback=0, breakable, toprule=.15mm, arc=.35mm, colback=white, coltitle=black, bottomrule=.15mm, bottomtitle=1mm, colbacktitle=quarto-callout-note-color!10!white, left=2mm, rightrule=.15mm, opacitybacktitle=0.6]
+\begin{tcolorbox}[enhanced jigsaw, colframe=quarto-callout-note-color-frame, coltitle=black, colback=white, colbacktitle=quarto-callout-note-color!10!white, left=2mm, leftrule=.75mm, titlerule=0mm, rightrule=.15mm, toptitle=1mm, opacityback=0, arc=.35mm, bottomrule=.15mm, bottomtitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, toprule=.15mm, opacitybacktitle=0.6, breakable]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -716,38 +716,39 @@ rate of 0.88 (44/50).}
 \subsection{Factors affecting JSO success rate: index properties and
 jellyfish hyper-parameters}\label{sec-app-2}
 
-In addition to the pipe-finding problem, a new shape, sine wave, is
-investigated in 6D and 8D spaces with six indexes considered:
+This simulation uses two different data shapes, pipe and a sine wave,
+investigated in 6D and 8D spaces with six different PP indexes:
 \texttt{dcor2d\_2}, \texttt{loess2d}, \texttt{MIC}, \texttt{TIC},
-\texttt{spline}, and \texttt{stringy}. Combining with two JSO
-hyper-parameters, a total of 52 cases is produced, comprising of 24
-pipe-finding cases and 28 sine-wave finding cases. For each case, JSO is
-run fifty times and the success rate is calculated.
+\texttt{spline}, and \texttt{stringy}. The two JSO hyper-parameters are
+varied. A total of 52 combinations result, comprising of 24 computed on
+the pipe data and 28 on the sine-wave data. For each case, JSO is run 50
+times to calculate the success rate.
 
-Smoothness and squintability are computed for each case, following the
+Smoothness and squintability are computed for each run, following the
 procedures outlined in Section~\ref{sec-smoothness} and
-Section~\ref{sec-squintability} and illustrated in
-Figure~\ref{fig-smoothness} and Figure~\ref{fig-squintability}. For
-smoothness, three hundred random bases are simulated. Index values and
-projection distance (to the optimal basis) are calculated for each
-random basis before fitting into a Gaussian process model to obtain the
-smoothness measure. For squintability, fifty random bases are sampled
-and interpolated to the optimal basis with a step size of 0.005. Index
-values and projection distances are calculated for these interpolated
-bases and the index values are averaged with a bin width of 0.005. The
-squintability measure is then calculated from fitting a 4-parameter
-scaled logistic function of index value against projection distance,
-estimated by non-linear least squares.
+Section~\ref{sec-squintability} and as illustrated in
+Figure~\ref{fig-smoothness} and Figure~\ref{fig-squintability}.
 
-Combining with the success rate calculated for each case, the dataset is
-fitted using a generalised linear model with a binomial family and a
-logit link function with three pre-processing steps are applied: 1)
-scaling the JSO hyper-parameters by a factor of 10 for interpretation,
-2) creating a new binary variable \texttt{long\_time} to indicate cases
-with an average run time over 30 seconds, and 3) encoding the success
-rate for the stringy case as 0, because upon visual inspection of the
-final projection, none of the 50 simulations identified the sine-wave
-shape.
+To compute smoothness, 300 random bases are simulated. Index values and
+projection distance (to the optimal basis) are calculated for each
+random basis before fitting the Gaussian process model to obtain the
+smoothness measure for the index.
+
+To compute squintability, 50 random bases are sampled and interpolated
+to the optimal basis with a step size of 0.005. Index values and
+projection distances are calculated for these interpolated bases and the
+index values are averaged with a bin width of 0.005. The squintability
+measure is then calculated by fitting a four-parameter scaled logistic
+function of index value against projection distance, estimated by
+non-linear least squares.
+
+A generalised linear model is fitted to the resulting data, using a
+binomial family and a logit link function. The data is pre-processed by
+1) scaling the JSO hyper-parameters by a factor of 10 for
+interpretation, 2) creating a new binary variable \texttt{long\_time} to
+indicate cases with an average run time over 30 seconds, and 3)
+re-coding the success rate for the \texttt{stringy} index as 0, because
+none of the 50 simulations correctly identified the sine-wave shape.
 
 \begin{figure}
 
@@ -944,7 +945,7 @@ for modelling.}
 
 \begin{tabular}{lrrrrrrr}
 \toprule
-Index & D & Smoothness & Squintability & N. jellyfish & Max. tries & Success rate & Time (sec)\\
+index & d & smoothness & squintability & n. jellyfish & max. tries & success rate & time (sec)\\
 \midrule
 MIC & 6 & 2.46 & 1.26 & 20 & 50 & 0.12 & 2.48\\
 MIC & 6 & 2.46 & 1.26 & 20 & 100 & 0.24 & 8.95\\
