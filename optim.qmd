@@ -120,14 +120,8 @@ A tour on high-dimensional data is constructed by geodesically interpolating bet
 -   `search_posse()`: implements the algorithm described in @posse95.
 -   `search_polish()`: is a very localised search, to take tiny steps to get closer to the local maximum.
 
-There are several PP index functions available: `holes()` and `cmass()`
-[@cook1993projection]; `lda_pp()` [@lee2005projection]; `pda_pp()`
-[@lee2010projection]; `dcor2d()` and `splines2d()` [@Grimm2016];
-`norm_bin()` and `norm_kol()` [@huber85]; `slice_index()`
-[@Laa:2020wkm]. Most are relatively simply defined, for any projection
-dimension, and implemented because they are relatively easy to optimise.
-A goal is to be able to incorporate more complex PP indexes, for example
-based on scagnostics (@scag, @WW08).
+There are several PP index functions available: `holes()` and `cmass()` [@cook1993projection]; `lda_pp()` [@lee2005projection]; `pda_pp()`
+[@lee2010projection]; `dcor2d()` and `splines2d()` [@Grimm2016]; `norm_bin()` and `norm_kol()` [@huber85]; `slice_index()` [@Laa:2020wkm]. Most are relatively simply defined, for any projection dimension, and implemented because they are relatively easy to optimise. A goal is to be able to incorporate more complex PP indexes, for example based on scagnostics (@scag, @WW08).
 
 An initial investigation of PP indexes, and the potential for scagnostics is described in @laa_using_2020. To be useful here an optimiser needs to be able to handle index functions which are possibly
 not very smooth. In addition, because data structures might be relatively fine, the optimiser needs to be able to find maxima that occur with a small squint angle, that can only be seen from very close
@@ -373,32 +367,29 @@ Alternatively, one can estimate (@eq-squintability) in a nonparametric way, for 
 
 # Simulation details {#sec-sim-deets}
 
-The JSO performance is compared with the existing Creeping Random Search (CRS) currently used in guided tour, and explores how JSO behaves with different hyper-parameters combinations. A second simulation
-studies the effect of index properties (smoothness and squintability), along with JSO hyper-parameters, on the success rate of the JSO performance.
+The JSO performance is compared with the existing Creeping Random Search (CRS) [@RJ-2021-105;
+@laa_using_2020] currently used in guided tour, and explores how JSO behaves with different hyper-parameter (number of jellies, maximum tries) and data dimension combinations. A second simulation
+studies the effect of index properties (smoothness and squintability), along with JSO hyper-parameters, and data dimension, on the success rate of the JSO performance.
 
-## Performance of JSO in pipe-finding problems {#sec-app-1}
+## Performance of JSO relative to CRS {#sec-app-1}
 
-The performance of JSO is investigated in two folds: 1) compare it with a commonly used optimiser: the Csreeping Random Search (CRS) [@RJ-2021-105;
-@laa_using_2020], and 2) examine its success rate under two hyper-parameters (number of jellyfishes and maximum number of tries). The projection pursuit problem used is finding the pipe shape using the holes index, investigated by @laa_using_2020. Fifty simulations are conducted with both JSO and CRS, in four dimensions ($d = 6, 8, 10, 12$). JSO uses 100 jellyfishes and 100 maximum number of tries, while the CRS allows a maximum of 1000 samples at each iteration before the algorithm terminates. The results of the simulation are collected using the data structure proposed in @RJ-2021-105 is used here for assessing JSO. A sample for the sine-wave structure in 6D data using a spline index function (`splines2d`) is printed below:
+The performance of JSO is investigated in comparison with the existing optimiser, CRS, with respect to two hyper-parameters (number of jellyfishes and maximum number of tries). The performance is measured by success rate, defined as the proportion of simulations that achieves a final index value within 0.05 of the best index value found among all 50 simulations. This comparison is based on projection pursuit to find the pipe shape investigated by @laa_using_2020 using two simple and well-behaved indexes, the `holes` index, and the `splines2d` index. Fifty simulations are conducted with both JSO and CRS, in four different data dimensions ($d = 6, 8, 10, 12$). JSO uses 100 jellyfishes with 100 maximum number of tries, while the CRS allows a maximum of 1000 samples at each iteration before the algorithm terminates. The different numbers accounts for the multiple paths of JSO to enable fairer comparison with CRS. The results of the simulation are collected using the data structure proposed in @RJ-2021-105 is used here for assessing JSO, where the design parameters are stored along with index value, projection basis, random seed, and computation time. <!--A sample for the sine-wave structure in 6D data using a spline index function (`splines2d`) is printed below:
 
 ```{r}
 dplyr::glimpse(sim_sine_6d_spline_head |> select(-id, -info)) 
 ```
+-->
 
-In this simulation, 50 jellyfishes (`n_jellies`) and
-a maximum of 50 tries (`max_tries`) are used. The full data contains 50 simulations, indexed by the variable `sim`, with the associated `seed`s. Recorded in columns `basis`, `index_val`, `tries`, `loop` and `time`, are the sampled projection basis, index value, iteration ID, jellyfish ID, and computational time, respectively. 
-
+In this simulation, 50 jellies (`n_jellies`) and
+a maximum of 50 tries (`max_tries`) are used. The full data contains 50 simulations, indexed by the variable `sim`, with the associated `seed`s. Recorded in columns `basis`, `index_val`, `tries`, `loop` and `time`, are the projection basis, index value, iteration ID, jellyfish ID, and computational time, respectively. 
 <!-- The basis column records every visited basis before -->
 <!-- comparing with the current (last) basis. If a visited basis has a -->
 <!-- smaller index value than the current (last) one, JSO will keep the -->
 <!-- current basis for the next iteration in the search but still records the -->
 <!-- visited inferior basis.  -->
 
-In the second experiment, fifty simulations are conducted at each hyper-parameter combination below to analyse its effects on the JSO success rate: number of jellyfish: 20, 50, and 100, and  maximum number of  tries: 50 and 100). The success rate is defined as the proportion of simulations that achieves a final index value within 0.05 of the best index value found among all 50 simulations. @fig-success-rate illustrates 
-the calculation based on the projection found by the above simulation. Here, the optimal index value is
-`r sim_sine_6d_spline_best |> pull(index_val) |> max() |> round(3) -> aa; aa`. Out of the 50 simulations,
+In the second experiment, 50 simulations are conducted at each hyper-parameter combination to analyse its effect on the JSO success rate: number of jellies (20, 50, and 100), and  maximum number of  tries (50 and 100).  @fig-success-rate illustrates the calculation based on the projection found by the above simulation. Here, the optimal index value is `r sim_sine_6d_spline_best |> pull(index_val) |> max() |> round(3) -> aa; aa`. Out of the 50 simulations,
 `r sim_sine_6d_spline_best |> filter(index_val >= aa - 0.05) |> nrow() -> bb; bb` achieved an index value within \[`r aa - 0.05`, `r aa`\], resulting in a success rate of `r sim_sine_6d_spline_best |> mutate(a = index_val >= aa - 0.05) |> pull(a) -> cc; round(sum(cc)/length(cc), 3)`.
-
 
 <!-- @fig-projection shows the best projection found in each simulation, -->
 <!-- sorted by the index value. Most of the projections show a clear -->

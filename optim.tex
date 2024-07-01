@@ -407,7 +407,7 @@ one, rejected otherwise. This process continues and iteratively improves
 the projection, until the pre-specified maximum number of trials is
 reached.
 
-\begin{tcolorbox}[enhanced jigsaw, titlerule=0mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, colbacktitle=quarto-callout-note-color!10!white, toptitle=1mm, arc=.35mm, colback=white, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomtitle=1mm, leftrule=.75mm, coltitle=black, bottomrule=.15mm, toprule=.15mm, opacityback=0, left=2mm, rightrule=.15mm, breakable]
+\begin{tcolorbox}[enhanced jigsaw, leftrule=.75mm, colframe=quarto-callout-note-color-frame, toptitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, titlerule=0mm, opacityback=0, breakable, toprule=.15mm, arc=.35mm, colback=white, coltitle=black, bottomrule=.15mm, bottomtitle=1mm, colbacktitle=quarto-callout-note-color!10!white, left=2mm, rightrule=.15mm, opacitybacktitle=0.6]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -652,64 +652,49 @@ value.
 \section{Simulation details}\label{sec-sim-deets}
 
 The JSO performance is compared with the existing Creeping Random Search
-(CRS) currently used in guided tour, and explores how JSO behaves with
-different hyper-parameters combinations. A second simulation studies the
-effect of index properties (smoothness and squintability), along with
-JSO hyper-parameters, on the success rate of the JSO performance.
+(CRS) \citep{RJ-2021-105, laa_using_2020} currently used in guided tour,
+and explores how JSO behaves with different hyper-parameter (number of
+jellies, maximum tries) and data dimension combinations. A second
+simulation studies the effect of index properties (smoothness and
+squintability), along with JSO hyper-parameters, and data dimension, on
+the success rate of the JSO performance.
 
-\subsection{Performance of JSO in pipe-finding
-problems}\label{sec-app-1}
+\subsection{Performance of JSO relative to CRS}\label{sec-app-1}
 
-The performance of JSO is investigated in two folds: 1) compare it with
-a commonly used optimiser: the Csreeping Random Search (CRS)
-\citep{RJ-2021-105, laa_using_2020}, and 2) examine its success rate
-under two hyper-parameters (number of jellyfishes and maximum number of
-tries). The projection pursuit problem used is finding the pipe shape
-using the holes index, investigated by \citet{laa_using_2020}. Fifty
-simulations are conducted with both JSO and CRS, in four dimensions
-(\(d = 6, 8, 10, 12\)). JSO uses 100 jellyfishes and 100 maximum number
-of tries, while the CRS allows a maximum of 1000 samples at each
-iteration before the algorithm terminates. The results of the simulation
-are collected using the data structure proposed in \citet{RJ-2021-105}
-is used here for assessing JSO. A sample for the sine-wave structure in
-6D data using a spline index function (\texttt{splines2d}) is printed
-below:
+The performance of JSO is investigated in comparison with the existing
+optimiser, CRS, with respect to two hyper-parameters (number of
+jellyfishes and maximum number of tries). The performance is measured by
+success rate, defined as the proportion of simulations that achieves a
+final index value within 0.05 of the best index value found among all 50
+simulations. This comparison is based on projection pursuit to find the
+pipe shape investigated by \citet{laa_using_2020} using two simple and
+well-behaved indexes, the \texttt{holes} index, and the
+\texttt{splines2d} index. Fifty simulations are conducted with both JSO
+and CRS, in four different data dimensions (\(d = 6, 8, 10, 12\)). JSO
+uses 100 jellyfishes with 100 maximum number of tries, while the CRS
+allows a maximum of 1000 samples at each iteration before the algorithm
+terminates. The different numbers accounts for the multiple paths of JSO
+to enable fairer comparison with CRS. The results of the simulation are
+collected using the data structure proposed in \citet{RJ-2021-105} is
+used here for assessing JSO, where the design parameters are stored
+along with index value, projection basis, random seed, and computation
+time.
 
-\begin{verbatim}
-Rows: 10
-Columns: 12
-$ index     <chr> "splines2d", "splines2d", "splines2d", "splines2d", "splines~
-$ d         <dbl> 6, 6, 6, 6, 6, 6, 6, 6, 6, 6
-$ n_jellies <dbl> 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
-$ max_tries <dbl> 50, 50, 50, 50, 50, 50, 50, 50, 50, 50
-$ sim       <int> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-$ seed      <int> 3462, 3462, 3462, 3462, 3462, 3462, 3462, 3462, 3462, 3462
-$ basis     <list> <<matrix[6 x 2]>>, <<matrix[6 x 2]>>, <<matrix[6 x 2]>>, <<m~
-$ index_val <dbl> 0.036664532, 0.005121912, 0.058683104, 0.056527991, 0.015734~
-$ method    <chr> "search_jellyfish", "search_jellyfish", "search_jellyfish", ~
-$ tries     <dbl> 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
-$ loop      <dbl> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-$ time      <drtn> 4.362133 mins, 4.362133 mins, 4.362133 mins, 4.362133 mins, ~
-\end{verbatim}
-
-In this simulation, 50 jellyfishes (\texttt{n\_jellies}) and a maximum
-of 50 tries (\texttt{max\_tries}) are used. The full data contains 50
+In this simulation, 50 jellies (\texttt{n\_jellies}) and a maximum of 50
+tries (\texttt{max\_tries}) are used. The full data contains 50
 simulations, indexed by the variable \texttt{sim}, with the associated
 \texttt{seed}s. Recorded in columns \texttt{basis}, \texttt{index\_val},
-\texttt{tries}, \texttt{loop} and \texttt{time}, are the sampled
-projection basis, index value, iteration ID, jellyfish ID, and
-computational time, respectively.
+\texttt{tries}, \texttt{loop} and \texttt{time}, are the projection
+basis, index value, iteration ID, jellyfish ID, and computational time,
+respectively.
 
-In the second experiment, fifty simulations are conducted at each
-hyper-parameter combination below to analyse its effects on the JSO
-success rate: number of jellyfish: 20, 50, and 100, and maximum number
-of tries: 50 and 100). The success rate is defined as the proportion of
-simulations that achieves a final index value within 0.05 of the best
-index value found among all 50 simulations.
-Figure~\ref{fig-success-rate} illustrates the calculation based on the
-projection found by the above simulation. Here, the optimal index value
-is 0.999. Out of the 50 simulations, 44 achieved an index value within
-{[}0.949, 0.999{]}, resulting in a success rate of 0.88.
+In the second experiment, 50 simulations are conducted at each
+hyper-parameter combination to analyse its effect on the JSO success
+rate: number of jellies (20, 50, and 100), and maximum number of tries
+(50 and 100). Figure~\ref{fig-success-rate} illustrates the calculation
+based on the projection found by the above simulation. Here, the optimal
+index value is 0.999. Out of the 50 simulations, 44 achieved an index
+value within {[}0.949, 0.999{]}, resulting in a success rate of 0.88.
 
 \begin{figure}
 
