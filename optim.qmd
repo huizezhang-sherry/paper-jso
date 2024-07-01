@@ -990,8 +990,9 @@ projection pursuit guided tour in the `tourr` package, and can be
 further examined using PP optimisation diagnostics in the `ferrn`
 package. Using the JSO is a little different than the current CRS,
 because it runs many paths. The recommended approach is to conduct the
-optimisation off-line, and then use the guided tour to follow selected
-jellyfish. The tools for this are available in the `tourr` package, too.
+optimisation off-line, extract the bases of a selected jellyfish, and
+then use the planned tour to follow selected jellyfish. The tools for
+this are available in the `tourr` package, too.
 
 ```{=html}
 <!--
