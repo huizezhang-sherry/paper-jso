@@ -1,0 +1,933 @@
+---
+title: Studying the Performance of the Jellyfish Search Optimiser for the Application of Projection Pursuit
+header-includes:
+   - \usepackage{algorithm}
+author:
+  - name: H. Sherry Zhang
+    email: huize.zhang@austin.utexas.edu
+    affiliations: 
+        - id: 1
+          name: University of Texas at Austin
+          department: Department of Statistics and Data Sciences
+          city: Austin
+          country: United States
+          postal-code: 78751
+    attributes:
+        corresponding: true
+  - name: Dianne Cook
+    email: dicook@monash.edu
+    affiliations:
+        - id: 2
+          name: Monash University
+          department: Department of Econometrics and Business Statistics
+          city: Melbourne
+          country: Australia
+          postal-code: 3800
+  - name: Nicolas  Langrené
+    email: nicolaslangrene@uic.edu.cn
+    affiliations:
+        - id: 3
+          name: Guangdong Provincial Key Laboratory of Interdisciplinary Research and Application for Data Science, BNU-HKBU United International College
+          department: Department of Mathematical Sciences
+          city: Zhuhai
+          country: China
+          postal-code: 519087
+  - name: Jessica Wai Yin Leung
+    email: Jessica.Leung@monash.edu
+    affiliations:
+        - id: 2
+          name: Monash University
+          department: Department of Econometrics and Business Statistics
+          city: Melbourne
+          country: Australia
+          postal-code: 3800
+abstract: |
+  The projection pursuit (PP) guided tour interactively optimises a criteria function known as the PP index, to explore high-dimensional data by revealing interesting projections. The optimisation in PP can be non-trivial, involving non-smooth functions and optima with a small "squint angle", detectable only from close proximity. To address these challenges, this study investigates the performance of a recently introduced swarm-based algorithm, Jellyfish Search Optimiser (JSO), for optimising PP indexes. The performance of JSO for visualising data is evaluated across various hyper-parameter settings and compared with existing optimisers. Additionally, this work proposes novel methods to quantify two properties of the PP index -- smoothness and squintability -- that capture the complexities inherent in PP optimisation problems. These two metrics are evaluated along with JSO hyper-parameters to determine their effects on JSO success rate. Our numerical results confirm the positive impact of these metrics on the JSO success rate, with squintability being the most significant. The JSO algorithm has been implemented in the `tourr` package and functions to calculate smoothness and squintability are available in the `ferrn` package. 
+keywords: 
+  - projection pursuit
+  - jellyfish search optimiser (JSO)
+  - optimisation
+  - grand tour
+  - high-dimensional data
+  - exploratory data analysis
+date: last-modified
+bibliography: bibliography.bib
+format:
+  elsevier-pdf:
+    keep-tex: true
+    journal:
+      name: Journal of Multivariate Analysis
+      formatting: preprint
+      model: 3p
+      cite-style: numbername
+editor: 
+  markdown: 
+    wrap: 72
+crossref: 
+  eq-prefix: ""
+---
+
+```{r setup, echo = FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(ggplot2)
+library(patchwork)
+library(ggh4x)
+library(broom)
+library(kableExtra)
+library(ferrn)
+load(here::here("data/sim_pipe_run_best.rda"))
+load(here::here("data/sim_sine_6d_spline_head.rda"))
+load(here::here("data/sim_sine_6d_spline_best.rda"))
+load(here::here("data/sim_sine_6d_spline_projdist.rda"))
+load(here::here("data/pipe_better.rda"))
+load(here::here("data/pipe_jellyfish.rda"))
+load(here::here("data/smoothness.rda"))
+load(here::here("data/squintability.rda"))
+load(here::here("data/sq_basis_dist_idx.rda"))
+load(here::here("data/sim_df.rda"))
+```
+
+# Introduction
+
+Projection Pursuit (PP) (@kr69, @FT74) is a dimension reduction
+technique aimed at identifying informative linear projections of data.
+The method involves optimising an objective function known as the PP
+index (e.g. @hall1989polynomial, @cook1993projection,
+@lee2010projection, @Loperfido2018, @Loperfido2020), which defines the
+criteria for what constitutes interesting or informative projections.
+Given high-dimensional data $X \in \mathbf{R}^{n\times p}$ and an index
+function $f(\cdot)$, PP finds the orthonormal basis
+$A \in \mathbf{R}^{p \times d}$ that maximises the index value of the
+projection, $Y = XA$:
+
+$$
+\underset{A}{\max } \quad f(XA) \quad \text{subject to} \quad A'A = I
+$$ {#eq-optimization}
+
+The index functions can be non-linear and non-convex, hence an effective
+and efficient optimisation procedure is essential to explore the data
+landscape and achieve a globally optimal viewpoint of the data.
+
+Optimisation of PP is typically investigated in the literature when new
+indexes are proposed [@posse1995; @marie-sainte2010; @grochowski2011] or
+when visualisation method are used to track the optimisation process.
+@cook1995grand introduced the PP guided tour, which monitors the
+optimisation visually to see the data projections leading in and out of
+the optima. An implementation is available in the `tourr` package
+[@tourr] in R [@R]. @RJ-2021-105 illustrated how to diagnose
+optimisation processes, particularly focusing on the guided tour, and
+revealed a need for improved optimisation. While improving the quality
+of the optimisation solutions in the tour is essential, it is also
+important to be able to view the data projections as the optimisation
+progresses. Integrating the guided tour with a global optimisation
+algorithm that is efficient in finding the global optimal and enables
+viewing of the projected data during the exploration process is a goal.
+
+Here, the potential for a Jellyfish Search Optimiser (JSO) to be
+integrated with the projection pursuit guided tour is explored. JSO,
+[@chou_novel_2021] - [@rajwar_exhaustive_2023], inspired by the search
+behaviour of jellyfish in the ocean, is a swarm-based metaheuristic
+designed to solve global optimisation problems. Compared to traditional
+methods, JSO has demonstrated stronger search ability and faster
+convergence, and requires fewer tuning parameters. These practical
+advantages make JSO a promising candidate for enhancing PP optimisation.
+<!--The study reported here explores JSO's potential in enhancing projection pursuit and examines the characteristics
+and advantages of such implementation.-->
+
+The primary goal of the study reported here is to investigate the
+performance of JSO in PP optimisation for the guided tour. It is of
+interest to assess how quickly and closely the optimiser reaches a gobal
+optima, for various PP indexes that may have differing complexities. To
+observe the performance of JSO with different types of PP indexes,
+metrics are introduced to capture specific properties of the index
+including squintability (based on @barnett1981interpreting's squint
+angle) and smoothness as introduced in @laa_using_2020. Here we
+mathematically define metrics for squintability and smoothness, which is
+new for the field. A series of simulation experiments using various
+datasets and PP indexes are conducted to assess JSO's behaviour and its
+sensitivity to hyper-parameter choices (number of jellyfish and maximum
+number of tries). The relationship between the JSO performance,
+hyper-parameter choices and properties of PP indexes (smoothness and
+squintability) is analysed to provide guidance on selecting optimisers
+for practitioners using projection pursuit. Additionally, it aims to
+guide the design of new indexes that facilitate easy optimization for PP
+researchers.
+
+The paper is structured as follows. @sec-background introduces the
+background of PP guided tour and reviews existing optimisers and index
+functions in the literature. @sec-theory details JSO and introduces
+metrics that measure different properties of PP indexes, smoothness and
+squintability. @sec-sim-deets details two simulation experiments to
+assess JSO's performance: one comparing JSO's performance improvements
+relative to an existing optimiser, Creeping Random Search (CRS), and the
+other studying the impact of different PP index properties on
+optimisation performance. @sec-sim-res presents the results.
+@sec-conclusion summarises the work and provides suggestions for future
+directions.
+
+# Projection pursuit, tours, index functions and optimisation {#sec-background}
+
+<!-- Need to assume that the special issue will have the general introduction to PP, so the focus here will be on background needed for this paper, tours, guidance using PP, optimisation, visualisation, ... -->
+
+A tour on high-dimensional data is constructed by geodesically
+interpolating between pairs of planes. Any plane is described by an
+orthonormal basis, $A_t$, where $t$ represents time in the sequence. The
+term "geodesic" refers to maintaining the orthonormality constraint so
+that each view shown is correctly a projection of the data. The PP
+guided tour operates by geodesically interpolating to target planes
+(projections) which have high PP index values, as provided by the
+optimiser. The geodesic interpolation means that the viewer sees a
+continuous sequence of projections of the data, so they can watch
+patterns of interest forming as the function is optimised. There are
+five (unsophisticated) optimisation methods implemented in the `tourr`
+package:
+
+-   `search_geodesic()`: provides a pseudo-derivative optimisation. It
+    searches locally for the best direction, based on differencing the
+    index values for very close projections. Then it follows the
+    direction along the geodesic path between planes, stopping when the
+    next index value fails to increase.
+-   `search_better()`: also known as Creeping Random Search (CRS), is a
+    brute-force optimisation searching randomly for projections with
+    higher index values.
+-   `search_better_random()`: is essentially simulated annealing
+    [@Bertsimas93] where the search space is reduced as the optimisation
+    progresses.
+-   `search_posse()`: implements the algorithm described in @posse95.
+-   `search_polish()`: is a very localised search, to take tiny steps to
+    get closer to the local maximum.
+
+There are several PP index functions available: `holes()` and `cmass()`
+[@cook1993projection]; `lda_pp()` [@lee2005projection]; `pda_pp()`
+[@lee2010projection]; `dcor2d()` and `splines2d()` [@Grimm2016];
+`norm_bin()` and `norm_kol()` [@huber85]; `slice_index()`
+[@Laa:2020wkm]. Most are relatively simply defined, for any projection
+dimension, and implemented because they are relatively easy to optimise.
+A goal is to be able to incorporate more complex PP indexes, for
+example, based on scagnostics (@scag, @WW08).
+
+An initial investigation of PP indexes, and the potential for
+scagnostics is described in @laa_using_2020. To be useful here an
+optimiser needs to be able to handle index functions which are possibly
+not very smooth. In addition, because data structures might be
+relatively fine, the optimiser needs to be able to find maxima that
+occur with a small squint angle, that can only be seen from very close
+by. One last aspect that is useful is for an optimiser to return local
+maxima in addition to global because data can contain many different and
+interesting features.
+
+# The jellyfish optimiser and properties of PP indexes {#sec-theory}
+
+JSO mimics the natural movements of jellyfish, which include passive and
+active motions driven by ocean currents and their swimming patterns,
+respectively. In the context of optimization, these movements are
+abstracted to explore the search space, aiming to balance exploration
+(searching new areas) and exploitation (focusing on promising areas).
+The algorithm aims to find the optimal solution by adapting the
+behaviour of jellyfish to navigate towards the best solution over
+iterations [@chou_novel_2021].
+
+To solve the optimisation problem embedded in the PP guided tour, a
+starting projection, an index function, the number of jellyfish, and the
+maximum number of trials (tries) are provided as input. Then, the
+current projection is evaluated by the index function. The projection is
+then moved in a direction determined by a random factor, influenced by
+how far along we are in the optimisation process. Occasionally,
+completely new directions may be taken like a jellyfish might with ocean
+currents. A new projection is accepted if it is an improvement compared
+to the current one, rejected otherwise. This process continues and
+iteratively improves the projection, until the pre-specified maximum
+number of trials is reached.
+
+::: {.callout-note icon="false"}
+## Algorithm: Jellyfish Optimizer Pseudo Code
+
+**Input**: `current_projections`, `index_function`, `trial_id`,
+`max_trial`
+
+**Output**: `optimised_projection`
+
+**Initialize** `current_best` as the projection with the best index
+value from `current_projections`, and `current_idx` as the array of
+index values for each projection in `current_projections`
+
+**for** each `trial_id` in 1 to `max_tries` **do**
+
+> Calculate the time control value, $c_t$, based on `current_idx` and
+> `max_trial`
+
+> **if** $c_t$ is greater than or equal to $0.5$ **then**
+>
+> > Define trend based on the `current_best` and `current_projections`
+>
+> > Update each projection towards the trend using a random factor and
+> > orthonormalisation
+>
+> **else**
+>
+> > **if** a random number is greater than $1 - c_t$ **then**
+> >
+> > > Slightly adjust each projection with a small random factor
+> > > (passive)
+> >
+> > **else**
+> >
+> > > For each projection, compare with a random jellyfish and adjust
+> > > towards or away from it (active)
+>
+> Update the orientation of each projection to maintain consistency
+>
+> Evaluate the new projections using the index function
+
+> **if** any new projection is worse than the current, revert to the
+> `current_projections` for that case
+>
+> > Determine the projection with the best index value as the new
+> > `current_best`
+
+> **if** `trial_id` $\ge$ `max_trial`, print the last best projection
+> **exit**
+
+**return** the set of projections with the updated `current_best` as the
+`optimised_projection`
+:::
+
+<!-- Var names in the function and in the text needs to be consistent??? -->
+
+The JSO implementation involves several key parameters that control its
+search process in optimization problems. These parameters are designed
+to guide the exploration and exploitation phases of the algorithm. While
+the specific implementation details can vary depending on the version of
+the algorithm or its application, the focus is on two main parameters
+that are most relevant to our application: the number of jellyfish and
+the maximum number of tries.
+
+@laa_using_2020 has proposed five criteria for assessing projection
+pursuit indexes (smoothness, squintability, flexibility, rotation
+invariance, and speed). Since not all index properties affect the
+optimisation process, the focus here is on the first two properties,
+*smoothness* (@sec-smoothness) and *squintability* (@sec-squintability),
+for which metrics are proposed to quantify them.
+
+## Smoothness {#sec-smoothness}
+
+This subsection proposes a metric for the smoothness of a projection
+pursuit index.
+
+If a PP index function is evaluated at some random points, as is done at
+the initialization stage of JSO, then these random index values can be
+interpreted as a random field, indexed by a space parameter, namely the
+random projection angle. This analogy suggests to use this random
+training sample to fit a spatial model, a simple one being a (spatial)
+Gaussian process.
+
+The distribution of a Gaussian process is fully determined by its mean
+and covariance function. The smoothness property comes into play in the
+definition of the covariance function: if a PP index is very smooth,
+then two close projection angles should produce close index values
+(strong correlation); by contrast, if a PP index is not very smooth,
+then two close projection angles might give very different index values
+(fast decay of correlations with respect to distance between angles).
+
+Popular covariance functions are parametric positive semi-definite
+functions, some of which have a parameter to capture the smoothness of
+the Gaussian field. In particular, consider the Matérn class of
+covariance functions, defined by
+
+$$
+K(u):=\frac{(\sqrt{2\nu}u)^{\nu}}{\Gamma(\nu)2^{\nu-1}}\mathcal{K}_{\nu}(\sqrt{2\nu}u)\ ,
+$$
+
+where $\nu>0$ is the smoothness parameter and where $\mathcal{K}_\nu$ is
+the modified Bessel function. The Matérn covariance function can be
+expressed analytically when $\nu$ is a half-integer, the most popular
+values in the literature being $\frac{1}{2}$, $\frac{3}{2}$ and
+$\frac{5}{2}$. The parameter $\nu$, called *smoothness parameter*,
+controls the decay of the covariance function. As such, it is an
+appropriate measure of smoothness of a random field.
+
+In this context, the parameter $\nu$ is suggested as a measure of the
+smoothness of the index function by fitting a Gaussian process prior
+with Matérn covariance on a dataset generated by random evaluations of
+the index function, as done at the initialization stage of the jellyfish
+search optimization. There exist several R packages, such as `GpGp`
+[@guinness2021gpgp] or `ExaGeoStatR` [@abdulah2023large], to fit the
+hyperparameters of a GP covariance function on data. In this project,
+the `GpGp` package is used.
+
+After fitting the smoothness parameter $\nu>0$, its value can be
+interpreted as follows: the higher $\nu$, the smoother the index
+function.
+
+## Squintability {#sec-squintability}
+
+Squintability has been a useful concept. Here, it is defined
+mathematically and two approaches to compute this metric numerically,
+are described.
+
+From @barnett1981interpreting and @laa_using_2020, a large squint angle
+implies that the objective function value is close to optimal even when
+the perfect view to see the structure is far away. A small squint angle
+means that the PP index value improves substantially only when the
+perfect view is close by. As such, low squintability implies rapid
+improvement in the index value when near the perfect view. For PP, a
+small squint angle is considered to be undesirable because it means that
+the optimiser needs to be very close to be able to "see" the optima.
+Thus, it could be difficult for the optimiser to find the optima. The
+mathematical formulation of this intuition is proposed below:
+
+Let $A \in \mathbf{R}^{p \times d}$ be the d-D projection basis and
+$A^*$ be the optimal basis achieving the maximum index value for a given
+projection pursuit problem defined by the shape to find, data dimension,
+and the index function $f(.)$. The projection distance $d(A, A^*)$, is
+defined as the Frobenius norm $\lVert . \rVert _F$, between the squared
+difference of these two bases:
+
+$$d(A, A^*) = \lVert M \rVert _F = \sum_{ij} M_{ij}^2, \text{ where } M = AA^\prime - A^*A^{*\prime}\ .$$ {#eq-proj-dist}
+
+We now focus our attention to how the index value $f(XA)$ changes with
+respect to the projection distance $d(A, A^*)$, over the course of the
+JSO.
+
+It is expected that for a PP index with high squint angle, the
+optimization (@eq-optimization) should make substantial progress early
+on. Conversely, for a PP index with low squint angle, it might take a
+long while for the optimization to make substantial progress, as the
+candidate projections would need to be very close to the optimal one for
+the structure of the index function to be visible enough to be amenable
+to efficient optimization. This observation suggests that the extreme
+values of $f'$ (the ones for which $f''=0$, assuming that $f$ is twice
+differentiable), and the projection distances for which these values are
+attained, are crucial in the mathematical definition of squintability.
+Noticing that $f$ is expected to be a decreasing function, the
+squintability metric is proposed as follows:
+
+$$
+\varsigma:=-4\min_{x}f'(x)\times\underset{x}{\arg\min}f'(x)\ .
+$$ {#eq-squintability}
+
+$-\min_{x}f'(x)$ represents the largest value of the gradient of $-f$
+and $\underset{x}{\arg\min}f'(x)$ represents the projection distance at
+which this largest gradient is attained. It is expected that these two
+values should be both high in the case of high squintability (fast
+increase in $f$ early on), and both low in the case of low squintability
+(any substantial increase in $f$ happens very late, close to the optimal
+angle). This suggest that their product (@eq-squintability) should
+provide a sensible measure of squintability. The multiplicative constant
+$4$, which can be deemed arbitrary, does not change the interpretation
+of the squintability metric $\varsigma$; it is here to adjust the range
+of values of $\varsigma$ and simplify the explicit formula for
+$\varsigma$ obtained later on.
+
+To compute the squintability metric (@eq-squintability) in practice,
+several approaches are possible. The first one is to propose a
+parametric model for $f$, and use it to obtain an explicit formula for
+$\varsigma$. Numerical experiments suggest a scaled sigmoid shape as
+described below. Define
+
+$$
+\ell(x):=\frac{1}{1+\exp(\theta_{3}(x-\theta_{2}))}\ ,
+$$ {#eq-logistic}
+
+which is a decreasing logistic function depending on two parameters
+$\theta_2$ and $\theta_3$, such that $\ell(\theta_{2})=\frac{1}{2}$.
+Then, define
+
+$$
+f(x)=(\theta_{1}-\theta_{4})\frac{\ell(x)-\ell(x_{\max})}{\ell(0)-\ell(x_{\max})}+\theta_{4}\ ,
+$$ {#eq-parametric}
+
+which depends on three additional parameters, $\theta_1$, $\theta_2$,
+and $x_{\max}$, such that $f(0)=\theta_1$ and $f(x_{\max})=\theta_4$.
+Under the parametric model (@eq-parametric), the squintability metric
+(@eq-squintability) can be shown to be equal to
+
+$$
+\varsigma=\frac{(\theta_{1}-\theta_{4})\theta_{2}\theta_{3}}{\ell(0)-\ell(x_{\max})}\ .
+$$ {#eq-squintability-parametric}
+
+In practice, the parameters of this model (@eq-parametric) can be
+estimated numerically, for example by non-linear least squares, and then
+used to evaluate $\varsigma$ as in equation
+(@eq-squintability-parametric).
+
+Alternatively, one can estimate (@eq-squintability) in a nonparametric
+way, for example by fitting $f$ using kernel regression, then
+numerically estimate the angle at which $-f'$ attains its highest value.
+
+<!-- \textcolor{orange}{See whether further details are needed for the nonparametric approach.} -->
+
+<!--To the best of our knowledge, -->
+
+<!-- ## Speed -->
+
+<!-- The speed of optimizing an index function can be measured empirically by -->
+
+<!-- recording the duration of the optimisation. Alternatively, one can also -->
+
+<!-- gauge the speed in terms of computational complexity of evaluating the -->
+
+<!-- index function (for instance, in big O notation, with respect to the -->
+
+<!-- sample size) of computing the index function. -->
+
+# Simulation details {#sec-sim-deets}
+
+The JSO performance is compared with an existing optimiser, Creeping
+Random Search (CRS) [@RJ-2021-105; @laa_using_2020] used in the PP
+guided tour to explore JSO's behaviour under different hyper-parameter
+and data dimension combinations. The second simulation studies the
+effect of index properties (smoothness and squintability), along with
+JSO hyper-parameters, and data dimension, on the success rate of the JSO
+performance. This section describes the simulation details, with the
+results deferred to Section @sec-sim-res.
+
+## Performance of JSO relative to CRS {#sec-app-1}
+
+he performance of JSO is investigated both in comparison to the existing
+optimizer, CRS, and across various hyper-parameter values. The
+performance is measured by the success rate, defined as the proportion
+of simulations that achieves a final index value within 0.05 of the best
+index value found among all 50 simulations (see @fig-success-rate for an
+illustration). This comparison is based on projection pursuit to find
+the pipe shape investigated by @laa_using_2020 using the `holes` index.
+
+Fifty simulations are conducted with both JSO and CRS, in four different
+data dimensions ($d = 6, 8, 10, 12$). JSO uses 100 jellyfishes with a
+maximum of 100 tries, while the CRS allows a maximum of 1000 samples at
+each iteration before the algorithm terminates. The different numbers
+account for the multiple paths of JSO to enable fairer comparison with
+CRS. The results of the simulation are collected using the data
+structure proposed in @RJ-2021-105 for assessing JSO, where the design
+parameters are stored along with index value, projection basis, random
+seed, and computation time.
+
+Fifty additional simulations are conducted for each hyper-parameter
+combination to analyze how they affect the JSO success rate. This
+includes variations in the number of jellyfish (20, 50, and 100) and the
+maximum number of tries (50 and 100).
+
+```{r}
+#| label: fig-success-rate
+#| fig.cap: "Illustration of success rate calculation: Final projections based on projection pursuit to find the pipe shape in 8D data using the holes index, optimised by CRS, in 50 simulations. The 50 final projections are sorted by their index values. The highest index value found across all simulations is 0.969. Out of the 50 simulations, 43 achieved an index value within 0.05 of the best, resulting in a success rate of 0.86 (43/50)."
+# pipe_jellyfish_12d <- pipe_better |> 
+#   filter(dim == 2) |> 
+#   mutate(dim = as.numeric(dim) * 8, sim = as.numeric(sim)) 
+# proj_dt <- map_dfr(pipe_jellyfish_12d |> pull(basis),
+#               ~as_tibble(pipe1000_8d %*% .x), .id = "sim") |>
+#   mutate(sim = as.numeric(sim)) |>
+#   left_join(pipe_jellyfish_12d |> select(sim, index_val), by = "sim")
+# 
+# idx_val_sorted <- proj_dt |> pull(index_val) |> unique() |> sort()
+# proj_dt |>
+#   ggplot(aes(x = V1, y = V2)) +
+#   geom_point(size = 0.5) +
+#   geom_text(aes(label = round(index_val, 3)), x = 0, y = 3.7,
+#             size = 8) +
+#   xlim(-4, 4) + ylim(-4, 4) +
+#   facet_wrap(~fct_reorder(as.factor(sim), -index_val), ncol = 10) +
+#   theme_bw() +
+#   theme(aspect.ratio = 1, axis.ticks = element_blank(),
+#         axis.text = element_blank(), axis.title = element_blank(),
+#         panel.grid = element_blank(), strip.background = element_blank(),
+#         strip.text = element_blank()) 
+knitr::include_graphics(here::here("figures", "success-rate.png"))
+```
+
+## Factors affecting JSO success rate: index properties and jellyfish hyper-parameters {#sec-app-2}
+
+To assess JSO's performance across various scenarios, two different data
+shapes, pipe and a sine wave, are investigated in 6D and 8D spaces using
+six different PP indexes: `dcor2d_2`, `loess2d`, `MIC`, `TIC`, `spline`,
+and `stringy`, with varied JSO hyper-parameters. A total of
+`r nrow(sim_df)` combinations result, comprising of
+`r nrow(filter(sim_df, index == "holes"))` computed on the pipe data and
+`r nrow(filter(sim_df, index != "holes"))` on the sine-wave data. Again,
+JSO is run 50 times to calculate the success rate for each projection
+pursuit.
+
+Smoothness and squintability are computed following the procedures
+outlined in @sec-smoothness and @sec-squintability and as illustrated in
+@fig-smoothness and @fig-squintability.
+
+To compute smoothness, 300 random bases are simulated. Index values and
+projection distance (to the optimal basis) are calculated for each
+random basis before fitting the Gaussian process model to obtain the
+smoothness measure for the index.
+
+To compute squintability, 50 random bases are sampled and interpolated
+to the optimal basis with a step size of 0.005. Index values and
+projection distances are calculated for these interpolated bases and the
+index values are averaged with a bin width of 0.005. A four-parameter
+scaled logistic function is fitted to the index values against
+projection distances, estimated by non-linear least squares. The
+squintability measure is then calculated as
+@eq-squintability-parametric.
+
+To construct a relationship among success rate, index properties
+(smoothness and squintability), and jellyfish hyper-parameters, a
+generalised linear model is fitted using a binomial family and a logit
+link function. The data is pre-processed by 1) scaling the JSO
+hyper-parameters by a factor of 10 for interpretation, 2) creating a new
+binary variable `long_time` to indicate cases with an average run time
+over 30 seconds, and 3) re-coding the success rate for the `stringy`
+index as 0, because none of the 50 simulations correctly identified the
+sine-wave shape.
+
+<!-- **Projection distance**: The projection distance between projection -->
+
+<!-- bases and the optimal best basis (or the empirical best basis if -->
+
+<!-- the optimal is unknown) measures how close a visited basis is to  -->
+
+<!-- the best basis and it is calculated as the Frobenius norm in Equation -->
+
+<!-- @eq-proj-dist. Plotting projection distances against index values for the  -->
+
+<!-- bases visited reveals how the index value changes as the basis -->
+
+<!-- approaches the optimal basis, helping to calculate the squintability -->
+
+<!-- measure. -->
+
+```{r}
+#| label: fig-smoothness
+#| out.width: 100%
+#| fig.cap: "Illustration of steps to calculate smoothness. For a given projection pursuit problem defined by the shape to find, data dimension and the index function, 1) sample random bases given the orthonormality contraint, 2) calculate the projection distance and the index value for each random basis, and 3) fit a Gaussian process model of index values against projection distances to obtain the smoothness measure. "
+# basis_smoothness <- sample_bases(idx = "splines2d", n_basis = 1000)
+# basis_smoothness |>
+#    ggplot(aes(x = dist, y = index)) +
+#    geom_point() + 
+#    labs(x = "Projection distance", y = "Index value") + 
+#    theme_bw() +   
+#   theme(axis.text = element_text(size = 20), axis.title = element_text(size = 30))
+knitr::include_graphics(here::here("figures", "smoothness.png"))
+```
+
+```{r}
+#| label: fig-squintability
+#| out.width: 100%
+#| fig.cap: "Illustration of steps to calculate squintability. For a given projection pursuit problem defined by the shape to find, data dimension and the index function, 1) sample random bases given the orthonormality and projection distance contraint, 2) interpolate the sampled bases to the optimal basis and calculate the projection distance and the index value for each interpolated basis. 3) bin the index values by projection distances to obtain the average index value for each bin, 4) fit the scaled sigmoid function in Equation @eq-squintability to the binned index values against projection distances using non-linear least square, 5) calculate the squintability measure using Equation @eq-squintability-parametric with parameters estimated from the model."
+# p1 <- sim_sine_6d_spline_projdist |> 
+#   ggplot(aes(x = proj_dist, y = index_val)) +
+#   geom_point(size = 0.1, alpha = 0.5) + 
+#   labs(x = "Projection distance", y = "Index value") + 
+#   theme_bw() + 
+#   theme(axis.text = element_text(size = 20), axis.title = element_text(size = 30))
+# 
+# 
+# dist_bin <- ceiling(sim_sine_6d_spline_projdist[["proj_dist"]] / 0.1) * 0.1
+# dt <- sim_sine_6d_spline_projdist |>
+#   dplyr::bind_cols(dist_bin = dist_bin) |>
+#   dplyr::group_by(dist_bin) |>
+#   dplyr::summarise(index_val = mean(index_val, na.rm = TRUE))
+# 
+# p2 <-  dt |> 
+#   ggplot(aes(x = dist_bin, y = index_val)) + 
+#   geom_line() +
+#   geom_point() + 
+#   labs(x = "Projection distance", y = "Index value") + 
+#   theme_bw() + 
+#   theme(axis.text = element_text(size = 20), axis.title = element_text(size = 30))
+knitr::include_graphics(here::here("figures", "squintability.png"))
+```
+
+# Results {#sec-sim-res}
+
+The results from the first simulation described in @sec-sim-deets are
+analysed based on the final projections across two optimisers (JSO and
+CRS) and the success rate across JSO hyper-parameters. In the second
+simulation, smoothness and squintability are calculated across a
+collection of pipe-finding and sine-wave finding problems to construct
+the relationship between success rate, JSO hyper-parameters, and index
+properties.
+
+The final projections found by the two optimisers (JSO and CRS) are
+presented in @fig-proj, broken down by 10th quantile, faceted by the
+data dimensions. In the 6-dimensional data scenario, JSO consistently
+identifies a clear pipe shape. The CRS also finds the pipe shape but
+with a wide rim, suggesting a further polish search may be required.
+With increasing dimensions, JSO may not always identify the pipe shape
+due to random sampling, but it still finds the pipe shape in over 50% of
+cases. Compared to CRS, JSO achieves higher index values and clearer
+pipe shapes across all quantiles in data of 8, 10, 12 dimensions,
+suggesting its advantage in exploring high-dimensional spaces.
+
+The success rate calculated at each hyper-parameter combination (number
+of jellyfish and the maximum number of tries) is presented in
+@fig-proportion. As the number of jellyfish and maximum tries increase,
+the success rate also increases. For simpler problems (6 dimensions),
+small parameter values (20 jellyfishes and a maximum of 50 tries) can
+already achieve a high success rate. However, larger parameter values
+(i.e. 100 jellyfishes and a maximum of 100 tries) are necessary for
+higher-dimensional problems (8, 10, and 12 dimensions). Increasing both
+parameters enhances the performance of JSO, but it also extends the
+computational time required for the optimisation, which can be
+computationally intensive when evaluating the index function (such as
+scagnostic indexes) multiple times across numerous iterations.
+
+```{r}
+#| fig.height = 7.5,
+#| fig.width = 10,
+#| label = fig-proj,
+#| fig.align = "center",
+#| fig.cap = "Projections found by the JSO and CRS at each 10th quantile across 50 simulations. The projection pursuit problem is to find the pipe shape using the holes index in the 6, 8, 10, and 12-dimensional spaces. The JSO uses 100 jellyfishes and a maximum number of tries of 100. The CRS uses a maximum of 1000 tries in each step of random sampling step before the algorithm terminates. In the 6-D data space, JSO always finds a clear pipe shape while the CRS also finds the pipe shape but with a wide rim. At higher data dimensions, JSO finds a higher index value and a clearer pipe shape across all the quantiles than the CRS"
+
+aaa <- map_dfr(
+  list(pipe1000, pipe1000_8d, pipe1000_10d, pipe1000_12d), 
+  ~{
+    d_dim = dim(.x)[2]
+    pipe_jellyfish |> 
+      filter(d == d_dim) |> 
+      arrange(index_val) |>
+      filter(row_number() %in% c(1, seq(5, 50, 5))) |> 
+      mutate(id = factor(
+        paste0(c(0, seq(5, 50, 5)) / 50 * 100, "th"),
+        levels = paste0(c(0, seq(5, 50, 5)) / 50 * 100, "th"))) |> 
+      compute_projection(data = .x, col = c("d", "index_val", "id"))
+  }
+)
+
+p1 <- aaa |> 
+  ggplot() + 
+  geom_point(aes(x = V1, y = V2), size = 0.05) + 
+  geom_text(data = aaa |> select(-V1, -V2) |> unique(), 
+            aes(label = round(index_val,3)), x =0, y = 3.7, 
+            size = 3) + 
+  facet_grid(d ~ id) + 
+  xlim(-4, 4) + ylim(-4, 4) +
+  theme_bw() +
+  theme(aspect.ratio = 1, axis.ticks = element_blank(),
+        axis.text = element_blank(), axis.title = element_blank(),
+        panel.grid = element_blank())
+
+bbb <- pipe_better |> 
+  group_by(dim) |> 
+  arrange(index_val) |> 
+  filter(row_number() %in% c(1, seq(5, 50, 5))) |>  
+  mutate(id = factor(
+    paste0(c(0, seq(5, 50, 5)) / 50 * 100, "th"),
+    levels = paste0(c(0, seq(5, 50, 5)) / 50 * 100, "th")), 
+    d= 4 + 2 * as.numeric(dim)) |> 
+  unnest(proj)
+
+p2 <- bbb |> 
+  ggplot() + 
+  geom_point(aes(x = V1, y = V2), size = 0.05) + 
+  geom_text(data = bbb |> select(-V1, -V2) |> unique(), 
+            aes(label = round(index_val,3)), x =0, y = 3.7, 
+            size = 3) + 
+  facet_grid(d ~ id) + 
+  xlim(-4, 4) + ylim(-4, 4) +
+  theme_bw() +
+  theme(aspect.ratio = 1, axis.ticks = element_blank(),
+        axis.text = element_blank(), axis.title = element_blank(),
+        panel.grid = element_blank())
+
+(p1 + ggtitle("a. JSO"))/(p2 + ggtitle("b. CRS"))
+```
+
+```{r}
+#| label = fig-proportion,
+#| fig.width = 6,
+#| fig.height = 2.5,
+#| fig.align = "center",
+#| fig.cap = "Proportion of simulations reaches near-optimal index values in the pipe-finding problem using the holes index. The proportion is calculated based on the number of simulations, out of 50, that achieve an index value within 0.05 of the best-performing simulation. As the dimensionality increases, the proportion of simulations reaching the optimal index value increases."
+pipe_sim_best <- sim_pipe_run_best |> 
+  group_by(n_jellies, max_tries, d) |>
+  summarise(I_best = max(I_max))
+  
+pipe_res <- sim_pipe_run_best |> 
+  left_join(pipe_sim_best) |> 
+  mutate(diff = abs(I_max - I_best) < 0.05) |> 
+  group_by(n_jellies, max_tries, d) |> 
+  summarise(proportion = sum(diff) / n()) |> 
+  mutate(d = as.factor(d), n_jellies = as.factor(n_jellies))
+
+pipe_res |> 
+  rename(`max # of tries` = max_tries) |>
+  ggplot(aes(x = n_jellies, y = proportion, 
+             group = interaction(d, `max # of tries`),
+             color = d)) + 
+  geom_line() + 
+  scale_color_brewer(palette = "Dark2", name = "dimension") +
+  facet_wrap(vars(`max # of tries`), 
+             labeller = "label_both") + 
+  theme_bw() + 
+  xlab("Number of jellyfish") + 
+  ylab("Proportion of success")
+
+```
+
+```{r}
+sim_df2 <- sim_df |>   
+  mutate(n_jellies = n_jellies/10,
+         max_tries = max_tries/10,
+         long_time = ifelse(time > 20, 1, 0),
+         P_J = ifelse(index == "stringy", 0, P_J))
+
+mod1 <- glm(P_J ~ smoothness + squintability + d + long_time + n_jellies + max_tries, data = sim_df2, family = binomial)
+```
+
+The index properties, including smoothness and squintability, offer
+numerical metrics to characterise the complexity of projection pursuit
+optimisation problems. @tbl-smoothness-squintability presents the
+parameters for calculating both metrics estimated from the Gaussian
+process (variance, range, smooth, and nugget) and the scaled logistic
+function ($\theta_1$ to $\theta_4$) for each case considered in the
+simulation. The column "smooth" is used as the smoothness metric and the
+column "squint" is calculated as equation @eq-squintability-parametric
+as the squintability metric. @tbl-mod-output presents the results of
+fitting a generalised linear model with a binomial family and a logit
+link function to a sample of data in @tbl-mod-data, where all the three
+components (success rate, JS hyper-parameters, and index properties) are
+combined. The model suggests that JSO success rate is positively
+associated with the two hyper-parameters, as well as with the index
+properties: smoothness and squintability. Specifically, using 10 more
+jellyfish and 10 more tries increases the odd ratio of success by
+`r round(100 * (exp(broom::tidy(mod1)$estimate[6])-1), 2)`% and
+`r round(100 * (exp(broom::tidy(mod1)$estimate[7])-1), 2)`%,
+respectively. However, being flagged with long runtime and an increase
+of data dimension reduce the success rate by
+`r round(exp(broom::tidy(mod1)$estimate[5]) * 100, 2)`% and
+`r round(exp(broom::tidy(mod1)$estimate[4]) * 100, 2)`%, respectively.
+The variable `squintability` and `dimension` are significant, suggesting
+their importance relative to JSO hyper-parameters in the optimisation
+success. In defining a projection pursuit problem, factors such as the
+shape-to-find, the index function used, and the data dimension,
+determine the properties such as smoothness and squintability. These
+metrics can then be compared across different problems to understand
+their relative complexites. The results suggest that squintability has a
+more significant influence than smoothness on the success rate of JSO.
+Once the characteristics of the projection pursuit problem are fully
+understood, increasing JSO hyper-parameters can enhance the search
+effectiveness, however, it is also important to consider the resulting
+increase in computational complexity.
+
+```{r fig-idx-proj-dist, eval = FALSE}
+#| fig.width = 9,
+#| fig.height = 5,
+#| fig.cap = "Index values versus projection distance for the 12 pipe/sine-wave finding problem, after the binning procedure for calculating the squintability measure. The index values, averaged at bin width of 0.005, are scaled from 0 to 1 for comparison (holes, TIC, and stringy). The `MIC` and `TIC` index curves are convex while others are concave. The stringy curve shows an instantaneous jump to the optimum when aproaching the best basis." 
+sq_basis_dist_idx |>
+  ggplot(aes(x = dist, y = index, group = index_name)) +
+  geom_line() + 
+  facet_nested_wrap(~index_name + n, nrow = 3, labeller = label_both) + 
+  xlab("projection distance") + ylab("index value") +
+  theme_bw()
+```
+
+```{r}
+#| label: tbl-smoothness-squintability
+#| tbl-cap: Parameters estimated from the Gaussian process (including variance, range, smoothness, and nugget) and scaled logistic function ($\theta_1$ to $\theta_4$) for the pipe-finding and sine-wave finding problems.  The column "smooth" and "squint" represent the smoothness and squintability measures. 
+dt <- tibble(shape = c(rep("pipe", 4), rep("sine", 8)), smoothness) |>
+  left_join(squintability) |> 
+  rename(d = n, smooth = smoothness) |> 
+  mutate(index = ifelse(index == "dcor2d_2", "dcor2d", index)) 
+dt |> 
+  knitr::kable(
+    digits = 2, format = "latex", 
+    col.names = c(
+      "shape", "index", "d",
+      "variance", "range", "smooth", "nugget",
+      "$\\theta_1$", "$\\theta_2$", "$\\theta_3$", "$\\theta_4$", "squint"), linesep = "",
+    booktabs = T, escape = FALSE, row.names = TRUE) |> 
+  column_spec(1, border_left = TRUE) |> 
+  column_spec(c(4, 8, 13), border_right = TRUE) |> 
+  kable_styling(font_size = 10) 
+```
+
+```{r}
+#| label: tbl-mod-data
+#| tbl-cap: The first 7 rows of the datasets processed for modelling. 
+sim_df |> 
+  dplyr::select(index, d, smoothness, 
+    squintability, n_jellies, max_tries, 
+    -I_max, P_J, time) |> 
+  mutate(time = as.numeric(time)) |>
+  arrange(index, d, n_jellies, max_tries) |> 
+  head(7) |> 
+  kable(digits = 2, format = "latex", 
+        col.names = c("index", "d", 
+          "smoothness", "squintability", 
+          "n. jellyfish", 
+          "max. tries", 
+          "success rate", "time (sec)"),
+        linesep = "",
+        booktabs = T) |> 
+  kable_styling(#latex_options = "hold_position",
+    font_size = 10)
+```
+
+```{r}
+#| label: tbl-mod-output
+#| tbl-cap: Model estimates of proportion of jellyfish success on index properties and jellyfish hyper-parameters from the generalised linear model with a binomial family and a logit link function. The variable smoothness, squintability, number of jellyfish and maximum number of tries are positively associated with JSO success rate while data dimension and being flagged as long runtime are negatively associated with the success rate. The variable squintability and dimension are significant, suggesting their importance relative to jellyfish hyper-parameters in the optimisation success.
+broom::tidy(mod1) |> 
+  mutate(term = c("Intercept", "Smoothness",
+   "Squintability", "Dimension (d)", 
+   "Long time", "N. jellyfish", 
+   "Max. tries")) |>
+  kable(digits = 2, format = "latex", 
+    linesep = "", booktabs = T) |> 
+  column_spec(c(1,5), border_right = TRUE) |> 
+  column_spec(1, border_left = TRUE) |> 
+  kable_styling(font_size = 10) 
+```
+
+# Conclusion {#sec-conclusion}
+
+This paper has presented new metrics to mathematically define desirable
+features of PP indexes, squintability and smoothness, and used these to
+assess the performance of the new jellyfish search optimiser. The
+metrics will be generally useful for characterising PP indexes, and help
+with developing new indexes.
+
+In the comparison of the JSO against the currently used CRS, as expected
+the JSO vastly out-performs CRS, and provides a high probability of
+finding the global optima. The JSO obtains the maximum more cleanly,
+with a slightly higher index value, and plot of the projected data
+showing the structure more clearly.
+
+The JSO performance is affected by the hyper-parameters, with a higher
+chance of reaching the global optima when more jellyfish are used and
+the maximum number of tries is increased. However, it comes at a
+computational cost, as expected. The performance declines if the
+projection dimension increases and if the PP index has low
+squintability. The higher the squintability the better chance the JSO
+can find the optima. However, interestingly smoothness does not affect
+the JSO performance.
+
+The new JSO is integrated with the current implementation of the
+projection pursuit guided tour in the `tourr` package, and can be
+further examined using PP optimisation diagnostics in the `ferrn`
+package. Using the JSO is a little different than the current CRS,
+because it runs many paths. The recommended approach is to conduct the
+optimisation off-line, extract the bases of a selected jellyfish, and
+then use the planned tour to follow selected jellyfish. The tools for
+this are available in the `tourr` package, too.
+
+```{=html}
+<!--
+- Summarise the result of the simulation: JSO immense improvement on current methods, ...
+- JSO for a guided tour, what changes are needed? Do we follow one tentacle, do we perform off-line and then pull tentacles out to watch, how does it integrate with ferrn
+
+
+Main findings: 
+
+  - JSO tends to obtian a clearer projection and higher index value when searching higher dimension spaces than CRS (and other current optimisers) - Figure 4
+  
+  - Increasing JS hyper-parameter enhances its performance, but the computational time required for the optimisation can quickly become intensive, especially when evaluating the index function (such as scagnostic indexes) multiple times across numerous iterations. - Figure 5
+  
+  - Smoothness and squintability can be calculated and compared across different problems to understand their relative complexity. Once a projection pursuit problem is fully characterised (by the shape-to-find, the index function used, and the data dimension), increasing JSO hyper-parameters can enhance the search effectiveness, however, the resulting increase in computational complexity will also need to be considered. - modelling
+-->
+```
+# Acknowledgement
+
+The article is created using Quarto [@Allaire_Quarto_2022] in R [@R].
+The source code for reproducing the work reported in this paper can be
+found at: <https://github.com/huizezhang-sherry/paper-jso>. Nicolas
+Langrené acknowledges the partial support of the Guangdong Provincial
+Key Laboratory IRADS (2022B1212010006, R0400001-22) and the UIC Start-up
+Research Fund UICR0700041-22.
+
+# References
