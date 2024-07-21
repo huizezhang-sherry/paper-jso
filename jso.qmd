@@ -2,6 +2,36 @@
 title: Studying the Performance of the Jellyfish Search Optimiser for the Application of Projection Pursuit
 header-includes:
    - \usepackage{algorithm}
+   - \usepackage{amsmath}
+   - \usepackage{amsthm}
+   - \usepackage{amssymb}
+   - \theoremstyle{plain}
+   - \newtheorem{assumption}{\protect\assumptionname}
+   - \newtheorem{claim}{\protect\claimname}
+   - \newtheorem{condition}{\protect\conditionname}
+   - \newtheorem{conjecture}{\protect\conjecturename}
+   - \newtheorem{cor}{\protect\corollaryname}
+   - \newtheorem{defn}{\protect\definitionname}
+   - \newtheorem{example}{\protect\examplename}
+   - \newtheorem{lem}{\protect\lemmaname}
+   - \newtheorem{notation}{\protect\notationname}
+   - \newtheorem{problem}{\protect\problemname}
+   - \newtheorem{prop}{\protect\propositionname}
+   - \newtheorem{rem}{\protect\remarkname}
+   - \newtheorem{thm}{\protect\theoremname}
+   - \providecommand{\assumptionname}{Assumption}
+   - \providecommand{\claimname}{Claim}
+   - \providecommand{\conditionname}{Condition}
+   - \providecommand{\conjecturename}{Conjecture}
+   - \providecommand{\corollaryname}{Corollary}
+   - \providecommand{\definitionname}{Definition}
+   - \providecommand{\examplename}{Example}
+   - \providecommand{\lemmaname}{Lemma}
+   - \providecommand{\notationname}{Notation}
+   - \providecommand{\problemname}{Problem}
+   - \providecommand{\propositionname}{Proposition}
+   - \providecommand{\remarkname}{Remark}
+   - \providecommand{\theoremname}{Theorem}
 author:
   - name: H. Sherry Zhang
     email: huize.zhang@austin.utexas.edu
@@ -88,7 +118,84 @@ load(here::here("data/sq_basis_dist_idx.rda"))
 load(here::here("data/sim_df.rda"))
 ```
 
+
+
+
 # Introduction
+
+<!--  
+\begin{assumption}\label{assum:my_assumption}
+This is an assumption.
+\end{assumption}
+Assumption \ref{assum:my_assumption} is convenient.
+
+\begin{claim}\label{claim:my_claim}
+This is a claim.
+\end{claim}
+Claim \ref{claim:my_claim} is suspicious.
+
+\begin{condition}\label{cond:my_condition}
+This is a condition.
+\end{condition}
+Condition \ref{cond:my_condition} is necessary.
+
+\begin{conjecture}\label{conj:my_conjecture}
+This is a conjecture.
+\end{conjecture}
+Conjecture \ref{conj:my_conjecture} is intriguing.
+
+\begin{cor}\label{cor:my_corollary}
+This is a corollary.
+\end{cor}
+Corollary \ref{cor:my_corollary} is trivial.
+
+\begin{defn}\label{def:my_definition}
+This is a definition.
+\end{defn}
+Definition \ref{def:my_definition} is clear.
+
+\begin{example}\label{ex:my_example}
+This is an example.
+\end{example}
+Example \ref{ex:my_example} is enlightening.
+
+\begin{lem}\label{lem:my_lemma}
+This is a lemma.
+\end{lem}
+Lemma \ref{lem:my_lemma} is helpful.
+
+\begin{notation}\label{not:my_notation}
+This is a notation.
+\end{notation}
+Notation \ref{not:my_notation} is cumbersome.
+
+\begin{problem}\label{prob:my_problem}
+This is a problem.
+\end{problem}
+Problem \ref{prob:my_problem} is difficult.
+
+\begin{proof}\label{proof:my_proof}
+This is a proof.
+\end{proof}
+Proof \ref{proof:my_proof} is compelling.
+
+\begin{prop}\label{prop:my_prop}
+This is a proposition.
+\end{prop}
+Proposition \ref{prop:my_prop} is useful.
+
+\begin{rem}\label{rem:my_remark}
+This is a remark.
+\end{rem}
+Remark \ref{rem:my_remark} is interesting.
+
+\begin{thm}\label{thm:my_theorem}
+This is a theorem.
+\end{thm}
+Theorem \ref{thm:my_theorem} is important.
+-->
+
+
 
 Projection Pursuit (PP) (@kr69, @FT74) is a dimension reduction
 technique aimed at identifying informative linear projections of data.
