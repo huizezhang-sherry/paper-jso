@@ -473,6 +473,33 @@ Squintability has been a useful concept. Here, it is defined
 mathematically and two approaches to compute this metric numerically,
 are described.
 
+\begin{defn}\label{def:proj-dist}
+Let $A \in \mathbf{R}^{p \times d}$ be the d-dimensional projection basis and
+$A^*$ be the optimal basis that achieves the maximum index value for a given
+PP problem defined by the shape to find, data dimension,
+and the index function. The projection distance $d(A, A^*)$ between $A$ 
+and $A^*$ is defined as 
+$d(A, A^*) = \lVert AA^\prime - A^*A^{*\prime}\  \rVert _F$
+where $\lVert . \rVert _F$ denotes the Frobenius norm, given by
+$\lVert M \rVert _F = \sqrt{\sum_{ij} M_{ij}^2}$. 
+\end{defn}
+
+We now focus our attention to how the index value $f(XA)$ changes with
+respect to the projection distance $d(A, A^*)$, over the course of the
+JSO.
+
+
+\begin{defn}\label{def:squintability}
+Let $g$ be the function that maps the projection distance, $d = d(A, A^*)$, 
+to the index value $f(XA)$, such that $g(d(A, A^*)) = f(XA)$.
+The squintability of $f(\cdot)$, denoted $\varsigma(f)$, is defined as 
+$$\varsigma(f) = c \times \max_{d} \Delta g(d) \times \arg \max_{d}  \Delta g(d)$$ 
+where $c$ is a constant scaling factor, $\max_A \Delta g(x)$ represents the 
+maximum change in the index value along the curve $g$, and $\arg \max_{d} \Delta g(x)$ represents the projection distance at which this largest gradient is attained.
+
+\end{defn}
+Definition \ref{def:squintability} is ...
+
 From @barnett1981interpreting and @laa_using_2020, a large squint angle
 implies that the objective function value is close to optimal even when
 the perfect view to see the structure is far away. A small squint angle
@@ -484,18 +511,6 @@ the optimiser needs to be very close to be able to "see" the optima.
 Thus, it could be difficult for the optimiser to find the optima. The
 mathematical formulation of this intuition is proposed below:
 
-Let $A \in \mathbf{R}^{p \times d}$ be the d-D projection basis and
-$A^*$ be the optimal basis achieving the maximum index value for a given
-projection pursuit problem defined by the shape to find, data dimension,
-and the index function $f(.)$. The projection distance $d(A, A^*)$, is
-defined as the Frobenius norm $\lVert . \rVert _F$, between the squared
-difference of these two bases:
-
-$$d(A, A^*) = \lVert M \rVert _F = \sum_{ij} M_{ij}^2, \text{ where } M = AA^\prime - A^*A^{*\prime}\ .$$ {#eq-proj-dist}
-
-We now focus our attention to how the index value $f(XA)$ changes with
-respect to the projection distance $d(A, A^*)$, over the course of the
-JSO.
 
 It is expected that for a PP index with high squint angle, the
 optimization (@eq-optimization) should make substantial progress early
