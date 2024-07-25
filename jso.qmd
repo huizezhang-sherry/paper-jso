@@ -118,11 +118,9 @@ load(here::here("data/sq_basis_dist_idx.rda"))
 load(here::here("data/sim_df.rda"))
 ```
 
-
-
-
 # Introduction
 
+```{=html}
 <!--  
 \begin{assumption}\label{assum:my_assumption}
 This is an assumption.
@@ -194,9 +192,7 @@ This is a theorem.
 \end{thm}
 Theorem \ref{thm:my_theorem} is important.
 -->
-
-
-
+```
 Projection Pursuit (PP) (@kr69, @FT74) is a dimension reduction
 technique aimed at identifying informative linear projections of data.
 The method involves optimising an objective function known as the PP
@@ -422,50 +418,93 @@ for which metrics are proposed to quantify them.
 This subsection proposes a metric for the smoothness of a projection
 pursuit index.
 
-If a PP index function is evaluated at some random points, as is done at
-the initialization stage of JSO, then these random index values can be
+An classical way to describe the smoothness of a function is to identify
+how many continuous derivatives of the function exist. This can be
+characterized by Sobolev spaces [@adams2003sobolev].
+
+```{=tex}
+\begin{defn}\label{def:sobolev_space}
+The Sobolev space $W^{k,p}(\mathbb{R})$ for $1\leq p\leq \infty$ is the set of all functions $f$ in $L^p(\mathbb{R})$ for which all weak derivatives $f^{(\ell)}$ of order $\ell\leq k$ exist and have a finite $L^p$ norm.
+\end{defn}
+```
+The Sobolev index $k$ in Definition \ref{def:sobolev_space} can be used
+to characterize the smoothness of a function: if $f\in W^{k,p}$, then
+the higher $k$, the smoother $f$. While this Sobolev index $k$ is a
+useful measure of smoothness, it can be difficult to compute or even estimate
+in practice.
+
+To obtain a computable estimator of the smoothness of the index function
+$f$, we propose an approach based on random fields. If a PP index
+function $f$ is evaluated at some random bases, as is done at the
+initialization stage of JSO, then these random index values can be
 interpreted as a random field, indexed by a space parameter, namely the
-random projection angle. This analogy suggests to use this random
-training sample to fit a spatial model, a simple one being a (spatial)
-Gaussian process.
+random projection basis. This analogy suggests to use this random
+training sample to fit a spatial model. We propose to use a Gaussian
+process equipped with a Matérn covariance function, due to the
+connections between this model and Sobolev spaces, see for example
+@porcu2024matern.
 
 The distribution of a Gaussian process is fully determined by its mean
 and covariance function. The smoothness property comes into play in the
 definition of the covariance function: if a PP index is very smooth,
-then two close projection angles should produce close index values
+then two close projection bases should produce close index values
 (strong correlation); by contrast, if a PP index is not very smooth,
-then two close projection angles might give very different index values
-(fast decay of correlations with respect to distance between angles).
+then two close projection bases might give very different index values
+(fast decay of correlations with respect to distance between bases). Popular covariance functions are parametric positive semi-definite
+functions.  In particular, the Matérn class of
+covariance functions has a dedicated parameter to capture the smoothness of
+the Gaussian field.
 
-Popular covariance functions are parametric positive semi-definite
-functions, some of which have a parameter to capture the smoothness of
-the Gaussian field. In particular, consider the Matérn class of
-covariance functions, defined by
+```{=tex}
+\begin{defn}
+The Matérn covariance function $K$ is defined by
+\begin{equation}
+K(u)=K_{\nu,\eta,\ell}(u):=\eta^2\frac{\left(\sqrt{2\nu}\frac{u}{\ell}\right)^{\nu}}{\Gamma(\nu)2^{\nu-1}}\mathcal{K}_{\nu}\left(\sqrt{2\nu}\frac{u}{\ell}\right)\ , u\geq0\label{eq:matern}
+\end{equation}
+where $\nu>0$ is the smoothness parameter, $\eta$ is the outputscale, $\ell$ is the lengthscale, and $\mathcal{K}_\nu$ is
+the modified Bessel function \citep[10.25]{DLMF}. A multivariate extension $K(u)$, $u\in\mathbb{R}^d$ can be obtained by products of univariate covariance functions \eqref{eq:matern}.
+\end{defn}
+```
+The Matérn covariance function can be expressed analytically when $\nu$
+is a half-integer, the most popular values in the literature being
+$\frac{1}{2}$, $\frac{3}{2}$ and $\frac{5}{2}$ [@rasmussen2006gaussian]. The parameter $\nu$,
+called *smoothness parameter*, controls the decay of the covariance
+function. As such, it is an appropriate measure of smoothness of a
+random field. For example, @karvonen2023asymptotic showed that if a
+function $f$ has a Sobolev index of $k$, then the smoothness parameter
+estimate $\nu$ in \eqref{eq:matern} cannot be asymptotically less than
+$k$. See the survey @porcu2024matern for additional results on the connection between the Matérn model and Sobolev spaces. An interesting result is that the asymptotic case
+$\nu\rightarrow\infty$ coincides with the Gaussian kernel:
+$K_\infty(u)=\exp(-u^{2}/2)$.
 
-$$
-K(u):=\frac{(\sqrt{2\nu}u)^{\nu}}{\Gamma(\nu)2^{\nu-1}}\mathcal{K}_{\nu}(\sqrt{2\nu}u)\ ,
-$$
+In view of these results, the parameter $\nu$ is suggested as a measure
+of the smoothness of the PP index function by fitting a Gaussian process
+prior with Matérn covariance on a dataset generated by random
+evaluations of the index function, as done at the initialization stage
+of the jellyfish search optimization. There exist several R packages,
+such as `GpGp` [@guinness2021gpgp] or `ExaGeoStatR` [@abdulah2023large],
+to fit the hyperparameters of a GP covariance function on data, which is
+usually done by maximum likelihood estimation. In this project, the
+`GpGp` package is used.
 
-where $\nu>0$ is the smoothness parameter and where $\mathcal{K}_\nu$ is
-the modified Bessel function. The Matérn covariance function can be
-expressed analytically when $\nu$ is a half-integer, the most popular
-values in the literature being $\frac{1}{2}$, $\frac{3}{2}$ and
-$\frac{5}{2}$. The parameter $\nu$, called *smoothness parameter*,
-controls the decay of the covariance function. As such, it is an
-appropriate measure of smoothness of a random field.
+```{=tex}
+\begin{defn}
+Let $\mathbf{A}=[A_1, \ldots, A_N] \in (\mathbf{R}^{p \times d})^N$ be d-dimensional projection bases, let $\mathbf{y}=[f(XA_1),\ldots,f(XA_N)]$ be the corresponding PP index values, and let $\mathbf{K}=[K_\theta(A_{i},A_{j})]_{1\leq i,j\leq N}\in\mathbb{R}^{N\times N}$ be the Matérn covariance matrix evaluated at the input bases, where the vector $\theta$ contains all the parameters of the multivariate Matérn covariance function $K$ (smoothness, outputscale, lengthscales). The log-likelihood of the parameters $\theta$ is defined by 
+\begin{equation}
+\mathcal{L}(\theta)=\log p(\mathbf{y}\left|\mathbf{A},\theta\right.)=-\frac{1}{2}\mathbf{y}^{\top}(\mathbf{K}+\sigma^{2}\mathbf{I})^{-1}\mathbf{y}-\frac{1}{2}\mathrm{\log}(\det(\mathbf{K}+\sigma^{2}\mathbf{I}))-\frac{N}{2}\log(2\pi)\,.\label{eq:gp_log_likelihood}
+\end{equation}
+where the nugget parameter $\sigma$ is the standard deviation of the intrinsic noise of the Gaussian process.
+The optimal parameters (including smoothness) are obtained by maximum log-likelihood
+\begin{equation}
+\theta^* = \underset{\theta}{\max}\mathcal{L}(\theta)
+\end{equation}
+The resulting optimal smoothness parameter $\nu$ is chosen as our smoothness metric.
+\end{defn}
+```
 
-In this context, the parameter $\nu$ is suggested as a measure of the
-smoothness of the index function by fitting a Gaussian process prior
-with Matérn covariance on a dataset generated by random evaluations of
-the index function, as done at the initialization stage of the jellyfish
-search optimization. There exist several R packages, such as `GpGp`
-[@guinness2021gpgp] or `ExaGeoStatR` [@abdulah2023large], to fit the
-hyperparameters of a GP covariance function on data. In this project,
-the `GpGp` package is used.
-
-After fitting the smoothness parameter $\nu>0$, its value can be
-interpreted as follows: the higher $\nu$, the smoother the index
-function.
+The value of the optimal smoothness parameter $\nu>0$ can be
+naturally interpreted as follows: the higher $\nu$, the smoother the
+index function.
 
 ## Squintability {#sec-squintability}
 
@@ -473,6 +512,7 @@ Squintability has been a useful concept. Here, it is defined
 mathematically and two approaches to compute this metric numerically,
 are described.
 
+```{=tex}
 \begin{defn}\label{def:proj-dist}
 Let $A \in \mathbf{R}^{p \times d}$ be the d-dimensional projection basis and
 $A^*$ be the optimal basis that achieves the maximum index value for a given
@@ -483,12 +523,12 @@ $d(A, A^*) = \lVert AA^\prime - A^*A^{*\prime}\  \rVert _F$
 where $\lVert . \rVert _F$ denotes the Frobenius norm, given by
 $\lVert M \rVert _F = \sqrt{\sum_{ij} M_{ij}^2}$. 
 \end{defn}
-
+```
 We now focus our attention to how the index value $f(XA)$ changes with
 respect to the projection distance $d(A, A^*)$, over the course of the
 JSO.
 
-
+```{=tex}
 \begin{defn}\label{def:squintability}
 Let $g$ be the function that maps the projection distance, $d = d(A, A^*)$, 
 to the index value $f(XA)$, such that $g(d(A, A^*)) = f(XA)$.
@@ -498,6 +538,7 @@ where $c$ is a constant scaling factor, $\max_A \Delta g(x)$ represents the
 maximum change in the index value along the curve $g$, and $\arg \max_{d} \Delta g(x)$ represents the projection distance at which this largest gradient is attained.
 
 \end{defn}
+```
 Definition \ref{def:squintability} is ...
 
 From @barnett1981interpreting and @laa_using_2020, a large squint angle
@@ -510,7 +551,6 @@ small squint angle is considered to be undesirable because it means that
 the optimiser needs to be very close to be able to "see" the optima.
 Thus, it could be difficult for the optimiser to find the optima. The
 mathematical formulation of this intuition is proposed below:
-
 
 It is expected that for a PP index with high squint angle, the
 optimization (@eq-optimization) should make substantial progress early
