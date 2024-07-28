@@ -95,6 +95,8 @@ editor:
     wrap: 72
 crossref: 
   eq-prefix: ""
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, echo = FALSE, message=FALSE, warning=FALSE}
@@ -199,13 +201,10 @@ The method involves optimising an objective function known as the PP
 index (e.g. @hall1989polynomial, @cook1993projection,
 @lee2010projection, @Loperfido2018, @Loperfido2020), which defines the
 criteria for what constitutes interesting or informative projections.
-Given high-dimensional data $X \in \mathbf{R}^{n\times p}$ and an index
-function $f(\cdot)$, PP finds the orthonormal basis
-$A \in \mathbf{R}^{p \times d}$ that maximises the index value of the
-projection, $Y = XA$:
+Let $X \in \mathbb{R}^{n\times p}$ be the data matrix, $A \in\mathbb{R}^{p \times d}$ be an orthonormal matrix, where $A$ belongs to the Stiefel manifold $\mathcal{A} = V_d(\mathbb{R}^p)$. The projection $Y = XA$ is a linear transformation that maps data from a $p$-dimensional space into a $d$-dimensional space. The index function $f(XA): \mathbb{R}^{n \times d} \to \mathbb{R}$ is a scalar function that measures an interesting aspect of the projected data, such as deviation from normality, presence of clusters, non-linear structure, or other features of interest. For a fixed data, PP finds the orthonormal basis $A$ that maximises the index value of the projection, $Y = XA$:
 
 $$
-\underset{A}{\max } \quad f(XA) \quad \text{subject to} \quad A'A = I
+\underset{A \in \mathcal{A}}{\max } \quad f(XA) \quad \text{subject to} \quad A'A = I_d
 $$ {#eq-optimization}
 
 The index functions can be non-linear and non-convex, hence an effective
@@ -513,7 +512,7 @@ mathematically and two approaches to compute this metric numerically,
 are described.
 
 ```{=tex}
-\begin{defn}\label{def:proj-dist}
+\begin{defn}[projection distance]\label{def:proj-dist}
 Let $A \in \mathbf{R}^{p \times d}$ be the d-dimensional projection basis and
 $A^*$ be the optimal basis that achieves the maximum index value for a given
 PP problem defined by the shape to find, data dimension,
@@ -528,18 +527,25 @@ We now focus our attention to how the index value $f(XA)$ changes with
 respect to the projection distance $d(A, A^*)$, over the course of the
 JSO.
 
+<!-- Squintability is defined as how rapidly and significantly the index value, $f(XA)$ response to the decrease of projection distance to optimal, $d(A, A^*)$. -->
+
 ```{=tex}
-\begin{defn}\label{def:squintability}
-Let $g$ be the function that maps the projection distance, $d = d(A, A^*)$, 
-to the index value $f(XA)$, such that $g(d(A, A^*)) = f(XA)$.
-The squintability of $f(\cdot)$, denoted $\varsigma(f)$, is defined as 
-$$\varsigma(f) = c \times \max_{d} \Delta g(d) \times \arg \max_{d}  \Delta g(d)$$ 
-where $c$ is a constant scaling factor, $\max_A \Delta g(x)$ represents the 
-maximum change in the index value along the curve $g$, and $\arg \max_{d} \Delta g(x)$ represents the projection distance at which this largest gradient is attained.
+\begin{defn}[squintability]\label{def:squintability}
+Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance, $d = d(A, A^*)$, 
+to the index value $f(XA)$, such that $g(d(A, A^*)) = f(XA)$. The squintability of the index function $f(\cdot)$, is defined as 
+$$\varsigma(f) = -c \times \max_{d} g'(d) \times \arg \max_{d} g'(d)$$ 
+where $c$ is a constant scaling factor, $-\max_d g'(d)$ represents the 
+largest gradient of $-g$ and $\arg \max_{d} g'(d)$ represents the projection distance at which this largest gradient is attained.
 
 \end{defn}
 ```
-Definition \ref{def:squintability} is ...
+
+<!-- Definition \ref{def:squintability} is ... -->
+
+\begin{prop}\label{prop:my_prop}
+This is a proposition.
+\end{prop}
+Proposition \ref{prop:my_prop} is useful.
 
 From @barnett1981interpreting and @laa_using_2020, a large squint angle
 implies that the objective function value is close to optimal even when
@@ -855,7 +861,7 @@ p1 <- aaa |>
   ggplot() + 
   geom_point(aes(x = V1, y = V2), size = 0.05) + 
   geom_text(data = aaa |> select(-V1, -V2) |> unique(), 
-            aes(label = round(index_val,3)), x =0, y = 3.7, 
+            aes(label = round(index_val,3)), x = 0, y = 3.7, 
             size = 3) + 
   facet_grid(d ~ id) + 
   xlim(-4, 4) + ylim(-4, 4) +
@@ -871,14 +877,14 @@ bbb <- pipe_better |>
   mutate(id = factor(
     paste0(c(0, seq(5, 50, 5)) / 50 * 100, "th"),
     levels = paste0(c(0, seq(5, 50, 5)) / 50 * 100, "th")), 
-    d= 4 + 2 * as.numeric(dim)) |> 
+    d = 4 + 2 * as.numeric(dim)) |> 
   unnest(proj)
 
 p2 <- bbb |> 
   ggplot() + 
   geom_point(aes(x = V1, y = V2), size = 0.05) + 
   geom_text(data = bbb |> select(-V1, -V2) |> unique(), 
-            aes(label = round(index_val,3)), x =0, y = 3.7, 
+            aes(label = round(index_val,3)), x = 0, y = 3.7, 
             size = 3) + 
   facet_grid(d ~ id) + 
   xlim(-4, 4) + ylim(-4, 4) +
