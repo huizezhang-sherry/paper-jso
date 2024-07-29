@@ -448,7 +448,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, leftrule=.75mm, colbacktitle=quarto-callout-note-color!10!white, titlerule=0mm, toprule=.15mm, bottomtitle=1mm, toptitle=1mm, arc=.35mm, coltitle=black, left=2mm, breakable, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colframe=quarto-callout-note-color-frame, rightrule=.15mm, bottomrule=.15mm, opacitybacktitle=0.6, colback=white, opacityback=0]
+\begin{tcolorbox}[enhanced jigsaw, colback=white, opacityback=0, titlerule=0mm, toptitle=1mm, colframe=quarto-callout-note-color-frame, colbacktitle=quarto-callout-note-color!10!white, opacitybacktitle=0.6, rightrule=.15mm, coltitle=black, breakable, left=2mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomtitle=1mm, arc=.35mm, bottomrule=.15mm, leftrule=.75mm, toprule=.15mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -638,10 +638,7 @@ mathematically and two approaches to compute this metric numerically,
 are described.
 
 \begin{defn}[projection distance]\label{def:proj-dist}
-Let $A \in \mathbf{R}^{p \times d}$ be the d-dimensional projection basis and
-$A^*$ be the optimal basis that achieves the maximum index value for a given
-PP problem defined by the shape to find, data dimension,
-and the index function. The projection distance $d(A, A^*)$ between $A$ 
+Recall that $A \in \mathbf{R}^{p \times d}$ is a $d$-dimensional orthonormal matrix. Let $A^*$ be the optimal matrix that achieves the maximum index value for a given data. The projection distance $d(A, A^*)$ between $A$ 
 and $A^*$ is defined as 
 $d(A, A^*) = \lVert AA^\prime - A^*A^{*\prime}\  \rVert _F$
 where $\lVert . \rVert _F$ denotes the Frobenius norm, given by
@@ -652,10 +649,16 @@ We now focus our attention to how the index value \(f(XA)\) changes with
 respect to the projection distance \(d(A, A^*)\), over the course of the
 JSO.
 
+\begin{defn}[squint angle]\label{def:squint-angle}
+Let $A$ and $B$ be two $d$-dimensional orthonormal matrices in $\mathbb{R}^p$. The squint angle $\theta$ between the subspace spanned by $A$ and $B$ is defined as the smallest principal angle between these subspaces: $\theta = \min_{i \in \{1, \cdots, d\}} \arccos(\tau_i)$, where $\tau_i$ are the singular values of the matrix $M = A^T B$ obtained from its singular value decomposition.
+
+\end{defn}
+
 \begin{defn}[squintability]\label{def:squintability}
-Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance, $d = d(A, A^*)$, 
-to the index value $f(XA)$, such that $g(d(A, A^*)) = f(XA)$. The squintability of the index function $f(\cdot)$, is defined as 
-$$\varsigma(f) = -c \times \max_{d} g'(d) \times \arg \max_{d} g'(d)$$ 
+Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance $d(A, A^*)$ to the index value $f(XA)$, such that $g(d(A, A^*)) = f(XA)$. For brevity, denote $g(d)$ as $g(d(A, A^*))$. The squintability of an index function $f(XA)$ is defined as 
+
+$$\varsigma(f) = -c \times \max_{d} g'(d) \times \arg \max_{d} g'(d) $$
+
 where $c$ is a constant scaling factor, $-\max_d g'(d)$ represents the 
 largest gradient of $-g$ and $\arg \max_{d} g'(d)$ represents the projection distance at which this largest gradient is attained.
 
@@ -689,8 +692,10 @@ amenable to efficient optimization. This observation suggests that the
 extreme values of \(f'\) (the ones for which \(f''=0\), assuming that
 \(f\) is twice differentiable), and the projection distances for which
 these values are attained, are crucial in the mathematical definition of
-squintability. Noticing that \(f\) is expected to be a decreasing
-function, the squintability metric is proposed as follows:
+squintability.
+
+Noticing that \(f\) is expected to be a decreasing function, the
+squintability metric is proposed as follows:
 
 \begin{equation}\phantomsection\label{eq-squintability}{
 \varsigma:=-4\min_{x}f'(x)\times\underset{x}{\arg\min}f'(x)\ .
@@ -698,17 +703,19 @@ function, the squintability metric is proposed as follows:
 
 \(-\min_{x}f'(x)\) represents the largest value of the gradient of
 \(-f\) and \(\underset{x}{\arg\min}f'(x)\) represents the projection
-distance at which this largest gradient is attained. It is expected that
-these two values should be both high in the case of high squintability
-(fast increase in \(f\) early on), and both low in the case of low
-squintability (any substantial increase in \(f\) happens very late,
-close to the optimal angle). This suggest that their product
+distance at which this largest gradient is attained.
+
+It is expected that these two values should be both high in the case of
+high squintability (fast increase in \(f\) early on), and both low in
+the case of low squintability (any substantial increase in \(f\) happens
+very late, close to the optimal angle). This suggest that their product
 (\ref{eq-squintability}) should provide a sensible measure of
-squintability. The multiplicative constant \(4\), which can be deemed
-arbitrary, does not change the interpretation of the squintability
-metric \(\varsigma\); it is here to adjust the range of values of
-\(\varsigma\) and simplify the explicit formula for \(\varsigma\)
-obtained later on.
+squintability.
+
+The multiplicative constant \(4\), which can be deemed arbitrary, does
+not change the interpretation of the squintability metric \(\varsigma\);
+it is here to adjust the range of values of \(\varsigma\) and simplify
+the explicit formula for \(\varsigma\) obtained later on.
 
 To compute the squintability metric (\ref{eq-squintability}) in
 practice, several approaches are possible. The first one is to propose a

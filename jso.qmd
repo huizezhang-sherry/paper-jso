@@ -513,27 +513,32 @@ are described.
 
 ```{=tex}
 \begin{defn}[projection distance]\label{def:proj-dist}
-Let $A \in \mathbf{R}^{p \times d}$ be the d-dimensional projection basis and
-$A^*$ be the optimal basis that achieves the maximum index value for a given
-PP problem defined by the shape to find, data dimension,
-and the index function. The projection distance $d(A, A^*)$ between $A$ 
+Recall that $A \in \mathbf{R}^{p \times d}$ is a $d$-dimensional orthonormal matrix. Let $A^*$ be the optimal matrix that achieves the maximum index value for a given data. The projection distance $d(A, A^*)$ between $A$ 
 and $A^*$ is defined as 
 $d(A, A^*) = \lVert AA^\prime - A^*A^{*\prime}\  \rVert _F$
 where $\lVert . \rVert _F$ denotes the Frobenius norm, given by
 $\lVert M \rVert _F = \sqrt{\sum_{ij} M_{ij}^2}$. 
 \end{defn}
 ```
+
 We now focus our attention to how the index value $f(XA)$ changes with
 respect to the projection distance $d(A, A^*)$, over the course of the
 JSO.
 
-<!-- Squintability is defined as how rapidly and significantly the index value, $f(XA)$ response to the decrease of projection distance to optimal, $d(A, A^*)$. -->
+```{=tex}
+\begin{defn}[squint angle]\label{def:squint-angle}
+Let $A$ and $B$ be two $d$-dimensional orthonormal matrices in $\mathbb{R}^p$. The squint angle $\theta$ between the subspace spanned by $A$ and $B$ is defined as the smallest principal angle between these subspaces: $\theta = \min_{i \in \{1, \cdots, d\}} \arccos(\tau_i)$, where $\tau_i$ are the singular values of the matrix $M = A^T B$ obtained from its singular value decomposition.
+
+\end{defn}
+```
+
 
 ```{=tex}
 \begin{defn}[squintability]\label{def:squintability}
-Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance, $d = d(A, A^*)$, 
-to the index value $f(XA)$, such that $g(d(A, A^*)) = f(XA)$. The squintability of the index function $f(\cdot)$, is defined as 
-$$\varsigma(f) = -c \times \max_{d} g'(d) \times \arg \max_{d} g'(d)$$ 
+Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance $d(A, A^*)$ to the index value $f(XA)$, such that $g(d(A, A^*)) = f(XA)$. For brevity, denote $g(d)$ as $g(d(A, A^*))$. The squintability of an index function $f(XA)$ is defined as 
+
+$$\varsigma(f) = -c \times \max_{d} g'(d) \times \arg \max_{d} g'(d) $$
+
 where $c$ is a constant scaling factor, $-\max_d g'(d)$ represents the 
 largest gradient of $-g$ and $\arg \max_{d} g'(d)$ represents the projection distance at which this largest gradient is attained.
 
@@ -567,7 +572,7 @@ the structure of the index function to be visible enough to be amenable
 to efficient optimization. This observation suggests that the extreme
 values of $f'$ (the ones for which $f''=0$, assuming that $f$ is twice
 differentiable), and the projection distances for which these values are
-attained, are crucial in the mathematical definition of squintability.
+attained, are crucial in the mathematical definition of squintability.  
 Noticing that $f$ is expected to be a decreasing function, the
 squintability metric is proposed as follows:
 
