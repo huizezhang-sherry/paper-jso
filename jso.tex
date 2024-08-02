@@ -448,7 +448,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, colback=white, opacityback=0, titlerule=0mm, toptitle=1mm, colframe=quarto-callout-note-color-frame, colbacktitle=quarto-callout-note-color!10!white, opacitybacktitle=0.6, rightrule=.15mm, coltitle=black, breakable, left=2mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomtitle=1mm, arc=.35mm, bottomrule=.15mm, leftrule=.75mm, toprule=.15mm]
+\begin{tcolorbox}[enhanced jigsaw, breakable, arc=.35mm, colframe=quarto-callout-note-color-frame, colback=white, rightrule=.15mm, coltitle=black, toprule=.15mm, toptitle=1mm, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, opacityback=0, leftrule=.75mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, opacitybacktitle=0.6, bottomtitle=1mm, bottomrule=.15mm, left=2mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -633,9 +633,9 @@ function.
 
 \subsection{Squintability}\label{sec-squintability}
 
-Squintability has been a useful concept. Here, it is defined
-mathematically and two approaches to compute this metric numerically,
-are described.
+Here the formal definition of projection distance and squint angle are
+given, before the definition of squintability. Two approaches to compute
+this metric numerically, are described.
 
 \begin{defn}[projection distance]\label{def:proj-dist}
 Recall that $A \in \mathbf{R}^{p \times d}$ is a $d$-dimensional orthonormal matrix. Let $A^*$ be the optimal matrix that achieves the maximum index value for a given data. The projection distance $d(A, A^*)$ between $A$ 
@@ -645,30 +645,44 @@ where $\lVert . \rVert _F$ denotes the Frobenius norm, given by
 $\lVert M \rVert _F = \sqrt{\sum_{ij} M_{ij}^2}$. 
 \end{defn}
 
-We now focus our attention to how the index value \(f(XA)\) changes with
-respect to the projection distance \(d(A, A^*)\), over the course of the
-JSO.
-
 \begin{defn}[squint angle]\label{def:squint-angle}
 Let $A$ and $B$ be two $d$-dimensional orthonormal matrices in $\mathbb{R}^p$. The squint angle $\theta$ between the subspace spanned by $A$ and $B$ is defined as the smallest principal angle between these subspaces: $\theta = \min_{i \in \{1, \cdots, d\}} \arccos(\tau_i)$, where $\tau_i$ are the singular values of the matrix $M = A^T B$ obtained from its singular value decomposition.
 
 \end{defn}
 
+Squintability can be defined as how the index value \(f(XA)\) changes
+with respect to the projection distance \(d(A, A^*)\), over the course
+of the JSO:
+
 \begin{defn}[squintability]\label{def:squintability}
 Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance $d(A, A^*)$ to the index value $f(XA)$, such that $g(d(A, A^*)) = f(XA)$. For brevity, denote $g(d)$ as $g(d(A, A^*))$. The squintability of an index function $f(XA)$ is defined as 
 
-$$\varsigma(f) = -c \times \max_{d} g'(d) \times \arg \max_{d} g'(d) $$
+\begin{equation}
+\varsigma(f) = -c \times \max_{d} g'(d) \times \arg \max_{d} g'(d)
+\label{eq-squintability}
+\end{equation}
 
 where $c$ is a constant scaling factor, $-\max_d g'(d)$ represents the 
 largest gradient of $-g$ and $\arg \max_{d} g'(d)$ represents the projection distance at which this largest gradient is attained.
 
 \end{defn}
 
-\begin{prop}\label{prop:my_prop}
-This is a proposition.
-\end{prop}
+It is expected that these two values should be both high in the case of
+high squintability (fast increase in \(f\) early on), and both low in
+the case of low squintability (any substantial increase in \(f\) happens
+very late, close to the optimal angle). This suggests that their product
+(\textbf{?@eq-squintability}) should provide a sensible measure of
+squintability. The multiplicative constant \(4\), which can be deemed
+arbitrary, does not change the interpretation of the squintability
+metric \(\varsigma\); it is here to adjust the range of values of
+\(\varsigma\) and simplify the explicit formula for \(\varsigma\)
+obtained later on.
 
-Proposition \ref{prop:my_prop} is useful.
+From the definition, the following proposition can be derived:
+
+\begin{prop}\label{prop:convex-concave}
+Let $g_1(d)$ be a convex function and $g_2(d)$ be a concave function, where $d \in [0, D]$ and $g_1(d), g_2(d) \in [0, 1]$. Assume both functions achieve the same maximum gradient, i.e., $\max g'_1(d_1) = \max g'_2(d_2) = -g_{max}$, it follows that $d_1 < d_2$ and $\varsigma(f_1) < \varsigma(f_2)$.
+\end{prop}
 
 From \citet{barnett1981interpreting} and \citet{laa_using_2020}, a large
 squint angle implies that the objective function value is close to
@@ -694,30 +708,7 @@ extreme values of \(f'\) (the ones for which \(f''=0\), assuming that
 these values are attained, are crucial in the mathematical definition of
 squintability.
 
-Noticing that \(f\) is expected to be a decreasing function, the
-squintability metric is proposed as follows:
-
-\begin{equation}\phantomsection\label{eq-squintability}{
-\varsigma:=-4\min_{x}f'(x)\times\underset{x}{\arg\min}f'(x)\ .
-}\end{equation}
-
-\(-\min_{x}f'(x)\) represents the largest value of the gradient of
-\(-f\) and \(\underset{x}{\arg\min}f'(x)\) represents the projection
-distance at which this largest gradient is attained.
-
-It is expected that these two values should be both high in the case of
-high squintability (fast increase in \(f\) early on), and both low in
-the case of low squintability (any substantial increase in \(f\) happens
-very late, close to the optimal angle). This suggest that their product
-(\ref{eq-squintability}) should provide a sensible measure of
-squintability.
-
-The multiplicative constant \(4\), which can be deemed arbitrary, does
-not change the interpretation of the squintability metric \(\varsigma\);
-it is here to adjust the range of values of \(\varsigma\) and simplify
-the explicit formula for \(\varsigma\) obtained later on.
-
-To compute the squintability metric (\ref{eq-squintability}) in
+To compute the squintability metric (\textbf{?@eq-squintability}) in
 practice, several approaches are possible. The first one is to propose a
 parametric model for \(f\), and use it to obtain an explicit formula for
 \(\varsigma\). Numerical experiments suggest a scaled sigmoid shape as
@@ -738,8 +729,8 @@ f(x)=(\theta_{1}-\theta_{4})\frac{\ell(x)-\ell(x_{\max})}{\ell(0)-\ell(x_{\max})
 which depends on three additional parameters, \(\theta_1\),
 \(\theta_2\), and \(x_{\max}\), such that \(f(0)=\theta_1\) and
 \(f(x_{\max})=\theta_4\). Under the parametric model
-(\ref{eq-parametric}), the squintability metric (\ref{eq-squintability})
-can be shown to be equal to
+(\ref{eq-parametric}), the squintability metric
+(\textbf{?@eq-squintability}) can be shown to be equal to
 
 \begin{equation}\phantomsection\label{eq-squintability-parametric}{
 \varsigma=\frac{(\theta_{1}-\theta_{4})\theta_{2}\theta_{3}}{\ell(0)-\ell(x_{\max})}\ .
@@ -750,7 +741,7 @@ estimated numerically, for example by non-linear least squares, and then
 used to evaluate \(\varsigma\) as in equation
 (\ref{eq-squintability-parametric}).
 
-Alternatively, one can estimate (\ref{eq-squintability}) in a
+Alternatively, one can estimate (\textbf{?@eq-squintability}) in a
 nonparametric way, for example by fitting \(f\) using kernel regression,
 then numerically estimate the angle at which \(-f'\) attains its highest
 value.
@@ -885,10 +876,10 @@ interpolate the sampled bases to the optimal basis and calculate the
 projection distance and the index value for each interpolated basis. 3)
 bin the index values by projection distances to obtain the average index
 value for each bin, 4) fit the scaled sigmoid function in Equation
-\ref{eq-squintability} to the binned index values against projection
-distances using non-linear least square, 5) calculate the squintability
-measure using Equation \ref{eq-squintability-parametric} with parameters
-estimated from the model.}
+\textbf{?@eq-squintability} to the binned index values against
+projection distances using non-linear least square, 5) calculate the
+squintability measure using Equation \ref{eq-squintability-parametric}
+with parameters estimated from the model.}
 
 \end{figure}%
 

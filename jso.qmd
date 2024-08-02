@@ -507,9 +507,9 @@ index function.
 
 ## Squintability {#sec-squintability}
 
-Squintability has been a useful concept. Here, it is defined
-mathematically and two approaches to compute this metric numerically,
+Here the formal definition of projection distance and squint angle are given, before the definition of squintability. Two approaches to compute this metric numerically,
 are described.
+
 
 ```{=tex}
 \begin{defn}[projection distance]\label{def:proj-dist}
@@ -521,9 +521,6 @@ $\lVert M \rVert _F = \sqrt{\sum_{ij} M_{ij}^2}$.
 \end{defn}
 ```
 
-We now focus our attention to how the index value $f(XA)$ changes with
-respect to the projection distance $d(A, A^*)$, over the course of the
-JSO.
 
 ```{=tex}
 \begin{defn}[squint angle]\label{def:squint-angle}
@@ -532,12 +529,18 @@ Let $A$ and $B$ be two $d$-dimensional orthonormal matrices in $\mathbb{R}^p$. T
 \end{defn}
 ```
 
+Squintability can be defined as how the index value $f(XA)$ changes with
+respect to the projection distance $d(A, A^*)$, over the course of the
+JSO:
 
 ```{=tex}
 \begin{defn}[squintability]\label{def:squintability}
 Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance $d(A, A^*)$ to the index value $f(XA)$, such that $g(d(A, A^*)) = f(XA)$. For brevity, denote $g(d)$ as $g(d(A, A^*))$. The squintability of an index function $f(XA)$ is defined as 
 
-$$\varsigma(f) = -c \times \max_{d} g'(d) \times \arg \max_{d} g'(d) $$
+\begin{equation}
+\varsigma(f) = -c \times \max_{d} g'(d) \times \arg \max_{d} g'(d)
+\label{eq-squintability}
+\end{equation}
 
 where $c$ is a constant scaling factor, $-\max_d g'(d)$ represents the 
 largest gradient of $-g$ and $\arg \max_{d} g'(d)$ represents the projection distance at which this largest gradient is attained.
@@ -545,12 +548,22 @@ largest gradient of $-g$ and $\arg \max_{d} g'(d)$ represents the projection dis
 \end{defn}
 ```
 
-<!-- Definition \ref{def:squintability} is ... -->
+It is expected that these two
+values should be both high in the case of high squintability (fast
+increase in $f$ early on), and both low in the case of low squintability
+(any substantial increase in $f$ happens very late, close to the optimal
+angle). This suggests that their product (@eq-squintability) should
+provide a sensible measure of squintability. The multiplicative constant
+$4$, which can be deemed arbitrary, does not change the interpretation
+of the squintability metric $\varsigma$; it is here to adjust the range
+of values of $\varsigma$ and simplify the explicit formula for
+$\varsigma$ obtained later on.
 
-\begin{prop}\label{prop:my_prop}
-This is a proposition.
+From the definition, the following proposition can be derived:
+
+\begin{prop}\label{prop:convex-concave}
+Let $g_1(d)$ be a convex function and $g_2(d)$ be a concave function, where $d \in [0, D]$ and $g_1(d), g_2(d) \in [0, 1]$. Assume both functions achieve the same maximum gradient, i.e., $\max g'_1(d_1) = \max g'_2(d_2) = -g_{max}$, it follows that $d_1 < d_2$ and $\varsigma(f_1) < \varsigma(f_2)$.
 \end{prop}
-Proposition \ref{prop:my_prop} is useful.
 
 From @barnett1981interpreting and @laa_using_2020, a large squint angle
 implies that the objective function value is close to optimal even when
@@ -573,25 +586,18 @@ to efficient optimization. This observation suggests that the extreme
 values of $f'$ (the ones for which $f''=0$, assuming that $f$ is twice
 differentiable), and the projection distances for which these values are
 attained, are crucial in the mathematical definition of squintability.  
-Noticing that $f$ is expected to be a decreasing function, the
-squintability metric is proposed as follows:
 
-$$
-\varsigma:=-4\min_{x}f'(x)\times\underset{x}{\arg\min}f'(x)\ .
-$$ {#eq-squintability}
 
-$-\min_{x}f'(x)$ represents the largest value of the gradient of $-f$
-and $\underset{x}{\arg\min}f'(x)$ represents the projection distance at
-which this largest gradient is attained. It is expected that these two
-values should be both high in the case of high squintability (fast
-increase in $f$ early on), and both low in the case of low squintability
-(any substantial increase in $f$ happens very late, close to the optimal
-angle). This suggest that their product (@eq-squintability) should
-provide a sensible measure of squintability. The multiplicative constant
-$4$, which can be deemed arbitrary, does not change the interpretation
-of the squintability metric $\varsigma$; it is here to adjust the range
-of values of $\varsigma$ and simplify the explicit formula for
-$\varsigma$ obtained later on.
+<!-- Noticing that $f$ is expected to be a decreasing function, the -->
+<!-- squintability metric is proposed as follows: -->
+
+<!-- $$ -->
+<!-- \varsigma:=-4\min_{x}f'(x)\times\underset{x}{\arg\min}f'(x)\ . -->
+<!-- $$ {#eq-squintability} -->
+
+<!-- $-\min_{x}f'(x)$ represents the largest value of the gradient of $-f$ -->
+<!-- and $\underset{x}{\arg\min}f'(x)$ represents the projection distance at -->
+<!-- which this largest gradient is attained.  -->
 
 To compute the squintability metric (@eq-squintability) in practice,
 several approaches are possible. The first one is to propose a
