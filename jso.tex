@@ -140,6 +140,10 @@
 \definecolor{quarto-callout-caution-color-frame}{HTML}{fd7e14}
 \makeatother
 \makeatletter
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
 \ifdefined\contentsname
@@ -175,10 +179,18 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 \makeatletter
-\makeatother
-\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
+\makeatother
+\makeatletter
+\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
+\makeatother
+\makeatletter
+\@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
 \makeatother
 \journal{Journal of Multivariate Analysis}
 \ifLuaTeX
@@ -186,8 +198,7 @@
 \fi
 \usepackage[]{natbib}
 \bibliographystyle{elsarticle-num-names}
-\usepackage{bookmark}
-
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
@@ -275,8 +286,10 @@ functions to calculate smoothness and squintability are available in the
     exploratory data analysis
 \end{keyword}
 \end{frontmatter}
-    
-\section{Introduction}\label{introduction}
+    \ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, interior hidden, borderline west={3pt}{0pt}{shadecolor}, frame hidden, sharp corners, boxrule=0pt, enhanced]}{\end{tcolorbox}}\fi
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
 
 Projection Pursuit (PP) (\citet{kr69}, \citet{FT74}) is a dimension
 reduction technique aimed at identifying informative linear projections
@@ -297,9 +310,9 @@ or other features of interest. For a fixed data, PP finds the
 orthonormal basis \(A\) that maximises the index value of the
 projection, \(Y = XA\):
 
-\begin{equation}\phantomsection\label{eq-optimization}{
+\begin{equation}\protect\hypertarget{eq-optimization}{}{
 \underset{A \in \mathcal{A}}{\max } \quad f(XA) \quad \text{subject to} \quad A'A = I_d
-}\end{equation}
+}\label{eq-optimization}\end{equation}
 
 The index functions can be non-linear and non-convex, hence an effective
 and efficient optimisation procedure is essential to explore the data
@@ -363,8 +376,9 @@ performance. Section~\ref{sec-sim-res} presents the results.
 Section~\ref{sec-conclusion} summarises the work and provides
 suggestions for future directions.
 
+\hypertarget{sec-background}{%
 \section{Projection pursuit, tours, index functions and
-optimisation}\label{sec-background}
+optimisation}\label{sec-background}}
 
 A tour on high-dimensional data is constructed by geodesically
 interpolating between pairs of planes. Any plane is described by an
@@ -424,8 +438,9 @@ by. One last aspect that is useful is for an optimiser to return local
 maxima in addition to global because data can contain many different and
 interesting features.
 
+\hypertarget{sec-theory}{%
 \section{The jellyfish optimiser and properties of PP
-indexes}\label{sec-theory}
+indexes}\label{sec-theory}}
 
 JSO mimics the natural movements of jellyfish, which include passive and
 active motions driven by ocean currents and their swimming patterns,
@@ -448,7 +463,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, breakable, arc=.35mm, colframe=quarto-callout-note-color-frame, colback=white, rightrule=.15mm, coltitle=black, toprule=.15mm, toptitle=1mm, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, opacityback=0, leftrule=.75mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, opacitybacktitle=0.6, bottomtitle=1mm, bottomrule=.15mm, left=2mm]
+\begin{tcolorbox}[enhanced jigsaw, left=2mm, toptitle=1mm, opacityback=0, opacitybacktitle=0.6, bottomrule=.15mm, colbacktitle=quarto-callout-note-color!10!white, breakable, leftrule=.75mm, colback=white, rightrule=.15mm, toprule=.15mm, colframe=quarto-callout-note-color-frame, coltitle=black, bottomtitle=1mm, titlerule=0mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -539,12 +554,13 @@ the optimisation process, the focus here is on the first two properties,
 \emph{squintability} (Section~\ref{sec-squintability}), for which
 metrics are proposed to quantify them.
 
-\subsection{Smoothness}\label{sec-smoothness}
+\hypertarget{sec-smoothness}{%
+\subsection{Smoothness}\label{sec-smoothness}}
 
 This subsection proposes a metric for the smoothness of a projection
 pursuit index.
 
-An classical way to describe the smoothness of a function is to identify
+A classical way to describe the smoothness of a function is to identify
 how many continuous derivatives of the function exist. This can be
 characterized by Sobolev spaces \citep{adams2003sobolev}.
 
@@ -595,14 +611,43 @@ being \(\frac{1}{2}\), \(\frac{3}{2}\) and \(\frac{5}{2}\)
 \citep{rasmussen2006gaussian}. The parameter \(\nu\), called
 \emph{smoothness parameter}, controls the decay of the covariance
 function. As such, it is an appropriate measure of smoothness of a
-random field. For example, \citet{karvonen2023asymptotic} showed that if
-a function \(f\) has a Sobolev index of \(k\), then the smoothness
-parameter estimate \(\nu\) in \eqref{eq:matern} cannot be asymptotically
-less than \(k\). See the survey \citet{porcu2024matern} for additional
-results on the connection between the Matérn model and Sobolev spaces.
-An interesting result is that the asymptotic case
-\(\nu\rightarrow\infty\) coincides with the Gaussian kernel:
-\(K_\infty(u)=\exp(-u^{2}/2)\).
+random field, as shown by the simulations on Figure~\ref{fig-matern-1d}
+and Figure~\ref{fig-matern-2d}. For example,
+\citet{karvonen2023asymptotic} showed that if a function \(f\) has a
+Sobolev index of \(k\), then the smoothness parameter estimate \(\nu\)
+in \eqref{eq:matern} cannot be asymptotically less than \(k\). See the
+survey \citet{porcu2024matern} for additional results on the connection
+between the Matérn model and Sobolev spaces. An interesting result is
+that the asymptotic case \(\nu\rightarrow\infty\) coincides with the
+Gaussian kernel: \(K_\infty(u)=\exp(-u^{2}/2)\).
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{figures/matern_simulation_1d.png}
+
+}
+
+\caption{\label{fig-matern-1d}Five random simulations from a Gaussian
+Process defined on \(\mathbb{R}\) with zero mean and Matérn-\(\nu\)
+covariance function, with \(\nu=1\) (left), \(\nu=2\) (middle), and
+\(\nu=4\) (right), showing that higher values of \(\nu\) produce
+smoother curves.}
+
+\end{figure}
+
+\begin{figure}
+
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{figures/matern_simulation_2d.png}
+
+}
+
+\caption{\label{fig-matern-2d}One random simulation from a Gaussian
+Process defined on \(\mathbb{R}^2\) with zero mean and Matérn-\(\nu\)
+covariance function, with \(\nu=1\) (left), \(\nu=2\) (middle), and
+\(\nu=4\) (right), showing that higher values of \(\nu\) produce
+smoother surfaces.}
+
+\end{figure}
 
 In view of these results, the parameter \(\nu\) is suggested as a
 measure of the smoothness of the PP index function by fitting a Gaussian
@@ -631,7 +676,8 @@ The value of the optimal smoothness parameter \(\nu>0\) can be naturally
 interpreted as follows: the higher \(\nu\), the smoother the index
 function.
 
-\subsection{Squintability}\label{sec-squintability}
+\hypertarget{sec-squintability}{%
+\subsection{Squintability}\label{sec-squintability}}
 
 Here the formal definition of projection distance and squint angle are
 given, before the definition of squintability. Two approaches to compute
@@ -671,7 +717,7 @@ It is expected that these two values should be both high in the case of
 high squintability (fast increase in \(f\) early on), and both low in
 the case of low squintability (any substantial increase in \(f\) happens
 very late, close to the optimal angle). This suggests that their product
-(\textbf{?@eq-squintability}) should provide a sensible measure of
+\eqref{eq-squintability} should provide a sensible measure of
 squintability. The multiplicative constant \(4\), which can be deemed
 arbitrary, does not change the interpretation of the squintability
 metric \(\varsigma\); it is here to adjust the range of values of
@@ -708,45 +754,46 @@ extreme values of \(f'\) (the ones for which \(f''=0\), assuming that
 these values are attained, are crucial in the mathematical definition of
 squintability.
 
-To compute the squintability metric (\textbf{?@eq-squintability}) in
+To compute the squintability metric \eqref{eq-squintability} in
 practice, several approaches are possible. The first one is to propose a
 parametric model for \(f\), and use it to obtain an explicit formula for
 \(\varsigma\). Numerical experiments suggest a scaled sigmoid shape as
 described below. Define
 
-\begin{equation}\phantomsection\label{eq-logistic}{
+\begin{equation}\protect\hypertarget{eq-logistic}{}{
 \ell(x):=\frac{1}{1+\exp(\theta_{3}(x-\theta_{2}))}\ ,
-}\end{equation}
+}\label{eq-logistic}\end{equation}
 
 which is a decreasing logistic function depending on two parameters
 \(\theta_2\) and \(\theta_3\), such that
 \(\ell(\theta_{2})=\frac{1}{2}\). Then, define
 
-\begin{equation}\phantomsection\label{eq-parametric}{
+\begin{equation}\protect\hypertarget{eq-parametric}{}{
 f(x)=(\theta_{1}-\theta_{4})\frac{\ell(x)-\ell(x_{\max})}{\ell(0)-\ell(x_{\max})}+\theta_{4}\ ,
-}\end{equation}
+}\label{eq-parametric}\end{equation}
 
 which depends on three additional parameters, \(\theta_1\),
 \(\theta_2\), and \(x_{\max}\), such that \(f(0)=\theta_1\) and
 \(f(x_{\max})=\theta_4\). Under the parametric model
-(\ref{eq-parametric}), the squintability metric
-(\textbf{?@eq-squintability}) can be shown to be equal to
+(\ref{eq-parametric}), the squintability metric \eqref{eq-squintability}
+can be shown to be equal to
 
-\begin{equation}\phantomsection\label{eq-squintability-parametric}{
+\begin{equation}\protect\hypertarget{eq-squintability-parametric}{}{
 \varsigma=\frac{(\theta_{1}-\theta_{4})\theta_{2}\theta_{3}}{\ell(0)-\ell(x_{\max})}\ .
-}\end{equation}
+}\label{eq-squintability-parametric}\end{equation}
 
 In practice, the parameters of this model (\ref{eq-parametric}) can be
 estimated numerically, for example by non-linear least squares, and then
 used to evaluate \(\varsigma\) as in equation
 (\ref{eq-squintability-parametric}).
 
-Alternatively, one can estimate (\textbf{?@eq-squintability}) in a
+Alternatively, one can estimate \eqref{eq-squintability} in a
 nonparametric way, for example by fitting \(f\) using kernel regression,
 then numerically estimate the angle at which \(-f'\) attains its highest
 value.
 
-\section{Simulation details}\label{sec-sim-deets}
+\hypertarget{sec-sim-deets}{%
+\section{Simulation details}\label{sec-sim-deets}}
 
 The JSO performance is compared with an existing optimiser, Creeping
 Random Search (CRS) \citep{RJ-2021-105, laa_using_2020} used in the PP
@@ -757,7 +804,8 @@ JSO hyper-parameters, and data dimension, on the success rate of the JSO
 performance. This section describes the simulation details, with the
 results deferred to Section Section~\ref{sec-sim-res}.
 
-\subsection{Performance of JSO relative to CRS}\label{sec-app-1}
+\hypertarget{sec-app-1}{%
+\subsection{Performance of JSO relative to CRS}\label{sec-app-1}}
 
 he performance of JSO is investigated both in comparison to the existing
 optimizer, CRS, and across various hyper-parameter values. The
@@ -785,9 +833,7 @@ maximum number of tries (50 and 100).
 
 \begin{figure}
 
-\centering{
-
-\includegraphics[width=4.52in,height=\textheight]{figures/success-rate.png}
+{\centering \includegraphics[width=4.52in,height=\textheight]{figures/success-rate.png}
 
 }
 
@@ -799,10 +845,11 @@ The highest index value found across all simulations is 0.969. Out of
 the 50 simulations, 43 achieved an index value within 0.05 of the best,
 resulting in a success rate of 0.86 (43/50).}
 
-\end{figure}%
+\end{figure}
 
+\hypertarget{sec-app-2}{%
 \subsection{Factors affecting JSO success rate: index properties and
-jellyfish hyper-parameters}\label{sec-app-2}
+jellyfish hyper-parameters}\label{sec-app-2}}
 
 To assess JSO's performance across various scenarios, two different data
 shapes, pipe and a sine wave, are investigated in 6D and 8D spaces using
@@ -830,7 +877,7 @@ index values are averaged with a bin width of 0.005. A four-parameter
 scaled logistic function is fitted to the index values against
 projection distances, estimated by non-linear least squares. The
 squintability measure is then calculated as
-\ref{eq-squintability-parametric}.
+(\ref{eq-squintability-parametric}).
 
 To construct a relationship among success rate, index properties
 (smoothness and squintability), and jellyfish hyper-parameters, a
@@ -844,9 +891,7 @@ correctly identified the sine-wave shape.
 
 \begin{figure}
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{figures/smoothness.png}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{figures/smoothness.png}
 
 }
 
@@ -858,13 +903,11 @@ and the index value for each random basis, and 3) fit a Gaussian process
 model of index values against projection distances to obtain the
 smoothness measure.}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{figures/squintability.png}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{figures/squintability.png}
 
 }
 
@@ -875,15 +918,16 @@ bases given the orthonormality and projection distance contraint, 2)
 interpolate the sampled bases to the optimal basis and calculate the
 projection distance and the index value for each interpolated basis. 3)
 bin the index values by projection distances to obtain the average index
-value for each bin, 4) fit the scaled sigmoid function in Equation
-\textbf{?@eq-squintability} to the binned index values against
-projection distances using non-linear least square, 5) calculate the
-squintability measure using Equation \ref{eq-squintability-parametric}
-with parameters estimated from the model.}
+value for each bin, 4) fit the scaled sigmoid function in equation
+\eqref{eq-squintability} to the binned index values against projection
+distances using non-linear least square, 5) calculate the squintability
+measure using equation (\ref{eq-squintability-parametric}) with
+parameters estimated from the model.}
 
-\end{figure}%
+\end{figure}
 
-\section{Results}\label{sec-sim-res}
+\hypertarget{sec-sim-res}{%
+\section{Results}\label{sec-sim-res}}
 
 The results from the first simulation described in
 Section~\ref{sec-sim-deets} are analysed based on the final projections
@@ -920,9 +964,7 @@ scagnostic indexes) multiple times across numerous iterations.
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{jso_files/figure-pdf/fig-proj-1.pdf}
+{\centering \includegraphics{jso_files/figure-pdf/fig-proj-1.pdf}
 
 }
 
@@ -937,13 +979,11 @@ pipe shape but with a wide rim. At higher data dimensions, JSO finds a
 higher index value and a clearer pipe shape across all the quantiles
 than the CRS}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{jso_files/figure-pdf/fig-proportion-1.pdf}
+{\centering \includegraphics{jso_files/figure-pdf/fig-proportion-1.pdf}
 
 }
 
@@ -954,7 +994,7 @@ out of 50, that achieve an index value within 0.05 of the
 best-performing simulation. As the dimensionality increases, the
 proportion of simulations reaching the optimal index value increases.}
 
-\end{figure}%
+\end{figure}
 
 The index properties, including smoothness and squintability, offer
 numerical metrics to characterise the complexity of projection pursuit
@@ -964,7 +1004,7 @@ process (variance, range, smooth, and nugget) and the scaled logistic
 function (\(\theta_1\) to \(\theta_4\)) for each case considered in the
 simulation. The column ``smooth'' is used as the smoothness metric and
 the column ``squint'' is calculated as equation
-\ref{eq-squintability-parametric} as the squintability metric.
+(\ref{eq-squintability-parametric}) as the squintability metric.
 Table~\ref{tbl-mod-output} presents the results of fitting a generalised
 linear model with a binomial family and a logit link function to a
 sample of data in Table~\ref{tbl-mod-data}, where all the three
@@ -989,15 +1029,13 @@ understood, increasing JSO hyper-parameters can enhance the search
 effectiveness, however, it is also important to consider the resulting
 increase in computational complexity.
 
+\hypertarget{tbl-smoothness-squintability}{}
 \begin{table}
-
-\caption{\label{tbl-smoothness-squintability}Parameters estimated from
-the Gaussian process (including variance, range, smoothness, and nugget)
-and scaled logistic function (\(\theta_1\) to \(\theta_4\)) for the
-pipe-finding and sine-wave finding problems. The column ``smooth'' and
-``squint'' represent the smoothness and squintability measures.}
-
-\centering{
+\caption{\label{tbl-smoothness-squintability}Parameters estimated from the Gaussian process (including variance,
+range, smoothness, and nugget) and scaled logistic function
+(\(\theta_1\) to \(\theta_4\)) for the pipe-finding and sine-wave
+finding problems. The column ``smooth'' and ``squint'' represent the
+smoothness and squintability measures. }\tabularnewline
 
 \centering\begingroup\fontsize{10}{12}\selectfont
 
@@ -1020,17 +1058,11 @@ pipe-finding and sine-wave finding problems. The column ``smooth'' and
 \bottomrule
 \end{tabular}
 \endgroup{}
+\end{table}
 
-}
-
-\end{table}%
-
+\hypertarget{tbl-mod-data}{}
 \begin{table}
-
-\caption{\label{tbl-mod-data}The first 7 rows of the datasets processed
-for modelling.}
-
-\centering{
+\caption{\label{tbl-mod-data}The first 7 rows of the datasets processed for modelling. }\tabularnewline
 
 \centering\begingroup\fontsize{10}{12}\selectfont
 
@@ -1048,24 +1080,19 @@ MIC & 8 & 2.64 & 0.77 & 20 & 100 & 0.08 & 4.96\\
 \bottomrule
 \end{tabular}
 \endgroup{}
+\end{table}
 
-}
-
-\end{table}%
-
+\hypertarget{tbl-mod-output}{}
 \begin{table}
-
-\caption{\label{tbl-mod-output}Model estimates of proportion of
-jellyfish success on index properties and jellyfish hyper-parameters
-from the generalised linear model with a binomial family and a logit
-link function. The variable smoothness, squintability, number of
-jellyfish and maximum number of tries are positively associated with JSO
-success rate while data dimension and being flagged as long runtime are
-negatively associated with the success rate. The variable squintability
-and dimension are significant, suggesting their importance relative to
-jellyfish hyper-parameters in the optimisation success.}
-
-\centering{
+\caption{\label{tbl-mod-output}Model estimates of proportion of jellyfish success on index properties
+and jellyfish hyper-parameters from the generalised linear model with a
+binomial family and a logit link function. The variable smoothness,
+squintability, number of jellyfish and maximum number of tries are
+positively associated with JSO success rate while data dimension and
+being flagged as long runtime are negatively associated with the success
+rate. The variable squintability and dimension are significant,
+suggesting their importance relative to jellyfish hyper-parameters in
+the optimisation success. }\tabularnewline
 
 \centering\begingroup\fontsize{10}{12}\selectfont
 
@@ -1083,12 +1110,10 @@ Max. tries & 0.11 & 0.15 & 0.75 & 0.45\\
 \bottomrule
 \end{tabular}
 \endgroup{}
+\end{table}
 
-}
-
-\end{table}%
-
-\section{Conclusion}\label{sec-conclusion}
+\hypertarget{sec-conclusion}{%
+\section{Conclusion}\label{sec-conclusion}}
 
 This paper has presented new metrics to mathematically define desirable
 features of PP indexes, squintability and smoothness, and used these to
@@ -1120,7 +1145,8 @@ optimisation off-line, extract the bases of a selected jellyfish, and
 then use the planned tour to follow selected jellyfish. The tools for
 this are available in the \texttt{tourr} package, too.
 
-\section{Acknowledgement}\label{acknowledgement}
+\hypertarget{acknowledgement}{%
+\section{Acknowledgement}\label{acknowledgement}}
 
 The article is created using Quarto \citep{Allaire_Quarto_2022} in R
 \citep{R}. The source code for reproducing the work reported in this

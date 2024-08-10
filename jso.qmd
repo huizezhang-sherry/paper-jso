@@ -417,7 +417,7 @@ for which metrics are proposed to quantify them.
 This subsection proposes a metric for the smoothness of a projection
 pursuit index.
 
-An classical way to describe the smoothness of a function is to identify
+A classical way to describe the smoothness of a function is to identify
 how many continuous derivatives of the function exist. This can be
 characterized by Sobolev spaces [@adams2003sobolev].
 
@@ -469,12 +469,31 @@ is a half-integer, the most popular values in the literature being
 $\frac{1}{2}$, $\frac{3}{2}$ and $\frac{5}{2}$ [@rasmussen2006gaussian]. The parameter $\nu$,
 called *smoothness parameter*, controls the decay of the covariance
 function. As such, it is an appropriate measure of smoothness of a
-random field. For example, @karvonen2023asymptotic showed that if a
+random field, as shown by the simulations on @fig-matern-1d and @fig-matern-2d. For example, @karvonen2023asymptotic showed that if a
 function $f$ has a Sobolev index of $k$, then the smoothness parameter
 estimate $\nu$ in \eqref{eq:matern} cannot be asymptotically less than
 $k$. See the survey @porcu2024matern for additional results on the connection between the Matérn model and Sobolev spaces. An interesting result is that the asymptotic case
 $\nu\rightarrow\infty$ coincides with the Gaussian kernel:
 $K_\infty(u)=\exp(-u^{2}/2)$.
+
+
+
+```{r}
+#| label: fig-matern-1d
+#| out.width: 100%
+#| fig.cap: |
+#|   Five random simulations from a Gaussian Process defined on $\mathbb{R}$ with zero mean and Matérn-$\nu$ covariance function, with $\nu=1$ (left), $\nu=2$ (middle), and $\nu=4$ (right), showing that higher values of $\nu$ produce smoother curves.
+knitr::include_graphics(here::here("figures", "matern_simulation_1d.png"))
+```
+
+```{r}
+#| label: fig-matern-2d
+#| out.width: 100%
+#| fig.cap: |
+#|   One random simulation from a Gaussian Process defined on $\mathbb{R}^2$ with zero mean and Matérn-$\nu$ covariance function, with $\nu=1$ (left), $\nu=2$ (middle), and $\nu=4$ (right), showing that higher values of $\nu$ produce smoother surfaces.
+knitr::include_graphics(here::here("figures", "matern_simulation_2d.png"))
+```
+
 
 In view of these results, the parameter $\nu$ is suggested as a measure
 of the smoothness of the PP index function by fitting a Gaussian process
@@ -552,7 +571,7 @@ It is expected that these two
 values should be both high in the case of high squintability (fast
 increase in $f$ early on), and both low in the case of low squintability
 (any substantial increase in $f$ happens very late, close to the optimal
-angle). This suggests that their product (@eq-squintability) should
+angle). This suggests that their product \eqref{eq-squintability} should
 provide a sensible measure of squintability. The multiplicative constant
 $4$, which can be deemed arbitrary, does not change the interpretation
 of the squintability metric $\varsigma$; it is here to adjust the range
@@ -599,7 +618,7 @@ attained, are crucial in the mathematical definition of squintability.
 <!-- and $\underset{x}{\arg\min}f'(x)$ represents the projection distance at -->
 <!-- which this largest gradient is attained.  -->
 
-To compute the squintability metric (@eq-squintability) in practice,
+To compute the squintability metric \eqref{eq-squintability} in practice,
 several approaches are possible. The first one is to propose a
 parametric model for $f$, and use it to obtain an explicit formula for
 $\varsigma$. Numerical experiments suggest a scaled sigmoid shape as
@@ -620,7 +639,7 @@ $$ {#eq-parametric}
 which depends on three additional parameters, $\theta_1$, $\theta_2$,
 and $x_{\max}$, such that $f(0)=\theta_1$ and $f(x_{\max})=\theta_4$.
 Under the parametric model (@eq-parametric), the squintability metric
-(@eq-squintability) can be shown to be equal to
+\eqref{eq-squintability} can be shown to be equal to
 
 $$
 \varsigma=\frac{(\theta_{1}-\theta_{4})\theta_{2}\theta_{3}}{\ell(0)-\ell(x_{\max})}\ .
@@ -631,7 +650,7 @@ estimated numerically, for example by non-linear least squares, and then
 used to evaluate $\varsigma$ as in equation
 (@eq-squintability-parametric).
 
-Alternatively, one can estimate (@eq-squintability) in a nonparametric
+Alternatively, one can estimate \eqref{eq-squintability} in a nonparametric
 way, for example by fitting $f$ using kernel regression, then
 numerically estimate the angle at which $-f'$ attains its highest value.
 
@@ -742,7 +761,7 @@ index values are averaged with a bin width of 0.005. A four-parameter
 scaled logistic function is fitted to the index values against
 projection distances, estimated by non-linear least squares. The
 squintability measure is then calculated as
-@eq-squintability-parametric.
+(@eq-squintability-parametric).
 
 To construct a relationship among success rate, index properties
 (smoothness and squintability), and jellyfish hyper-parameters, a
@@ -760,9 +779,9 @@ sine-wave shape.
 
 <!-- the optimal is unknown) measures how close a visited basis is to  -->
 
-<!-- the best basis and it is calculated as the Frobenius norm in Equation -->
+<!-- the best basis and it is calculated as the Frobenius norm in equation -->
 
-<!-- @eq-proj-dist. Plotting projection distances against index values for the  -->
+<!-- (@eq-proj-dist). Plotting projection distances against index values for the  -->
 
 <!-- bases visited reveals how the index value changes as the basis -->
 
@@ -787,7 +806,8 @@ knitr::include_graphics(here::here("figures", "smoothness.png"))
 ```{r}
 #| label: fig-squintability
 #| out.width: 100%
-#| fig.cap: "Illustration of steps to calculate squintability. For a given projection pursuit problem defined by the shape to find, data dimension and the index function, 1) sample random bases given the orthonormality and projection distance contraint, 2) interpolate the sampled bases to the optimal basis and calculate the projection distance and the index value for each interpolated basis. 3) bin the index values by projection distances to obtain the average index value for each bin, 4) fit the scaled sigmoid function in Equation @eq-squintability to the binned index values against projection distances using non-linear least square, 5) calculate the squintability measure using Equation @eq-squintability-parametric with parameters estimated from the model."
+#| fig.cap: |
+#|   Illustration of steps to calculate squintability. For a given projection pursuit problem defined by the shape to find, data dimension and the index function, 1) sample random bases given the orthonormality and projection distance contraint, 2) interpolate the sampled bases to the optimal basis and calculate the projection distance and the index value for each interpolated basis. 3) bin the index values by projection distances to obtain the average index value for each bin, 4) fit the scaled sigmoid function in equation \eqref{eq-squintability} to the binned index values against projection distances using non-linear least square, 5) calculate the squintability measure using equation (@eq-squintability-parametric) with parameters estimated from the model.
 # p1 <- sim_sine_6d_spline_projdist |> 
 #   ggplot(aes(x = proj_dist, y = index_val)) +
 #   geom_point(size = 0.1, alpha = 0.5) + 
@@ -956,7 +976,7 @@ parameters for calculating both metrics estimated from the Gaussian
 process (variance, range, smooth, and nugget) and the scaled logistic
 function ($\theta_1$ to $\theta_4$) for each case considered in the
 simulation. The column "smooth" is used as the smoothness metric and the
-column "squint" is calculated as equation @eq-squintability-parametric
+column "squint" is calculated as equation (@eq-squintability-parametric)
 as the squintability metric. @tbl-mod-output presents the results of
 fitting a generalised linear model with a binomial family and a logit
 link function to a sample of data in @tbl-mod-data, where all the three
