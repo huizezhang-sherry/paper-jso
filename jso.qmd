@@ -581,7 +581,18 @@ $\varsigma$ obtained later on.
 From the definition, the following proposition can be derived:
 
 \begin{prop}\label{prop:convex-concave}
-Let $g_1(d)$ be a convex function and $g_2(d)$ be a concave function, where $d \in [0, D]$ and $g_1(d), g_2(d) \in [0, 1]$. Assume both functions achieve the same maximum gradient, i.e., $\max g'_1(d_1) = \max g'_2(d_2) = -g_{max}$, it follows that $d_1 < d_2$ and $\varsigma(f_1) < \varsigma(f_2)$.
+Let $g_1(d)$ be a convex decreasing function and $g_2(d)$ be a concave decreasing function defined on [0, 1] where $d \in [0, D]$. Let $d_1 := \underset{d}{\arg \max} |g_1'(d)|$ and $d_2 := \underset{d}{\arg \max} |g_2'(d)|$.
+
+$$\varsigma(g_1) < \varsigma(g_2)$$
+
+For a convex function, $g_1'(d) < 0 \; \forall d$ and is non-decreasing. For a concave function, $g_2'(d) < 0 \; \forall d$ and is non-increasing. As such, it follows that $d_1 < d_2$.
+
+Suppose both functions achieve the same maximum gradient $-g_{\max}$, i.e., $\max g'_1(d_1) = \max g'_2(d_2) = -g_{\max}$,
+
+$$
+\varsigma(g_1(d_1)) = -c  \max g'_1(d_1)  d_1 = -c  (-g_{\max}) d_1 \leq -c  (-g_{\max}) d_2 = -c \max g'_2(d_2)  d_2 = \varsigma(g_2(d_2))
+$$
+
 \end{prop}
 
 From @barnett1981interpreting and @laa_using_2020, a large squint angle
