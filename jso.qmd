@@ -578,7 +578,7 @@ $\varsigma$ obtained later on.
 From the definition, the following proposition can be derived:
 
 \begin{prop}\label{prop:convex-concave}
-Let $g_1(d)$ be a convex decreasing function and $g_2(d)$ be a concave decreasing function defined on [0, 1] where $d \in [0, D]$. Let $d_1 := \underset{d}{\arg \max} |g_1'(d)|$ and $d_2 := \underset{d}{\arg \max} |g_2'(d)|$.
+Let $g_1(d)$ be a convex decreasing function and $g_2(d)$ be a concave decreasing function both defined on [0, 1] where $d \in [0, D]$. Let $d_1 := \underset{d}{\arg \max} |g_1'(d)|$ and $d_2 := \underset{d}{\arg \max} |g_2'(d)|$.
 
 $$\varsigma(g_1) < \varsigma(g_2)$$
 
@@ -1074,10 +1074,13 @@ broom::tidy(mod1) |>
 
 # Discussion {#sec-discussion}
 
-The two properties, smoothness and squintability, can be calculated once factors such as the target shape, the chosen index function, and the data dimension are defined in a projection pursuit problem. In practice, these metrics can be used to characterise the complexity of the optimisation task and inform the optimiser selection. For example, a large smoothness value suggests a smooth index function and both gradient-based and random sampling optimisers tend to perform well. A large squintability value indicates a distinct difference in index values between optimal regions and others. When one jellyfish enters the optimal region, the high index value it generates will be clearly distinguishable from spurious values due to this pronounced difference and lead other jellyfish to move toward the optimal region. In contrast, a smaller squintability value results in a less distinct separation between desirable and undesirable regions, making it more difficult for other jellyfish to accurately navigate toward the target area. When comparing between multiple optimisers, the smoothness and squintability metrics proposed in this paper are relative and comparison can only be made with common parameters, i.e. the same seed for generating random bases and the same binning width for squintability. Furthermore, the range of the index values should be standardised to the [0, 1] interval as demonstrated for the `holes` and `TIC` indexes.
+This section discusses the insights in implementation yielded from the previous sections to guide the usage of projection pursuit guided tour amongst practitioners. Smoothness and squintability in a projection pursuit problem can now be measured given the target shape, the chosen index function, and the data dimension. In practice, these metrics can be used to characterise the difficulty of the optimisation task and inform the choice of optimiser. For instance, a large squintability value indicates a distinct difference in index values between optimal regions and others. When one jellyfish enters the optimal region, the high index value it generates will be clearly distinguishable from spurious values due to this pronounced difference and lead other jellyfish to move toward the optimal region. In contrast, a smaller squintability value results in a less distinct separation between desirable and undesirable regions, making it more difficult for other jellyfish to accurately navigate toward the target area. In addition, a larger smoothness value implies a smoother index function, which suggests the use of both gradient-based and random sampling optimisers. 
 
-As a population-based metaheuristic method, JSO requires evaluating multiple jellyfish in each iteration, which increased its computational complexity compared to single-candidate random sampling methods. When choosing optimisers, this higher computational costs needs to be considered. Tuning JSO hyperparameters, such as the number of jellyfish and the maximum number of attempts, can enhance the likelihood of finding the optimal region. However, in some cases, increasing these parameters may not be effective if the index surface is complex or has low squintability. Moreover, the increased computational cost associated with higher parameter can make JSO impractical.
+This study enables comparison of new indices with existing indices with the proposed smoothness and squintability measures, as well as benchmarking with existing well-known data sets. Note that when comparing between multiple optimisers, the smoothness and squintability metrics proposed in this paper are relative. Comparison should be made with common parameters, i.e. the same seed for generating random bases and the same binning width for squintability. Furthermore, the range of the index values should be standardised to the [0, 1] interval as demonstrated for the `holes` and `TIC` indexes.
 
+As a population-based metaheuristic method, JSO requires evaluating multiple jellyfish in each iteration, which increased its computational complexity compared to single-candidate random sampling methods. This additional computational costs should be taken into consideration when choosing optimisers. Tuning JSO hyperparameters, such as the number of jellyfish and the maximum number of attempts, can enhance the likelihood of finding the optimal region at the expense of computational costs. However, in some cases, increasing these parameters may not be effective if the index surface is complex or has low squintability.
+
+The new JSO is integrated with the current implementation of the projection pursuit guided tour in the `tourr` package, and can be further examined using PP optimisation diagnostics in the `ferrn` package. The recommended approach is to conduct the optimisation off-line, extract the bases of a selected jellyfish, and then use the planned tour to follow selected jellyfish. These tools are also available in the `tourr` package.
 
 # Conclusion {#sec-conclusion}
 
@@ -1102,14 +1105,7 @@ squintability. The higher the squintability the better chance the JSO
 can find the optima. However, interestingly smoothness does not affect
 the JSO performance.
 
-The new JSO is integrated with the current implementation of the
-projection pursuit guided tour in the `tourr` package, and can be
-further examined using PP optimisation diagnostics in the `ferrn`
-package. Using the JSO is a little different than the current CRS,
-because it runs many paths. The recommended approach is to conduct the
-optimisation off-line, extract the bases of a selected jellyfish, and
-then use the planned tour to follow selected jellyfish. The tools for
-this are available in the `tourr` package, too.
+
 
 ```{=html}
 <!--
