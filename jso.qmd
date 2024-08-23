@@ -687,7 +687,7 @@ and data dimension combinations. The second simulation studies the
 effect of index properties (smoothness and squintability), along with
 JSO hyper-parameters, and data dimension, on the success rate of the JSO
 performance. This section describes the simulation details, with the
-results deferred to Section @sec-sim-res.
+results deferred to @sec-sim-res.
 
 ## Performance of JSO relative to CRS {#sec-app-1}
 
