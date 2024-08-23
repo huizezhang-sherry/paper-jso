@@ -261,7 +261,7 @@ squintability. @sec-sim-deets details two simulation experiments to
 assess JSO's performance: one comparing JSO's performance improvements
 relative to an existing optimiser, Creeping Random Search (CRS), and the
 other studying the impact of different PP index properties on
-optimisation performance. @sec-sim-res presents the results.
+optimisation performance. @sec-sim-res presents the results. @sec-discussion discusses implementation details and insights for practitioners. 
 @sec-conclusion summarises the work and provides suggestions for future
 directions.
 
