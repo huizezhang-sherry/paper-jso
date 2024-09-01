@@ -1,37 +1,5 @@
 ---
 title: Studying the Performance of the Jellyfish Search Optimiser for the Application of Projection Pursuit
-header-includes:
-   - \usepackage{algorithm}
-   - \usepackage{amsmath}
-   - \usepackage{amsthm}
-   - \usepackage{amssymb}
-   - \theoremstyle{plain}
-   - \newtheorem{assumption}{\protect\assumptionname}
-   - \newtheorem{claim}{\protect\claimname}
-   - \newtheorem{condition}{\protect\conditionname}
-   - \newtheorem{conjecture}{\protect\conjecturename}
-   - \newtheorem{cor}{\protect\corollaryname}
-   - \newtheorem{defn}{\protect\definitionname}
-   - \newtheorem{example}{\protect\examplename}
-   - \newtheorem{lem}{\protect\lemmaname}
-   - \newtheorem{notation}{\protect\notationname}
-   - \newtheorem{problem}{\protect\problemname}
-   - \newtheorem{prop}{\protect\propositionname}
-   - \newtheorem{rem}{\protect\remarkname}
-   - \newtheorem{thm}{\protect\theoremname}
-   - \providecommand{\assumptionname}{Assumption}
-   - \providecommand{\claimname}{Claim}
-   - \providecommand{\conditionname}{Condition}
-   - \providecommand{\conjecturename}{Conjecture}
-   - \providecommand{\corollaryname}{Corollary}
-   - \providecommand{\definitionname}{Definition}
-   - \providecommand{\examplename}{Example}
-   - \providecommand{\lemmaname}{Lemma}
-   - \providecommand{\notationname}{Notation}
-   - \providecommand{\problemname}{Problem}
-   - \providecommand{\propositionname}{Proposition}
-   - \providecommand{\remarkname}{Remark}
-   - \providecommand{\theoremname}{Theorem}
 author:
   - name: H. Sherry Zhang
     email: huize.zhang@austin.utexas.edu
@@ -94,6 +62,38 @@ crossref:
   eq-prefix: ""
 editor_options: 
   chunk_output_type: console
+header-includes:
+   - \usepackage{algorithm}
+   - \usepackage{amsmath}
+   - \usepackage{amsthm}
+   - \usepackage{amssymb}
+   - \theoremstyle{plain}
+   - \newtheorem{assumption}{\protect\assumptionname}
+   - \newtheorem{claim}{\protect\claimname}
+   - \newtheorem{condition}{\protect\conditionname}
+   - \newtheorem{conjecture}{\protect\conjecturename}
+   - \newtheorem{cor}{\protect\corollaryname}
+   - \newtheorem{defn}{\protect\definitionname}
+   - \newtheorem{example}{\protect\examplename}
+   - \newtheorem{lem}{\protect\lemmaname}
+   - \newtheorem{notation}{\protect\notationname}
+   - \newtheorem{problem}{\protect\problemname}
+   - \newtheorem{prop}{\protect\propositionname}
+   - \newtheorem{rem}{\protect\remarkname}
+   - \newtheorem{thm}{\protect\theoremname}
+   - \providecommand{\assumptionname}{Assumption}
+   - \providecommand{\claimname}{Claim}
+   - \providecommand{\conditionname}{Condition}
+   - \providecommand{\conjecturename}{Conjecture}
+   - \providecommand{\corollaryname}{Corollary}
+   - \providecommand{\definitionname}{Definition}
+   - \providecommand{\examplename}{Example}
+   - \providecommand{\lemmaname}{Lemma}
+   - \providecommand{\notationname}{Notation}
+   - \providecommand{\problemname}{Problem}
+   - \providecommand{\propositionname}{Proposition}
+   - \providecommand{\remarkname}{Remark}
+   - \providecommand{\theoremname}{Theorem}
 ---
 
 ```{r setup, echo = FALSE, message=FALSE, warning=FALSE}
@@ -104,7 +104,10 @@ library(patchwork)
 library(ggh4x)
 library(broom)
 library(kableExtra)
+library(tourr)
+library(PPtreeViz)
 library(ferrn)
+library(colorspace)
 load(here::here("data/sim_pipe_run_best.rda"))
 load(here::here("data/sim_sine_6d_spline_head.rda"))
 load(here::here("data/sim_sine_6d_spline_best.rda"))
@@ -119,8 +122,8 @@ load(here::here("data/sim_df.rda"))
 
 # Introduction
 
-```{=html}
 <!--  
+```{=html}
 \begin{assumption}\label{assum:my_assumption}
 This is an assumption.
 \end{assumption}
@@ -190,38 +193,197 @@ Remark \ref{rem:my_remark} is interesting.
 This is a theorem.
 \end{thm}
 Theorem \ref{thm:my_theorem} is important.
--->
 ```
-Projection Pursuit (PP) (@kr69, @FT74) is a dimension reduction
-technique aimed at identifying informative linear projections of data.
-The method involves optimising an objective function known as the PP
-index (e.g. @hall1989polynomial, @cook1993projection,
-@lee2010projection, @Loperfido2018, @Loperfido2020), which defines the
-criteria for what constitutes interesting or informative projections.
-Let $X \in \mathbb{R}^{n\times p}$ be the data matrix, $A \in\mathbb{R}^{p \times d}$ be an orthonormal matrix, where $A$ belongs to the Stiefel manifold $\mathcal{A} = V_d(\mathbb{R}^p)$. The projection $Y = XA$ is a linear transformation that maps data from a $p$-dimensional space into a $d$-dimensional space. The index function $f(XA): \mathbb{R}^{n \times d} \to \mathbb{R}$ is a scalar function that measures an interesting aspect of the projected data, such as deviation from normality, presence of clusters, non-linear structure, or other features of interest. For a fixed data, PP finds the orthonormal basis $A$ that maximises the index value of the projection, $Y = XA$:
+-->
+
+Projection Pursuit (PP) (@kr69, @FT74, @huber85) is a dimension reduction technique aimed at identifying informative linear projections of data. This is useful for exploring high-dimensional data, and creating plots of the data for publication that reveal the main features.  The method involves optimising an objective function known as the PP index (e.g. @hall1989polynomial, @cook1993projection,
+@lee2010projection, @Loperfido2018, @Loperfido2020), which defines the criteria for what constitutes interesting or informative projections. Let $X \in \mathbb{R}^{n\times p}$ be the data matrix, $A \in\mathbb{R}^{p \times d}$ be an orthonormal matrix, where $A$ belongs to the Stiefel manifold $\mathcal{A} = V_d(\mathbb{R}^p)$. (It is interesting to note that when using PP visually, one cares less about $A$ than the plane described by $A$, because the orientation in the plane is irrelevant. The the space of planes belongs to a Grassmann manifold.) The projection $Y = XA$ is a linear transformation that maps data from a $p$-dimensional space into a $d$-dimensional space. The index function $f(XA): \mathbb{R}^{n \times d} \to \mathbb{R}$ is a scalar function that measures an interesting aspect of the projected data, such as deviation from normality, presence of clusters, non-linear structure, or other features of interest. For a fixed data, PP finds the orthonormal basis $A$ that maximises the index value of the projection, $Y = XA$:
 
 $$
 \underset{A \in \mathcal{A}}{\max } \quad f(XA) \quad \text{subject to} \quad A'A = I_d
 $$ {#eq-optimization}
 
-The index functions can be non-linear and non-convex, hence an effective
-and efficient optimisation procedure is essential to explore the data
-landscape and achieve a globally optimal viewpoint of the data.
+The index functions vary in structure, partly depending on the data that is being projected. @fig-example-functions shows two examples. Huber plots [@huberplot] of 2D data sets are in (a) and (c). The PP index values for all 1D projections of the 2D data are shown in polar coordinates, revealing the nature of the function. The dashed circle is a baseline set at the average value, and the straight line marks the optimal projection. Plots (b) and (d) show the respective best projections of the data as histograms. Indexes like the holes, central mass and skewness [@cook1993projection] are generally smooth for most data sets. Many indexes noisy and non-convex, requiring an effective and efficient optimisation procedure to explore the data landscape and achieve a globally optimal viewpoint of the data. The skewness index computed for trimodal data, in (a), is smooth with a large squint angle but has three modes, and thus is not convex. The binned normality index computed on the famous RANDU data, in (c), is noisier and has a very small squint angle. The discreteness cannot be seen unless the optimiser is very close to the optimal projection.
 
-Optimisation of PP is typically investigated in the literature when new
-indexes are proposed [@posse1995; @marie-sainte2010; @grochowski2011] or
-when visualisation method are used to track the optimisation process.
-@cook1995grand introduced the PP guided tour, which monitors the
-optimisation visually to see the data projections leading in and out of
-the optima. An implementation is available in the `tourr` package
-[@tourr] in R [@R]. @RJ-2021-105 illustrated how to diagnose
-optimisation processes, particularly focusing on the guided tour, and
-revealed a need for improved optimisation. While improving the quality
-of the optimisation solutions in the tour is essential, it is also
-important to be able to view the data projections as the optimisation
-progresses. Integrating the guided tour with a global optimisation
-algorithm that is efficient in finding the global optimal and enables
-viewing of the projected data during the exploration process is a goal.
+```{r}
+#| label: huber-plot-function
+#| echo: false
+huber_plot <- function (origdata2D, origclass=NULL, 
+  PPmethod = "LDA", weight = TRUE, r = 1, lambda = 0.5, 
+  opt.proj = TRUE, UserDefFtn = NULL, ...) 
+{
+    index <- NULL
+    best.proj <- NULL
+    best.index <- 0
+    origdata2D <- as.matrix(origdata2D)
+    for (i in 0:360) {
+        theta <- pi/180 * i
+        proj.data <- matrix(cos(theta) * origdata2D[, 1] + sin(theta) * 
+            origdata2D[, 2])
+        proj <- matrix(c(cos(theta), sin(theta)), ncol = 1)
+        if (PPmethod == "LDA") {
+            newindex <- PPtreeViz::LDAindex(origclass, origdata2D, proj = proj, 
+                weight = weight)
+        }
+        else if (PPmethod == "PDA") {
+            newindex <- PPtreeViz::PDAindex(origclass, origdata2D, proj, 
+                weight = weight, lambda = lambda)
+        }
+        else if (PPmethod == "Lr") {
+            newindex <- PPtreeViz::Lrindex(origclass, origdata2D, proj, 
+                weight = weight, r = r)
+        }
+        else if (PPmethod == "GINI") {
+            newindex <- PPtreeViz::GINIindex1D(origclass, origdata2D, proj)
+        }
+        else if (PPmethod == "ENTROPY") {
+            newindex <- PPtreeViz::ENTROPYindex1D(origclass, origdata2D, 
+                proj)
+        }
+        else if (PPmethod == "holes") {
+          newindex <- tourr::holes()(proj.data)
+        }
+        else if (PPmethod == "skewness") {
+          newindex <- tourr::skewness()(proj.data)
+        }
+        else if (PPmethod == "norm_bin") {
+          newindex <- tourr::norm_bin(nrow(proj.data))(proj.data)
+        }
+        else if (PPmethod == "UserDef") {
+            newindex <- UserDefFtn(proj.data, ...)
+        }
+        index <- c(index, newindex)
+    }
+    sel.index <- which(index[1:360] > signif(max(index), 6) - 
+        1e-06)
+    theta.best.all <- pi/180 * (sel.index - 1)
+    theta.best <- theta.best.all[1]
+    proj.data.best <- matrix(cos(theta.best) * origdata2D[, 1] + 
+        sin(theta.best) * origdata2D[, 2])
+    index.best <- max(index)
+    range <- round(max(index) - min(index), 5)
+    if (range == 0) {
+      PPindex <- rep(4, length(index))
+    }
+    else {
+      PPindex <- (index - min(index))/range * 2 + 3
+    }
+    data.circle <- NULL
+    data.index <- NULL
+    for (i in 1:361) {
+        theta <- pi/180 * (i - 1)
+        data.index <- rbind(data.index, c(PPindex[i] * cos(theta), 
+            PPindex[i] * sin(theta)))
+        data.circle <- rbind(data.circle, c(4 * cos(theta), 4 * 
+            sin(theta)))
+    }
+    maxdiff <- max(c(diff(range(origdata2D[, 1])), diff(range(origdata2D[, 
+        2]))))
+    orig.scaled <- apply(origdata2D, 2, function(x) (x - mean(x))/maxdiff * 
+        3.5)
+    data.cX <- data.circle[, 1]
+    data.cY <- data.circle[, 2]
+    data.X <- data.index[, 1]
+    data.Y <- data.index[, 2]
+    plot.data <- data.frame(data.cX, data.cY, data.X, data.Y)
+    x <- orig.scaled[, 1]
+    y <- orig.scaled[, 2]
+    if (is.null(origclass)) 
+      group <- rep(1, nrow(origdata2D))
+    else
+      group <- origclass
+    point.data <- data.frame(x, y, group)
+    min.X <- min(unlist(plot.data))
+    max.X <- max(unlist(plot.data))
+    if (is.null(origclass)) {
+      P1 <- ggplot(data = plot.data, aes(x = data.X, y = data.Y)) + 
+        geom_path() + geom_path(aes(x = data.cX, y = data.cY), 
+        linetype = "dashed") + geom_point(data = point.data, 
+        aes(x = x, y = y)) + scale_x_continuous(breaks = NULL) + 
+        scale_y_continuous(breaks = NULL) + xlab("") + ylab("") + 
+        coord_fixed() + theme_bw() + theme(panel.border = element_blank())
+    } else {
+      P1 <- ggplot(data = plot.data, aes(x = data.X, y = data.Y)) + 
+        geom_path() + geom_path(aes(x = data.cX, y = data.cY), 
+        linetype = "dashed") + geom_point(data = point.data, 
+        aes(x = x, y = y, color = group, shape = group)) +
+        scale_x_continuous(breaks = NULL) + 
+        scale_y_continuous(breaks = NULL) + xlab("") + ylab("") + 
+        coord_fixed() + theme_bw() + theme(panel.border = element_blank())
+    }
+    if (opt.proj) {
+        P1 <- P1 + geom_abline(intercept = 0, slope = sin(theta.best)/cos(theta.best))
+        if (length(theta.best.all) > 1) 
+            for (i in 2:length(theta.best.all)) P1 <- P1 + geom_abline(intercept = 0, 
+                slope = sin(theta.best.all[i])/cos(theta.best.all[i]), 
+                linetype = "dashed")
+    }
+    best.proj.data <- proj.data.best
+    #group <- origclass
+    if (is.null(origclass)) {
+      hist.data <- data.frame(best.proj.data)
+      P2 <- ggplot(data = hist.data, aes(x = best.proj.data)) + 
+        geom_histogram()
+    } else {
+      hist.data <- data.frame(best.proj.data, group)
+      P2 <- ggplot(data = hist.data, aes(x = best.proj.data, 
+                                         group = group)) + 
+        geom_histogram(aes(fill = group), position = "stack")
+    }
+    #gridExtra::grid.arrange(P1, P2, nrow = 1)
+    return(list(plot=P1, proj_data=best.proj.data))
+}
+
+
+```
+
+```{r}
+#| label: fig-example-functions
+#| echo: false
+#| fig-width: 9
+#| fig-height: 6
+#| out-width: 80%
+#| fig-cap: "Examples of PP indexes with large (top row) and small (bottom row) squint angles, shown with a Huber plot, and histogram of the projected data corresponding to the optimal projection. Huber plot shows PP index values for all 1D projections in polar coordinates."
+data(randu)
+randu_std <- as.data.frame(apply(randu, 2, function(x) (x-mean(x))/sd(x)))
+randu_std$yz <- sqrt(35)/6*randu_std$y-randu_std$z/6
+
+#proj <- animate_xy(flea[,1:6], guided_tour(lda_pp(flea$species)))
+best_proj <- matrix(c(-0.44157005,  0.80959831,
+                      0.14622089, -0.08228193,
+                      -0.08454314, -0.23234287,
+                      0.70367852,  0.28185021,
+                      0.27876825,  0.44819691,
+                      0.45123453,  0.05896646), ncol=2, byrow=T)
+flea2D <- as.matrix(flea[,1:6]) %*% best_proj
+colnames(flea2D) <- c("X1", "X2")
+flea2D <- as.data.frame(flea2D)
+
+# Make both plots
+large_sqa <- huber_plot(flea2D, PPmethod="skewness")
+small_sqa <- huber_plot(randu_std[c(1,4)], PPmethod="norm_bin")
+
+sqa1 <- large_sqa$plot + ggtitle("(a) Skewness index")
+lsqa_d <- tibble(d = large_sqa$proj_data[,1])
+sqa2 <- ggplot(lsqa_d, aes(x=d)) + 
+  geom_histogram(binwidth=0.25, colour="white") +
+  xlab("") + ylab("") +
+  ggtitle("(b) Optimally projected data") +
+  theme_bw() +
+  theme(axis.text.y = element_blank())
+sqa3 <- small_sqa$plot + ggtitle("(c) Binned normality index")
+ssqa_d <- tibble(d = small_sqa$proj_data[,1])
+sqa4 = ggplot(ssqa_d, aes(x=d)) + 
+  geom_histogram(breaks = seq(-2.2, 2.4, 0.12)) +
+  xlab("") + ylab("") +
+  ggtitle("(d) Optimally projected data") +
+  theme_bw() +
+  theme(axis.text.y = element_blank())
+
+sqa1 + sqa2 + sqa3 + sqa4 + plot_layout(ncol=2, widths=c(2,2))
+```
+
+Optimisation of PP is often discussed when new indexes are proposed [@posse1995; @marie-sainte2010; @grochowski2011]. @cook1995grand tied the optimisation more closely to the index, when they introduced the PP guided tour, which monitors the optimisation visually so that the user can see the projected data leading in and out of the optima. An implementation is available in the `tourr` package [@tourr] in R [@R]. @RJ-2021-105 illustrated how to diagnose optimisation processes, particularly focusing on the guided tour, and revealed a need for improved optimisation. While improving the quality of the optimisation solutions in the tour is essential, it is also important to be able to view the data projections as the optimisation progresses. Integrating the guided tour with a global optimisation algorithm that is efficient in finding the global optimal and enables viewing of the projected data during the exploration process is a goal.
 
 Here, the potential for a Jellyfish Search Optimiser (JSO) to be
 integrated with the projection pursuit guided tour is explored. JSO,
