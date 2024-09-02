@@ -288,27 +288,24 @@ exploratory data analysis
 \setstretch{2}
 \section{Introduction}\label{introduction}
 
-Projection Pursuit (PP) (Kruskal (1969), Friedman and Tukey (1974),
+Projection pursuit (PP) (Kruskal (1969), Friedman and Tukey (1974),
 Huber (1985)) is a dimension reduction technique aimed at identifying
 informative linear projections of data. This is useful for exploring
-high-dimensional data, and creating plots of the data for publication
-that reveal the main features. The method involves optimising an
+high-dimensional data, and creating plots of the data that reveal the
+main features to use for publication. The method involves optimising an
 objective function known as the PP index (e.g. Hall (1989), Cook, Buja,
 and Cabrera (1993), Lee and Cook (2010), Loperfido (2018), Loperfido
 (2020)), which defines the criteria for what constitutes interesting or
 informative projections. Let \(X \in \mathbb{R}^{n\times p}\) be the
 data matrix, \(A \in\mathbb{R}^{p \times d}\) be an orthonormal matrix,
 where \(A\) belongs to the Stiefel manifold
-\(\mathcal{A} = V_d(\mathbb{R}^p)\). (It is interesting to note that
-when using PP visually, one cares less about \(A\) than the plane
-described by \(A\), because the orientation in the plane is irrelevant.
-The the space of planes belongs to a Grassmann manifold.) The projection
-\(Y = XA\) is a linear transformation that maps data from a
-\(p\)-dimensional space into a \(d\)-dimensional space. The index
-function \(f(XA): \mathbb{R}^{n \times d} \to \mathbb{R}\) is a scalar
-function that measures an interesting aspect of the projected data, such
-as deviation from normality, presence of clusters, non-linear structure,
-or other features of interest. For a fixed data, PP finds the
+\(\mathcal{A} = V_d(\mathbb{R}^p)\). The projection \(Y = XA\) is a
+linear transformation that maps data from a \(p\)-dimensional space into
+a \(d\)-dimensional space. The index function
+\(f(XA): \mathbb{R}^{n \times d} \to \mathbb{R}\) is a scalar function
+that measures an interesting aspect of the projected data, such as
+deviation from normality, presence of clusters, non-linear structure, or
+other features of interest. For a fixed sample of data, PP finds the
 orthonormal basis \(A\) that maximises the index value of the
 projection, \(Y = XA\):
 
@@ -316,23 +313,35 @@ projection, \(Y = XA\):
 \underset{A \in \mathcal{A}}{\max } \quad f(XA) \quad \text{subject to} \quad A'A = I_d
 }\end{equation}
 
-The index functions vary in structure, partly depending on the data that
-is being projected. Figure~\ref{fig-example-functions} shows two
-examples. Huber plots (Huber 1990) of 2D data sets are in (a) and (c).
-The PP index values for all 1D projections of the 2D data are shown in
-polar coordinates, revealing the nature of the function. The dashed
-circle is a baseline set at the average value, and the straight line
-marks the optimal projection. Plots (b) and (d) show the respective best
-projections of the data as histograms. Indexes like the holes, central
-mass and skewness (Cook, Buja, and Cabrera 1993) are generally smooth
-for most data sets. Many indexes noisy and non-convex, requiring an
-effective and efficient optimisation procedure to explore the data
-landscape and achieve a globally optimal viewpoint of the data. The
-skewness index computed for trimodal data, in (a), is smooth with a
-large squint angle but has three modes, and thus is not convex. The
-binned normality index computed on the famous RANDU data, in (c), is
-noisier and has a very small squint angle. The discreteness cannot be
-seen unless the optimiser is very close to the optimal projection.
+It is interesting to note that when using PP visually, one cares less
+about \(A\) than the plane described by \(A\), because the orientation
+in the plane is irrelevant. The space of planes belongs to a Grassmann
+manifold. This is usually how the projection pursuit guided tour (PPGT)
+(Cook et al. 1995) operates, when using geodesic interpolation between
+starting and target planes. It interpolates plane to plane, removing
+irrelevant within plane spin, and is agnostic to the basis (\(A\)) used
+to define the plane. Thus, indexes which are used for the PPGT should be
+rotationally invariant.
+
+Index functions are quite varied in form, partially depending on the
+data that is being projected. Figure~\ref{fig-example-functions} shows
+two examples. Huber plots (Huber 1990) of 2D data sets are in (a) and
+(c), showing the PP index values for all 1D projections of the 2D data
+in polar coordinates, which reveals the form of these functions. The
+dashed circle is a baseline set at the average value, and the straight
+line marks the optimal projection. Plots (b) and (d) show the respective
+best projections of the data as histograms. Indexes like the holes,
+central mass and skewness (Cook, Buja, and Cabrera 1993) are generally
+smooth for most data sets, but capture only large patterns. Many indexes
+noisy and non-convex, requiring an effective and efficient optimisation
+procedure to explore the data landscape and achieve a globally optimal
+viewpoint of the data. The skewness index computed for trimodal data, in
+(a), is smooth with a large squint angle but has three modes, and thus
+is not convex. The binned normality index (a simple version of a
+non-normality index as described in Huber (1985)) computed on the famous
+RANDU data, in (c), is noisier and has a very small squint angle. The
+discreteness cannot be seen unless the optimiser is very close to the
+optimal projection.
 
 \begin{figure}
 
@@ -345,36 +354,35 @@ seen unless the optimiser is very close to the optimal projection.
 \caption{\label{fig-example-functions}Examples of PP indexes with large
 (top row) and small (bottom row) squint angles, shown with a Huber plot,
 and histogram of the projected data corresponding to the optimal
-projection. Huber plot shows PP index values for all 1D projections in
-polar coordinates.}
+projection. A Huber plot shows the PP index values for all 1D data
+projections in polar coordinates.}
 
 \end{figure}%
 
 Optimisation of PP is often discussed when new indexes are proposed
 (Posse 1995a; Marie-Sainte, Berro, and Ruiz-Gazen 2010; Grochowski and
 Duch 2011). Cook et al. (1995) tied the optimisation more closely to the
-index, when they introduced the PP guided tour, which monitors the
-optimisation visually so that the user can see the projected data
-leading in and out of the optima. An implementation is available in the
-\texttt{tourr} package (Wickham et al. 2011) in R (R Core Team 2023).
-Zhang et al. (2021) illustrated how to diagnose optimisation processes,
-particularly focusing on the guided tour, and revealed a need for
-improved optimisation. While improving the quality of the optimisation
-solutions in the tour is essential, it is also important to be able to
-view the data projections as the optimisation progresses. Integrating
-the guided tour with a global optimisation algorithm that is efficient
-in finding the global optimal and enables viewing of the projected data
-during the exploration process is a goal.
+index, when they introduced the PPGT, which monitors the optimisation
+visually so that the user can see the projected data leading in and out
+of the optima. An implementation is available in the \texttt{tourr}
+package (Wickham et al. 2011) in R (R Core Team 2023). Zhang et al.
+(2021) illustrated how to diagnose optimisation processes, particularly
+focusing on the guided tour, and revealed a need for improved
+optimisation. While improving the quality of the optimisation solutions
+in the tour is essential, it is also important to be able to view the
+data projections as the optimisation progresses. Integrating the guided
+tour with a global optimisation algorithm that is efficient in finding
+the global optimal and enables viewing of the projected data during the
+exploration process is a goal.
 
-Here, the potential for a Jellyfish Search Optimiser (JSO) to be
-integrated with the projection pursuit guided tour is explored. JSO,
-(Chou and Truong 2021) - (Rajwar, Deep, and Das 2023), inspired by the
-search behaviour of jellyfish in the ocean, is a swarm-based
-metaheuristic designed to solve global optimisation problems. Compared
-to traditional methods, JSO has demonstrated stronger search ability and
-faster convergence, and requires fewer tuning parameters. These
-practical advantages make JSO a promising candidate for enhancing PP
-optimisation.
+Here, the potential for a Jellyfish Search Optimiser (JSO) (see Chou and
+Truong (2021), and Rajwar, Deep, and Das (2023)) for the PPGT is
+explored. JSO, inspired by the search behaviour of jellyfish in the
+ocean, is a swarm-based metaheuristic designed to solve global
+optimisation problems. Compared to traditional methods, JSO has
+demonstrated stronger search ability and faster convergence, and
+requires fewer tuning parameters. These practicalities make JSO a
+promising candidate for enhancing PP optimisation.
 
 The primary goal of the study reported here is to investigate the
 performance of JSO in PP optimisation for the guided tour. It is of
@@ -383,24 +391,23 @@ optima, for various PP indexes that may have differing complexities. To
 observe the performance of JSO with different types of PP indexes,
 metrics are introduced to capture specific properties of the index
 including squintability (based on Tukey and Tukey (1981)'s squint angle)
-and smoothness as introduced in Laa and Cook (2020). Here we
-mathematically define metrics for squintability and smoothness, which is
-new for the field. A series of simulation experiments using various
-datasets and PP indexes are conducted to assess JSO's behaviour and its
-sensitivity to hyper-parameter choices (number of jellyfish and maximum
-number of tries). The relationship between the JSO performance,
-hyper-parameter choices and properties of PP indexes (smoothness and
-squintability) is analysed to provide guidance on selecting optimisers
-for practitioners using projection pursuit. Additionally, it aims to
-guide the design of new indexes that facilitate easy optimization for PP
-researchers.
+and smoothness. Here, we mathematically define metrics for squintability
+and smoothness, which is a new contribution for PP research. A series of
+simulation experiments using various datasets and PP indexes are
+conducted to assess JSO's behaviour and its sensitivity to
+hyper-parameter choices (number of jellyfish and maximum number of
+tries). The relationship between the JSO performance, hyper-parameter
+choices and properties of PP indexes (smoothness and squintability) is
+analysed to provide guidance on selecting optimisers for practitioners
+using projection pursuit. Additionally, this work should guide the
+design of new PP indexes and facilitate better optimization for PP.
 
 The paper is structured as follows. Section~\ref{sec-background}
-introduces the background of PP guided tour and reviews existing
-optimisers and index functions in the literature.
-Section~\ref{sec-theory} details JSO and introduces metrics that measure
-different properties of PP indexes, smoothness and squintability.
-Section~\ref{sec-sim-deets} details two simulation experiments to assess
+introduces the background of the PPGT, reviews existing optimisers and
+index functions in the literature. Section~\ref{sec-theory} describes
+JSO and introduces the metrics that measure different properties of PP
+indexes, smoothness and squintability. Section~\ref{sec-sim-deets}
+summarises the results of two simulation experiments done to assess
 JSO's performance: one comparing JSO's performance improvements relative
 to an existing optimiser, Creeping Random Search (CRS), and the other
 studying the impact of different PP index properties on optimisation
@@ -494,7 +501,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, colframe=quarto-callout-note-color-frame, toptitle=1mm, rightrule=.15mm, colback=white, opacityback=0, title={Algorithm: Jellyfish Optimizer Pseudo Code}, coltitle=black, arc=.35mm, bottomrule=.15mm, toprule=.15mm, titlerule=0mm, bottomtitle=1mm, leftrule=.75mm, colbacktitle=quarto-callout-note-color!10!white, left=2mm, breakable, opacitybacktitle=0.6]
+\begin{tcolorbox}[enhanced jigsaw, bottomrule=.15mm, left=2mm, rightrule=.15mm, opacityback=0, title={Algorithm: Jellyfish Optimizer Pseudo Code}, breakable, opacitybacktitle=0.6, colback=white, colframe=quarto-callout-note-color-frame, toprule=.15mm, toptitle=1mm, arc=.35mm, leftrule=.75mm, bottomtitle=1mm, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, coltitle=black]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
