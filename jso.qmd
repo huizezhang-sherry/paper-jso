@@ -1218,6 +1218,8 @@ broom::tidy(mod1) |>
 
 # Practicalities {#sec-discussion}
 
+The simulation study illustrates how these metrics can be used to assess a PP index, and the optimisation process. In general, we would expect that the JSO is going to outperform most other optimisers. From an exploratory perspective, it take s shift in the GTPP practice because one no longer has a single path to follow. Here we describe how to adjust to using the JSO optimiser for exploring high-dimensional data, and how to use the new metrics for evaluating a new index.
+
 ## Computing the metrics for your new index
 
 The `ferrn` package provides functionality for computing the smoothness and squintability metrics. Both cases require sampling random bases using the `sample_bases()` function, followed by  calculating the specific metric with either `calc_smoothness()` or `calc_squintability()`. 
