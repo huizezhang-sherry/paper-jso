@@ -43,14 +43,28 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{5}
 % Make \paragraph and \subparagraph free-standing
+\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
+\makeatother
 
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -70,7 +84,7 @@
 \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
 \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
 \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
 \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
 \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
 \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
@@ -80,7 +94,7 @@
 \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.28,0.35,0.67}{#1}}
 \newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.46,0.62}{#1}}
 \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
 \newcommand{\NormalTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
 \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
 \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
@@ -254,6 +268,7 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
+
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -273,6 +288,7 @@ analysis},
   citecolor={Blue},
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
+
 
 \title{Studying the Performance of the Jellyfish Search Optimiser for
 the Application of Projection Pursuit}
@@ -324,6 +340,7 @@ projection pursuit\sep jellyfish search optimiser
 (JSO)\sep optimisation\sep grand tour\sep high-dimensional data\sep 
 exploratory data analysis
 \end{keywords}
+
 
 \setstretch{2}
 \section{Introduction}\label{introduction}
@@ -541,11 +558,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-<<<<<<< HEAD
-\begin{tcolorbox}[enhanced jigsaw, leftrule=.75mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colback=white, bottomrule=.15mm, arc=.35mm, breakable, colbacktitle=quarto-callout-note-color!10!white, rightrule=.15mm, bottomtitle=1mm, toptitle=1mm, colframe=quarto-callout-note-color-frame, toprule=.15mm, coltitle=black, opacitybacktitle=0.6, left=2mm, opacityback=0, titlerule=0mm]
-=======
-\begin{tcolorbox}[enhanced jigsaw, coltitle=black, breakable, colback=white, colframe=quarto-callout-note-color-frame, rightrule=.15mm, arc=.35mm, bottomtitle=1mm, colbacktitle=quarto-callout-note-color!10!white, leftrule=.75mm, left=2mm, bottomrule=.15mm, opacitybacktitle=0.6, toprule=.15mm, toptitle=1mm, titlerule=0mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, opacityback=0]
->>>>>>> 6330782700a93d4206753837532aa238991d5a00
+\begin{tcolorbox}[enhanced jigsaw, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colframe=quarto-callout-note-color-frame, colbacktitle=quarto-callout-note-color!10!white, opacitybacktitle=0.6, arc=.35mm, colback=white, bottomtitle=1mm, opacityback=0, breakable, bottomrule=.15mm, rightrule=.15mm, left=2mm, toprule=.15mm, toptitle=1mm, titlerule=0mm, coltitle=black, leftrule=.75mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -1628,6 +1641,7 @@ Optimisation with Application to Guided Tours.''} \emph{The R Journal}
 13: 624--41. \url{https://doi.org/10.32614/RJ-2021-105}.
 
 \end{CSLReferences}
+
 
 
 
