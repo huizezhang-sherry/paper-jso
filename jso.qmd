@@ -1220,6 +1220,52 @@ broom::tidy(mod1) |>
 
 ## Computing the metrics for your new index
 
+The `ferrn` package provides functionality for computing the smoothness and squintability metrics. Both cases require sampling random bases using the `sample_bases()` function, followed by  calculating the specific metric with either `calc_smoothness()` or `calc_squintability()`. 
+
+### Smoothness
+
+To sample bases for calculating smoothness, the required arguments include `idx` (the index function used), `data` (the dataset), `n_basis` (the number of random bases to sample), and `best` (the best basis to compute projection distance). The following code samples 300 bases for using the `holes` index to find the pipe shape in the 6D `sine1000` dataset: 
+
+```{r}
+#| echo: true
+library(GpGp)
+library(fields)
+library(tourr)
+library(ferrn)
+basis_smoothness <- sample_bases(
+  idx = "holes", data = sine1000, n_basis = 300, 
+  best = matrix(c(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1), nrow = 6))
+basis_smoothness |> head(3)
+```
+
+The output of `sample_bases()` is a data frame with four columns: `id` (the basis ID), `basis` (the basis matrix sampled), `dist` (the projection distance to the best basis), and `index` (the index value). To speed up the computation of index values,  parallellasation is available through the `parallel = TRUE` argument.
+
+The `calc_smoothness()` function takes the output from `sample_bases()` and fits a Gaussian process model to the index values against the projection distances to compute the smoothness metric. The starting parameter for the fit can be specified using the `start_params` argument, and additional Gaussian process arguments can be provided through `other_gp_params`. The following code calculates the smoothness metric from the previously sampled bases:
+
+```{r}
+#| echo: true
+(sm_res <- calc_smoothness(basis_smoothness))
+```
+
+The smoothness metric is the smoothness parameter from the Gussian process and all details of the fit can be accessed using `attr(sm_res, "fit_res")`.
+
+### Squintability
+
+Sampling bases for calculating squintability includes an additional step of interpolating between the sampled bases and the best basis. This is specified through setting the `step_size` and `min_proj_dist` arguments in the `sample_bases()` function to non-NA numerical values. Since the projection distance typically ranges from 0 to 2, it is recommended to set `step_size` to 0.1 or lower, and `min_proj_dist` to be at least 0.5 to ensure a meaningful interpolation length.
+
+The `calc_squintability()` function computes squintability using two methods: 1) parametrically, by fitting a scaled sigmoid function through non-linear least square (`method = "nls"`), and 2) non-parametrically, using kernel smoothing (`method = "ks"`). A `bin_width` argument is required to average the index values over the projection distance before the fit. The following code samples 100 bases for calculating squintability in the same scenario: 
+
+```{r}
+#| echo: true
+basis_squint <- sample_bases(
+   idx = "holes", data = sine1000, n_basis = 100, 
+  best = matrix(c(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1), nrow = 6),
+  step_size = 0.1, min_proj_dist = 1.5)
+calc_squintability(basis_squint, method = "nls", bin_width = 0.01)
+```
+
+The output provides the estimated parameters for the scaled sigmoid function ($\theta_1$ to $\theta_4$) and the squintability metric for the parametric case. For the non-parametric case, it shows the (`max_d`), the corresponding projection distance (`max_dist`), and teh squintability metric as their products.
+
 ## Using the JSO in a PPGT
 
 ```{r}
@@ -1229,6 +1275,8 @@ jso_optima <- save_history(flea[,1:6],
                            guided_tour(holes()), 
                            search_f = search_jellyfish)
 ```
+
+
 <!--
 This section discusses the insights in implementation yielded from the previous sections to guide the usage of projection pursuit guided tour amongst practitioners. Smoothness and squintability in a projection pursuit problem can now be measured given the target shape, the chosen index function, and the data dimension. In practice, these metrics can be used to characterise the difficulty of the optimisation task and inform the choice of optimiser. For instance, a large squintability value indicates a distinct difference in index values between optimal regions and others. When one jellyfish enters the optimal region, the high index value it generates will be clearly distinguishable from spurious values due to this pronounced difference and lead other jellyfish to move toward the optimal region. In contrast, a smaller squintability value results in a less distinct separation between desirable and undesirable regions, making it more difficult for other jellyfish to accurately navigate toward the target area. In addition, a larger smoothness value implies a smoother index function, which suggests the use of both gradient-based and random sampling optimisers. 
 
