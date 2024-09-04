@@ -1268,6 +1268,77 @@ The output provides the estimated parameters for the scaled sigmoid function ($\
 
 ## Using the JSO in a PPGT
 
+(not done yet)
+
+The JSO can be used by specifying the argument `search_f = search_jellyfish` in the `guided_tour()` function in the `tourr` package. In the example below, the `lda_pp` index is used to cluster the penguins data set. When binding animation `animate_xy()` to an object (`res<-`), it will save the visited bases of each jellyfish as a data object. The bases from each jellyfish can be extracted adn supplied as a planned tour to visualise its path. Figure @fig-jso-penguins shows the tour path of one particular jellyfish in the penguins data set. The jellyfish successfully finds the structure of the data set, separating the three species of penguins.
+
+```{r}
+#| echo: true
+#| eval: false
+# run the projection pursuit with JSO 
+res <- animate_xy(penguins_df, 
+                  guided_tour(lda_pp(cl = penguins_cl$species),
+                              search_f = search_jellyfish, 
+                              n_jellies = 20, max.tries = 50))
+# extract the bases from the first jellyfish
+bases <- res |> filter(loop == 1) |> pull(basis) |> check_dup(0.1)
+# visualise its path with a planned tour
+animate_xy(data = penguins_df, tour_path = planned_tour(bases), 
+           col = penguins_cl$species)
+```
+
+
+```{r}
+#| echo: false
+#| eval: false
+library(dplyr)
+library(palmerpenguins)
+library(ggplot2)
+library(tourr)
+check_dup <- function(bases, min_dist) {
+  res <- list()
+  res[[1]] <- bases[[1]]
+  i <- 1; j <- 2
+  while(j <= length(bases)){
+    if (proj_dist(bases[[i]], bases[[j]]) >= min_dist) {
+      res <- c(res, list(bases[[j]]))
+      i <- i + 1; j <- j + 1
+    } else{
+      j <- j + 1
+    }
+  }
+  return(res)
+}
+
+penguins_cl <- palmerpenguins::penguins |> filter(!is.na(bill_length_mm)) |>
+  rename(bl = bill_length_mm, bd = bill_depth_mm,
+         fl = flipper_length_mm, bm = body_mass_g)
+penguins_df <- penguins_cl |> select(bl:bm) |> rescale()
+res <- animate_xy(penguins_df, guided_tour(lda_pp(cl = penguins_cl$species), search_f = search_jellyfish, n_jellies = 20, max.tries = 50))
+bases <- res |> filter(loop == 1) |> pull(basis) |> check_dup(0.1)
+animate_xy(data = penguins_df, tour_path = planned_tour(bases), col = penguins_cl$species)
+render_gif(penguins_df, planned_tour(bases), display_xy(col = penguins_cl$species), 
+           here::here("figures/tour/penguins.gif"))
+render( 
+  penguins_df,
+  tour_path = planned_tour(bases),
+  dev = "png",
+  display = display_xy(col = penguins_cl$species),
+  frames = 100,
+  here::here("figures","tour", "penguins%03d.png")
+)
+```
+
+```{r}
+#| label: fig-jso-penguins
+#| fig-cap: "Visualising the tour path of one particular jellyfish in the penguins data set. The jellyfish is optimised by the JSO with 20 jellyfishes and a maximum of 50 tries. The tour path is planned off-line and then followed in the guided tour. The jellyfish successfully finds the structure of the data set, separating the three species of penguins."
+frames <- c("001", "010", "019", "028", "036", "048")
+ani <- paste0(here::here("figures/"), "tour/", "penguins", frames, ".png")
+rl <- lapply(ani, png::readPNG)
+gl <-  lapply(rl, grid::rasterGrob)
+wrap_plots(gl)
+```
+
 ```{r}
 #| eval: false
 #| echo: false
