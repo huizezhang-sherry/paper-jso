@@ -43,28 +43,14 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{5}
 % Make \paragraph and \subparagraph free-standing
-\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}{
-    \@ifstar
-      \xxxParagraphStar
-      \xxxParagraphNoStar
-  }
-  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
-  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}{
-    \@ifstar
-      \xxxSubParagraphStar
-      \xxxSubParagraphNoStar
-  }
-  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
-  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
-\makeatother
 
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -84,7 +70,7 @@
 \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
 \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
 \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
 \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
 \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
 \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
@@ -94,7 +80,7 @@
 \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.28,0.35,0.67}{#1}}
 \newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.46,0.62}{#1}}
 \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
 \newcommand{\NormalTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
 \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
 \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
@@ -131,38 +117,28 @@
 \makeatletter
 \def\fps@figure{htbp}
 \makeatother
-% definitions for citeproc citations
-\NewDocumentCommand\citeproctext{}{}
-\NewDocumentCommand\citeproc{mm}{%
-  \begingroup\def\citeproctext{#2}\cite{#1}\endgroup}
-\makeatletter
- % allow citations to break across lines
- \let\@cite@ofmt\@firstofone
- % avoid brackets around text for \cite:
- \def\@biblabel#1{}
- \def\@cite#1#2{{#1\if@tempswa , #2\fi}}
-\makeatother
 \newlength{\cslhangindent}
 \setlength{\cslhangindent}{1.5em}
 \newlength{\csllabelwidth}
 \setlength{\csllabelwidth}{3em}
-\newenvironment{CSLReferences}[2] % #1 hanging-indent, #2 entry-spacing
- {\begin{list}{}{%
-  \setlength{\itemindent}{0pt}
-  \setlength{\leftmargin}{0pt}
-  \setlength{\parsep}{0pt}
+\newlength{\cslentryspacingunit} % times entry-spacing
+\setlength{\cslentryspacingunit}{\parskip}
+\newenvironment{CSLReferences}[2] % #1 hanging-ident, #2 entry spacing
+ {% don't indent paragraphs
+  \setlength{\parindent}{0pt}
   % turn on hanging indent if param 1 is 1
   \ifodd #1
-   \setlength{\leftmargin}{\cslhangindent}
-   \setlength{\itemindent}{-1\cslhangindent}
+  \let\oldpar\par
+  \def\par{\hangindent=\cslhangindent\oldpar}
   \fi
   % set entry spacing
-  \setlength{\itemsep}{#2\baselineskip}}}
- {\end{list}}
+  \setlength{\parskip}{#2\cslentryspacingunit}
+ }%
+ {}
 \usepackage{calc}
-\newcommand{\CSLBlock}[1]{\hfill\break\parbox[t]{\linewidth}{\strut\ignorespaces#1\strut}}
-\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{\strut#1\strut}}
-\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{\strut#1\strut}}
+\newcommand{\CSLBlock}[1]{#1\hfill\break}
+\newcommand{\CSLLeftMargin}[1]{\parbox[t]{\csllabelwidth}{#1}}
+\newcommand{\CSLRightInline}[1]{\parbox[t]{\linewidth - \csllabelwidth}{#1}\break}
 \newcommand{\CSLIndent}[1]{\hspace{\cslhangindent}#1}
 
 \usepackage{booktabs}
@@ -228,6 +204,10 @@
 \definecolor{quarto-callout-caution-color-frame}{HTML}{fd7e14}
 \makeatother
 \makeatletter
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \AtBeginDocument{%
 \ifdefined\contentsname
@@ -263,17 +243,23 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 \makeatletter
-\makeatother
-\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-
+\makeatletter
+\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
+\makeatother
+\makeatletter
+\@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
+\makeatother
+\makeatletter
+\makeatother
+\makeatletter
+\makeatother
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
-\usepackage{bookmark}
-
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
@@ -288,7 +274,6 @@ analysis},
   citecolor={Blue},
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
-
 
 \title{Studying the Performance of the Jellyfish Search Optimiser for
 the Application of Projection Pursuit}
@@ -340,10 +325,11 @@ projection pursuit\sep jellyfish search optimiser
 (JSO)\sep optimisation\sep grand tour\sep high-dimensional data\sep 
 exploratory data analysis
 \end{keywords}
-
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, enhanced, sharp corners, interior hidden, frame hidden, breakable]}{\end{tcolorbox}}\fi
 
 \setstretch{2}
-\section{Introduction}\label{introduction}
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
 
 Projection pursuit (PP) (Kruskal (1969), Friedman and Tukey (1974),
 Huber (1985)) is a dimension reduction technique aimed at identifying
@@ -366,9 +352,9 @@ other features of interest. For a fixed sample of data, PP finds the
 orthonormal basis \(A\) that maximises the index value of the
 projection, \(Y = XA\):
 
-\begin{equation}\phantomsection\label{eq-optimization}{
+\begin{equation}\protect\hypertarget{eq-optimization}{}{
 \underset{A \in \mathcal{A}}{\max } \quad f(XA) \quad \text{subject to} \quad A'A = I_d
-}\end{equation}
+}\label{eq-optimization}\end{equation}
 
 It is interesting to note that when using PP visually, one cares less
 about \(A\) than the plane described by \(A\), because the orientation
@@ -402,9 +388,7 @@ optimal projection.
 
 \begin{figure}
 
-\centering{
-
-\includegraphics[width=0.8\textwidth,height=\textheight]{jso_files/figure-pdf/fig-example-functions-1.pdf}
+{\centering \includegraphics[width=0.8\textwidth,height=\textheight]{jso_files/figure-pdf/fig-example-functions-1.pdf}
 
 }
 
@@ -414,7 +398,7 @@ and histogram of the projected data corresponding to the optimal
 projection. A Huber plot shows the PP index values for all 1D data
 projections in polar coordinates.}
 
-\end{figure}%
+\end{figure}
 
 Optimisation of PP is often discussed when new indexes are proposed
 (Posse 1995a; Marie-Sainte, Berro, and Ruiz-Gazen 2010; Grochowski and
@@ -473,8 +457,9 @@ Section~\ref{sec-discussion} discusses implementation details and
 insights for practitioners. Section~\ref{sec-conclusion} summarises the
 work and provides suggestions for future directions.
 
+\hypertarget{sec-background}{%
 \section{Projection pursuit, tours, index functions and
-optimisation}\label{sec-background}
+optimisation}\label{sec-background}}
 
 A tour on high-dimensional data is constructed by geodesically
 interpolating between pairs of planes. Any plane is described by an
@@ -534,8 +519,9 @@ by. One last aspect that is useful is for an optimiser to return local
 maxima in addition to global because data can contain many different and
 interesting features.
 
+\hypertarget{sec-theory}{%
 \section{The jellyfish optimiser and properties of PP
-indexes}\label{sec-theory}
+indexes}\label{sec-theory}}
 
 JSO mimics the natural movements of jellyfish, which include passive and
 active motions driven by ocean currents and their swimming patterns,
@@ -558,7 +544,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colframe=quarto-callout-note-color-frame, colbacktitle=quarto-callout-note-color!10!white, opacitybacktitle=0.6, arc=.35mm, colback=white, bottomtitle=1mm, opacityback=0, breakable, bottomrule=.15mm, rightrule=.15mm, left=2mm, toprule=.15mm, toptitle=1mm, titlerule=0mm, coltitle=black, leftrule=.75mm]
+\begin{tcolorbox}[enhanced jigsaw, breakable, rightrule=.15mm, leftrule=.75mm, opacitybacktitle=0.6, arc=.35mm, toptitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colframe=quarto-callout-note-color-frame, toprule=.15mm, bottomrule=.15mm, coltitle=black, titlerule=0mm, bottomtitle=1mm, left=2mm, colbacktitle=quarto-callout-note-color!10!white, colback=white, opacityback=0]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -649,7 +635,8 @@ optimisation process, the focus here is on the first two properties,
 \emph{squintability} (Section~\ref{sec-squintability}), for which
 metrics are proposed to quantify them.
 
-\subsection{Smoothness}\label{sec-smoothness}
+\hypertarget{sec-smoothness}{%
+\subsection{Smoothness}\label{sec-smoothness}}
 
 This subsection proposes a metric for the smoothness of a projection
 pursuit index.
@@ -696,7 +683,7 @@ The Matérn covariance function $K$ is defined by
 K(u)=K_{\nu,\eta,\ell}(u):=\eta^2\frac{\left(\sqrt{2\nu}\frac{u}{\ell}\right)^{\nu}}{\Gamma(\nu)2^{\nu-1}}\mathcal{K}_{\nu}\left(\sqrt{2\nu}\frac{u}{\ell}\right)\ , u\geq0\label{eq:matern}
 \end{equation}
 where $\nu>0$ is the smoothness parameter, $\eta$ is the outputscale, $\ell$ is the lengthscale, and $\mathcal{K}_\nu$ is
-the modified Bessel function @DLMF. A multivariate extension $K(u)$, $u\in\mathbb{R}^d$ can be obtained by products of univariate covariance functions \eqref{eq:matern}.
+the modified Bessel function [DLMF 10.25]. A multivariate extension $K(u)$, $u\in\mathbb{R}^d$ can be obtained by products of univariate covariance functions \eqref{eq:matern}.
 \end{defn}
 
 The Matérn covariance function can be expressed analytically when
@@ -717,9 +704,7 @@ An interesting result is that the asymptotic case
 
 \begin{figure}
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{figures/matern_simulation_1d.png}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{figures/matern_simulation_1d.png}
 
 }
 
@@ -729,13 +714,11 @@ covariance function, with \(\nu=1\) (left), \(\nu=2\) (middle), and
 \(\nu=4\) (right), showing that higher values of \(\nu\) produce
 smoother curves.}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{figures/matern_simulation_2d.png}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{figures/matern_simulation_2d.png}
 
 }
 
@@ -745,7 +728,7 @@ covariance function, with \(\nu=1\) (left), \(\nu=2\) (middle), and
 \(\nu=4\) (right), showing that higher values of \(\nu\) produce
 smoother surfaces.}
 
-\end{figure}%
+\end{figure}
 
 In view of these results, the parameter \(\nu\) is suggested as a
 measure of the smoothness of the PP index function by fitting a Gaussian
@@ -775,7 +758,8 @@ The value of the optimal smoothness parameter \(\nu>0\) can be naturally
 interpreted as follows: the higher \(\nu\), the smoother the index
 function.
 
-\subsection{Squintability}\label{sec-squintability}
+\hypertarget{sec-squintability}{%
+\subsection{Squintability}\label{sec-squintability}}
 
 Here the formal definition of projection distance and squint angle are
 given, before the definition of squintability. Two approaches to compute
@@ -868,17 +852,17 @@ parametric model for \(f\), and use it to obtain an explicit formula for
 \(\varsigma\). Numerical experiments suggest a scaled sigmoid shape as
 described below. Define
 
-\begin{equation}\phantomsection\label{eq-logistic}{
+\begin{equation}\protect\hypertarget{eq-logistic}{}{
 \ell(x):=\frac{1}{1+\exp(\theta_{3}(x-\theta_{2}))}\ ,
-}\end{equation}
+}\label{eq-logistic}\end{equation}
 
 which is a decreasing logistic function depending on two parameters
 \(\theta_2\) and \(\theta_3\), such that
 \(\ell(\theta_{2})=\frac{1}{2}\). Then, define
 
-\begin{equation}\phantomsection\label{eq-parametric}{
+\begin{equation}\protect\hypertarget{eq-parametric}{}{
 f(x)=(\theta_{1}-\theta_{4})\frac{\ell(x)-\ell(x_{\max})}{\ell(0)-\ell(x_{\max})}+\theta_{4}\ ,
-}\end{equation}
+}\label{eq-parametric}\end{equation}
 
 which depends on three additional parameters, \(\theta_1\),
 \(\theta_2\), and \(x_{\max}\), such that \(f(0)=\theta_1\) and
@@ -886,9 +870,9 @@ which depends on three additional parameters, \(\theta_1\),
 (\ref{eq-parametric}), the squintability metric \eqref{eq-squintability}
 can be shown to be equal to
 
-\begin{equation}\phantomsection\label{eq-squintability-parametric}{
+\begin{equation}\protect\hypertarget{eq-squintability-parametric}{}{
 \varsigma=\frac{(\theta_{1}-\theta_{4})\theta_{2}\theta_{3}}{\ell(0)-\ell(x_{\max})}\ .
-}\end{equation}
+}\label{eq-squintability-parametric}\end{equation}
 
 In practice, the parameters of this model (\ref{eq-parametric}) can be
 estimated numerically, for example by non-linear least squares, and then
@@ -900,7 +884,8 @@ nonparametric way, for example by fitting \(f\) using kernel regression,
 then numerically estimate the angle at which \(-f'\) attains its highest
 value.
 
-\section{Simulation study}\label{sec-sim-deets}
+\hypertarget{sec-sim-deets}{%
+\section{Simulation study}\label{sec-sim-deets}}
 
 The JSO performance is compared with an existing optimiser, Creeping
 Random Search (CRS) (Zhang et al. 2021; Laa and Cook 2020) used in the
@@ -911,7 +896,8 @@ along with JSO hyper-parameters, and data dimension, on the success rate
 of the JSO performance. This section describes the simulation details,
 with the results deferred to Section~\ref{sec-sim-res}.
 
-\subsection{Performance of JSO relative to CRS}\label{sec-app-1}
+\hypertarget{sec-app-1}{%
+\subsection{Performance of JSO relative to CRS}\label{sec-app-1}}
 
 he performance of JSO is investigated both in comparison to the existing
 optimizer, CRS, and across various hyper-parameter values. The
@@ -939,9 +925,7 @@ maximum number of tries (50 and 100).
 
 \begin{figure}
 
-\centering{
-
-\includegraphics[width=4.52in,height=\textheight]{figures/success-rate.png}
+{\centering \includegraphics[width=4.52in,height=\textheight]{figures/success-rate.png}
 
 }
 
@@ -953,10 +937,11 @@ The highest index value found across all simulations is 0.969. Out of
 the 50 simulations, 43 achieved an index value within 0.05 of the best,
 resulting in a success rate of 0.86 (43/50).}
 
-\end{figure}%
+\end{figure}
 
+\hypertarget{sec-app-2}{%
 \subsection{Factors affecting JSO success rate: index properties and
-jellyfish hyper-parameters}\label{sec-app-2}
+jellyfish hyper-parameters}\label{sec-app-2}}
 
 To assess JSO's performance across various scenarios, two different data
 shapes, pipe and a sine wave, are investigated in 6D and 8D spaces using
@@ -998,9 +983,7 @@ correctly identified the sine-wave shape.
 
 \begin{figure}
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{figures/smoothness.png}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{figures/smoothness.png}
 
 }
 
@@ -1012,13 +995,11 @@ and the index value for each random basis, and 3) fit a Gaussian process
 model of index values against projection distances to obtain the
 smoothness measure.}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}
 
-\centering{
-
-\includegraphics[width=1\textwidth,height=\textheight]{figures/squintability.png}
+{\centering \includegraphics[width=1\textwidth,height=\textheight]{figures/squintability.png}
 
 }
 
@@ -1035,9 +1016,10 @@ distances using non-linear least square, 5) calculate the squintability
 measure using equation (\ref{eq-squintability-parametric}) with
 parameters estimated from the model.}
 
-\end{figure}%
+\end{figure}
 
-\section{Results}\label{sec-sim-res}
+\hypertarget{sec-sim-res}{%
+\section{Results}\label{sec-sim-res}}
 
 The results from the first simulation described in
 Section~\ref{sec-sim-deets} are analysed based on the final projections
@@ -1074,9 +1056,7 @@ scagnostic indexes) multiple times across numerous iterations.
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{jso_files/figure-pdf/fig-proj-1.pdf}
+{\centering \includegraphics{jso_files/figure-pdf/fig-proj-1.pdf}
 
 }
 
@@ -1091,13 +1071,11 @@ pipe shape but with a wide rim. At higher data dimensions, JSO finds a
 higher index value and a clearer pipe shape across all the quantiles
 than the CRS}
 
-\end{figure}%
+\end{figure}
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{jso_files/figure-pdf/fig-proportion-1.pdf}
+{\centering \includegraphics{jso_files/figure-pdf/fig-proportion-1.pdf}
 
 }
 
@@ -1108,7 +1086,7 @@ out of 50, that achieve an index value within 0.05 of the
 best-performing simulation. As the dimensionality increases, the
 proportion of simulations reaching the optimal index value increases.}
 
-\end{figure}%
+\end{figure}
 
 The index properties, including smoothness and squintability, offer
 numerical metrics to characterise the complexity of projection pursuit
@@ -1133,15 +1111,13 @@ runtime and an increase of data dimension reduce the success rate by
 and \texttt{dimension} are significant, suggesting their importance
 relative to JSO hyper-parameters in the optimisation success.
 
+\hypertarget{tbl-smoothness-squintability}{}
 \begin{table}
-
-\caption{\label{tbl-smoothness-squintability}Parameters estimated from
-the Gaussian process (including variance, range, smoothness, and nugget)
-and scaled logistic function (\(\theta_1\) to \(\theta_4\)) for the
-pipe-finding and sine-wave finding problems. The column ``smooth'' and
-``squint'' represent the smoothness and squintability measures.}
-
-\centering{
+\caption{\label{tbl-smoothness-squintability}Parameters estimated from the Gaussian process (including variance,
+range, smoothness, and nugget) and scaled logistic function
+(\(\theta_1\) to \(\theta_4\)) for the pipe-finding and sine-wave
+finding problems. The column ``smooth'' and ``squint'' represent the
+smoothness and squintability measures. }\tabularnewline
 
 \centering\begingroup\fontsize{10}{12}\selectfont
 
@@ -1164,17 +1140,11 @@ pipe-finding and sine-wave finding problems. The column ``smooth'' and
 \bottomrule
 \end{tabular}
 \endgroup{}
+\end{table}
 
-}
-
-\end{table}%
-
+\hypertarget{tbl-mod-data}{}
 \begin{table}
-
-\caption{\label{tbl-mod-data}The first 7 rows of the datasets processed
-for modelling.}
-
-\centering{
+\caption{\label{tbl-mod-data}The first 7 rows of the datasets processed for modelling. }\tabularnewline
 
 \centering\begingroup\fontsize{10}{12}\selectfont
 
@@ -1192,24 +1162,19 @@ MIC & 8 & 2.64 & 0.77 & 20 & 100 & 0.08 & 4.96\\
 \bottomrule
 \end{tabular}
 \endgroup{}
+\end{table}
 
-}
-
-\end{table}%
-
+\hypertarget{tbl-mod-output}{}
 \begin{table}
-
-\caption{\label{tbl-mod-output}Model estimates of proportion of
-jellyfish success on index properties and jellyfish hyper-parameters
-from the generalised linear model with a binomial family and a logit
-link function. The variable smoothness, squintability, number of
-jellyfish and maximum number of tries are positively associated with JSO
-success rate while data dimension and being flagged as long runtime are
-negatively associated with the success rate. The variable squintability
-and dimension are significant, suggesting their importance relative to
-jellyfish hyper-parameters in the optimisation success.}
-
-\centering{
+\caption{\label{tbl-mod-output}Model estimates of proportion of jellyfish success on index properties
+and jellyfish hyper-parameters from the generalised linear model with a
+binomial family and a logit link function. The variable smoothness,
+squintability, number of jellyfish and maximum number of tries are
+positively associated with JSO success rate while data dimension and
+being flagged as long runtime are negatively associated with the success
+rate. The variable squintability and dimension are significant,
+suggesting their importance relative to jellyfish hyper-parameters in
+the optimisation success. }\tabularnewline
 
 \centering\begingroup\fontsize{10}{12}\selectfont
 
@@ -1227,12 +1192,10 @@ Max. tries & 0.11 & 0.15 & 0.75 & 0.45\\
 \bottomrule
 \end{tabular}
 \endgroup{}
+\end{table}
 
-}
-
-\end{table}%
-
-\section{Practicalities}\label{sec-discussion}
+\hypertarget{sec-discussion}{%
+\section{Practicalities}\label{sec-discussion}}
 
 The simulation study illustrates how these metrics can be used to assess
 a PP index, and the optimisation process. In general, we would expect
@@ -1242,8 +1205,9 @@ one no longer has a single path to follow. Here we describe how to
 adjust to using the JSO optimiser for exploring high-dimensional data,
 and how to use the new metrics for evaluating a new index.
 
+\hypertarget{computing-the-metrics-for-your-new-index}{%
 \subsection{Computing the metrics for your new
-index}\label{computing-the-metrics-for-your-new-index}
+index}\label{computing-the-metrics-for-your-new-index}}
 
 The \texttt{ferrn} package provides functionality for computing the
 smoothness and squintability metrics. Both cases require sampling random
@@ -1251,7 +1215,8 @@ bases using the \texttt{sample\_bases()} function, followed by
 calculating the specific metric with either \texttt{calc\_smoothness()}
 or \texttt{calc\_squintability()}.
 
-\subsubsection{Smoothness}\label{smoothness}
+\hypertarget{smoothness}{%
+\subsubsection{Smoothness}\label{smoothness}}
 
 To sample bases for calculating smoothness, the required arguments
 include \texttt{idx} (the index function used), \texttt{data} (the
@@ -1319,7 +1284,8 @@ The smoothness metric is the smoothness parameter from the Gussian
 process and all details of the fit can be accessed using
 \texttt{attr(sm\_res,\ "fit\_res")}.
 
-\subsubsection{Squintability}\label{squintability}
+\hypertarget{squintability}{%
+\subsubsection{Squintability}\label{squintability}}
 
 Sampling bases for calculating squintability includes an additional step
 of interpolating between the sampled bases and the best basis. This is
@@ -1363,7 +1329,8 @@ the parametric case. For the non-parametric case, it shows the
 (\texttt{max\_d}), the corresponding projection distance
 (\texttt{max\_dist}), and teh squintability metric as their products.
 
-\subsection{Using the JSO in a PPGT}\label{using-the-jso-in-a-ppgt}
+\hypertarget{using-the-jso-in-a-ppgt}{%
+\subsection{Using the JSO in a PPGT}\label{using-the-jso-in-a-ppgt}}
 
 (not done yet)
 
@@ -1396,9 +1363,7 @@ structure of the data set, separating the three species of penguins.
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{jso_files/figure-pdf/fig-jso-penguins-1.pdf}
+{\centering \includegraphics{jso_files/figure-pdf/fig-jso-penguins-1.pdf}
 
 }
 
@@ -1409,9 +1374,10 @@ tour path is planned off-line and then followed in the guided tour. The
 jellyfish successfully finds the structure of the data set, separating
 the three species of penguins.}
 
-\end{figure}%
+\end{figure}
 
-\section{Conclusion}\label{sec-conclusion}
+\hypertarget{sec-conclusion}{%
+\section{Conclusion}\label{sec-conclusion}}
 
 This paper has presented new metrics to mathematically define desirable
 features of PP indexes, squintability and smoothness, and used these to
@@ -1434,7 +1400,8 @@ squintability. The higher the squintability the better chance the JSO
 can find the optima. However, interestingly smoothness does not affect
 the JSO performance.
 
-\section{Acknowledgement}\label{acknowledgement}
+\hypertarget{acknowledgement}{%
+\section{Acknowledgement}\label{acknowledgement}}
 
 The article is created using Quarto (Allaire et al. 2022) in R (R Core
 Team 2023). The source code for reproducing the work reported in this
@@ -1444,125 +1411,130 @@ acknowledges the partial support of the Guangdong Provincial Key
 Laboratory IRADS (2022B1212010006, R0400001-22) and the UIC Start-up
 Research Fund UICR0700041-22.
 
-\section*{References}\label{references}
+\hypertarget{references}{%
+\section*{References}\label{references}}
 \addcontentsline{toc}{section}{References}
 
-\phantomsection\label{refs}
+\hypertarget{refs}{}
 \begin{CSLReferences}{1}{0}
-\bibitem[\citeproctext]{ref-abdulah2023large}
+\leavevmode\vadjust pre{\hypertarget{ref-abdulah2023large}{}}%
 Abdulah, Sameh, Yuxiao Li, Jian Cao, Hatem Ltaief, David Keyes, Marc
 Genton, and Ying Sun. 2023. {``Large-Scale Environmental Data Science
 with {ExaGeoStatR}.''} \emph{Environmetrics} 34 (1): e2770.
 https://doi.org/\url{https://doi.org/10.1002/env.2770}.
 
-\bibitem[\citeproctext]{ref-adams2003sobolev}
+\leavevmode\vadjust pre{\hypertarget{ref-adams2003sobolev}{}}%
 Adams, Robert, and John Fournier. 2003. \emph{Sobolev Spaces}. Vol. 140.
 Pure and Applied Mathematics. Elsevier.
 
-\bibitem[\citeproctext]{ref-Allaire_Quarto_2022}
+\leavevmode\vadjust pre{\hypertarget{ref-Allaire_Quarto_2022}{}}%
 Allaire, J. J., Charles Teague, Carlos Scheidegger, Yihui Xie, and
 Christophe Dervieux. 2022. \emph{{Quarto}} (version 1.2).
 \url{https://doi.org/10.5281/zenodo.5960048}.
 
-\bibitem[\citeproctext]{ref-Bertsimas93}
+\leavevmode\vadjust pre{\hypertarget{ref-Bertsimas93}{}}%
 Bertsimas, Dimitris, and John Tsitsiklis. 1993. {``{Simulated
 Annealing}.''} \emph{Statistical Science} 8 (1): 10--15.
 \url{https://doi.org/10.1214/ss/1177011077}.
 
-\bibitem[\citeproctext]{ref-chou_novel_2021}
+\leavevmode\vadjust pre{\hypertarget{ref-chou_novel_2021}{}}%
 Chou, Jui-Sheng, and Dinh-Nhat Truong. 2021. {``A Novel Metaheuristic
 Optimizer Inspired by Behavior of Jellyfish in Ocean.''} \emph{Applied
 Mathematics and Computation} 389 (January): 125535.
 \url{https://doi.org/10.1016/j.amc.2020.125535}.
 
-\bibitem[\citeproctext]{ref-cook1993projection}
+\leavevmode\vadjust pre{\hypertarget{ref-cook1993projection}{}}%
 Cook, D., A. Buja, and J. Cabrera. 1993. {``Projection Pursuit Indexes
 Based on Orthonormal Function Expansions.''} \emph{Journal of
 Computational and Graphical Statistics} 2 (3): 225--50.
 \url{https://doi.org/10.2307/1390644}.
 
-\bibitem[\citeproctext]{ref-cook1995grand}
+\leavevmode\vadjust pre{\hypertarget{ref-cook1995grand}{}}%
 Cook, D., A. Buja, J. Cabrera, and C. Hurley. 1995. {``Grand Tour and
 Projection Pursuit.''} \emph{Journal of Computational and Graphical
 Statistics} 4 (3): 155--72.
 \url{https://doi.org/10.1080/10618600.1995.10474674}.
 
-\bibitem[\citeproctext]{ref-FT74}
+\leavevmode\vadjust pre{\hypertarget{ref-DLMF}{}}%
+DLMF. 2024. {``{NIST Digital Library of Mathematical Functions}.''}
+\url{https://dlmf.nist.gov/10.25}.
+
+\leavevmode\vadjust pre{\hypertarget{ref-FT74}{}}%
 Friedman, J. H., and J. W. Tukey. 1974. {``{A} {P}rojection {P}ursuit
 {A}lgorithm for {E}xploratory {D}ata {A}nalysis.''} \emph{IEEE
 Transactions on Computing C} 23: 881--89.
 
-\bibitem[\citeproctext]{ref-Grimm2016}
+\leavevmode\vadjust pre{\hypertarget{ref-Grimm2016}{}}%
 Grimm, Katrin. 2016. {``Kennzahlenbasierte Grafikauswahl.''} Doctoral
 thesis, Universit{ä}t Augsburg.
 
-\bibitem[\citeproctext]{ref-grochowski2011}
+\leavevmode\vadjust pre{\hypertarget{ref-grochowski2011}{}}%
 Grochowski, Marek, and Włodzisław Duch. 2011. {``Fast Projection Pursuit
 Based on Quality of Projected Clusters.''} In \emph{Adaptive and Natural
 Computing Algorithms}, edited by Andrej Dobnikar, Uroš Lotrič, and
 Branko Šter, 89--97. Berlin, Heidelberg: Springer Berlin Heidelberg.
 
-\bibitem[\citeproctext]{ref-guinness2021gpgp}
+\leavevmode\vadjust pre{\hypertarget{ref-guinness2021gpgp}{}}%
 Guinness, Joseph, Matthias Katzfuss, and Youssef Fahmy. 2021. {``{GpGp}:
 Fast {G}aussian Process Computation Using {V}ecchia's Approximation.''}
 R package.
 
-\bibitem[\citeproctext]{ref-hall1989polynomial}
+\leavevmode\vadjust pre{\hypertarget{ref-hall1989polynomial}{}}%
 Hall, Peter. 1989. {``On Polynomial-Based Projection Indices for
 Exploratory Projection Pursuit.''} \emph{The Annals of Statistics} 17
 (2): 589--605. \url{https://doi.org/10.1214/aos/1176347127}.
 
-\bibitem[\citeproctext]{ref-huber85}
+\leavevmode\vadjust pre{\hypertarget{ref-huber85}{}}%
 Huber, Peter J. 1985. {``Projection Pursuit.''} \emph{Ann. Statist.} 13
 (2): 435--75. \url{https://doi.org/10.1214/aos/1176349519}.
 
-\bibitem[\citeproctext]{ref-huberplot}
+\leavevmode\vadjust pre{\hypertarget{ref-huberplot}{}}%
 ---------. 1990. {``Data Analysis and Projection Pursuit.''} Technical
 Report PJH-90-1. Dept. of Mathematics, Massachusetts Institute of
 Technology.
 
-\bibitem[\citeproctext]{ref-karvonen2023asymptotic}
+\leavevmode\vadjust pre{\hypertarget{ref-karvonen2023asymptotic}{}}%
 Karvonen, Toni. 2023. {``Asymptotic Bounds for Smoothness Parameter
 Estimates in {G}aussian Process Interpolation.''} \emph{SIAM/ASA Journal
 on Uncertainty Quantification} 11 (4): 1225--57.
 
-\bibitem[\citeproctext]{ref-kr69}
+\leavevmode\vadjust pre{\hypertarget{ref-kr69}{}}%
 Kruskal, J. B. 1969. {``Toward a Practical Method Which Helps Uncover
 the Structure of a Set of Observations by Finding the Line
 Transformation Which Optimizes a New {`Index of Condensation'}.''} In
 \emph{Statistical Computation}, edited by R. C. Milton and J. A. Nelder,
 427--40. New York: Academic Press.
 
-\bibitem[\citeproctext]{ref-laa_using_2020}
+\leavevmode\vadjust pre{\hypertarget{ref-laa_using_2020}{}}%
 Laa, Ursula, and Dianne Cook. 2020. {``Using Tours to Visually
 Investigate Properties of New Projection Pursuit Indexes with
 Application to Problems in Physics.''} \emph{Computational Statistics}
 35 (3): 1171--1205. \url{https://doi.org/10.1007/s00180-020-00954-8}.
 
-\bibitem[\citeproctext]{ref-lee2010projection}
+\leavevmode\vadjust pre{\hypertarget{ref-lee2010projection}{}}%
 Lee, Eun-Kyung, and Dianne Cook. 2010. {``A Projection Pursuit Index for
 Large p Small n Data.''} \emph{Statistics and Computing} 20 (3):
 381--92. \url{https://doi.org/10.1007/s11222-009-9131-1}.
 
-\bibitem[\citeproctext]{ref-lee2005projection}
+\leavevmode\vadjust pre{\hypertarget{ref-lee2005projection}{}}%
 Lee, Eun-Kyung, Dianne Cook, Sigbert Klinke, and Thomas Lumley. 2005.
 {``Projection Pursuit for Exploratory Supervised Classification.''}
 \emph{Journal of Computational and Graphical Statistics} 14 (4):
 831--46. \url{https://doi.org/10.1198/106186005X77702}.
 
-\bibitem[\citeproctext]{ref-Loperfido2018}
+\leavevmode\vadjust pre{\hypertarget{ref-Loperfido2018}{}}%
 Loperfido, Nicola. 2018. {``Skewness-Based Projection Pursuit: A
 Computational Approach.''} \emph{Computational Statistics and Data
 Analysis} 120 (C): 42--57.
 https://doi.org/\url{https://doi.org/10.1016/j.csda.2017.11.001}.
 
-\bibitem[\citeproctext]{ref-Loperfido2020}
+\leavevmode\vadjust pre{\hypertarget{ref-Loperfido2020}{}}%
 ---------. 2020. {``Kurtosis-Based Projection Pursuit for Outlier
 Detection in Financial Time Series.''} \emph{The European Journal of
 Finance} 26 (2-3): 142--64.
 https://doi.org/\url{https://doi.org/10.1080/1351847X.2019.1647864}.
 
-\bibitem[\citeproctext]{ref-marie-sainte2010}
+\leavevmode\vadjust pre{\hypertarget{ref-marie-sainte2010}{}}%
 Marie-Sainte, Souad Larabi, Alain Berro, and Anne Ruiz-Gazen. 2010.
 {``An Efficient Optimization Method for Revealing Local Optima of
 Projection Pursuit Indices.''} In \emph{Swarm Intelligence}, edited by
@@ -1570,78 +1542,77 @@ Marco Dorigo, Mauro Birattari, Gianni A. Di Caro, René Doursat, Andries
 P Engelbrecht, Dario Floreano, Luca Maria Gambardella, et al., 60--71.
 Berlin, Heidelberg: Springer Berlin Heidelberg.
 
-\bibitem[\citeproctext]{ref-porcu2024matern}
+\leavevmode\vadjust pre{\hypertarget{ref-porcu2024matern}{}}%
 Porcu, Emilio, Moreno Bevilacqua, Robert Schaback, and Chris Oates.
 2024. {``The {M}atérn Model: A Journey Through Statistics, Numerical
 Analysis and Machine Learning.''} \emph{Statistical Science} 39 (3):
 469--92.
 
-\bibitem[\citeproctext]{ref-posse95}
+\leavevmode\vadjust pre{\hypertarget{ref-posse95}{}}%
 Posse, Christian. 1995b. {``Projection Pursuit Exploratory Data
 Analysis.''} \emph{Computational Statistics and Data Analysis} 20 (6):
 669--87.
 https://doi.org/\url{https://doi.org/10.1016/0167-9473(95)00002-8}.
 
-\bibitem[\citeproctext]{ref-posse1995}
+\leavevmode\vadjust pre{\hypertarget{ref-posse1995}{}}%
 ---------. 1995a. {``Projection Pursuit Exploratory Data Analysis.''}
 \emph{Computational Statistics \& Data Analysis} 20 (6): 669--87.
 https://doi.org/\url{https://doi.org/10.1016/0167-9473(95)00002-8}.
 
-\bibitem[\citeproctext]{ref-R}
+\leavevmode\vadjust pre{\hypertarget{ref-R}{}}%
 R Core Team. 2023. \emph{R: A Language and Environment for Statistical
 Computing}. Vienna, Austria: R Foundation for Statistical Computing.
 \url{https://www.R-project.org/}.
 
-\bibitem[\citeproctext]{ref-rajwar_exhaustive_2023}
+\leavevmode\vadjust pre{\hypertarget{ref-rajwar_exhaustive_2023}{}}%
 Rajwar, Kanchan, Kusum Deep, and Swagatam Das. 2023. {``An Exhaustive
 Review of the Metaheuristic Algorithms for Search and Optimization:
 Taxonomy, Applications, and Open Challenges.''} \emph{Artificial
 Intelligence Review}, 1--71.
 \url{https://doi.org/10.1007/s10462-023-10470-y}.
 
-\bibitem[\citeproctext]{ref-rasmussen2006gaussian}
+\leavevmode\vadjust pre{\hypertarget{ref-rasmussen2006gaussian}{}}%
 Rasmussen, Carl Edward, and Christopher K. I. Williams. 2006.
 \emph{Gaussian Processes for Machine Learning}. The MIT Press.
 
-\bibitem[\citeproctext]{ref-barnett1981interpreting}
+\leavevmode\vadjust pre{\hypertarget{ref-barnett1981interpreting}{}}%
 Tukey, P. A., and J. W. Tukey. 1981. \emph{Graphical Display of Data in
 Three and Higher Dimensions}. Wiley Series in Probability and
 Mathematical Statistics: Applied Probability and Statistics. Wiley.
 \url{https://books.google.com.au/books?id=WBzvAAAAMAAJ}.
 
-\bibitem[\citeproctext]{ref-Laa:2020wkm}
+\leavevmode\vadjust pre{\hypertarget{ref-Laa:2020wkm}{}}%
 Ursula Laa, Andreas Buja, Dianne Cook, and German Valencia. 2022.
 {``Hole or Grain? A Section Pursuit Index for Finding Hidden Structure
 in Multiple Dimensions.''} \emph{Journal of Computational and Graphical
 Statistics} 31 (3): 739--52.
 \url{https://doi.org/10.1080/10618600.2022.2035230}.
 
-\bibitem[\citeproctext]{ref-tourr}
+\leavevmode\vadjust pre{\hypertarget{ref-tourr}{}}%
 Wickham, H., D. Cook, H. Hofmann, and A. Buja. 2011. {``{tourr}: An {R}
 Package for Exploring Multivariate Data with Projections.''}
 \emph{Journal of Statistical Software} 40 (2): 1--18.
 \url{http://doi.org/10.18637/jss.v040.i02}.
 
-\bibitem[\citeproctext]{ref-scag}
+\leavevmode\vadjust pre{\hypertarget{ref-scag}{}}%
 Wilkinson, L., A. Anand, and R. Grossman. 2005. {``Graph-Theoretic
 Scagnostics.''} In \emph{IEEE Symposium on Information Visualization,
 2005. INFOVIS 2005.}, 157--64.
 \url{https://doi.org/10.1109/INFVIS.2005.1532142}.
 
-\bibitem[\citeproctext]{ref-WW08}
+\leavevmode\vadjust pre{\hypertarget{ref-WW08}{}}%
 Wilkinson, Leland, and Graham Wills. 2008. {``Scagnostics
 Distributions.''} \emph{Journal of Computational and Graphical
 Statistics} 17 (2): 473--91.
 \url{https://doi.org/10.1198/106186008X320465}.
 
-\bibitem[\citeproctext]{ref-RJ-2021-105}
+\leavevmode\vadjust pre{\hypertarget{ref-RJ-2021-105}{}}%
 Zhang, H. Sherry, Dianne Cook, Ursula Laa, Nicolas Langrené, and
 Patricia Menéndez. 2021. {``Visual Diagnostics for Constrained
 Optimisation with Application to Guided Tours.''} \emph{The R Journal}
 13: 624--41. \url{https://doi.org/10.32614/RJ-2021-105}.
 
 \end{CSLReferences}
-
 
 
 

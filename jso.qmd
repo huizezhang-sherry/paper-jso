@@ -94,6 +94,8 @@ header-includes:
    - \providecommand{\propositionname}{Proposition}
    - \providecommand{\remarkname}{Remark}
    - \providecommand{\theoremname}{Theorem}
+nocite: |
+   @DLMF
 ---
 
 ```{r setup, echo = FALSE, message=FALSE, warning=FALSE}
@@ -602,7 +604,7 @@ The Matérn covariance function $K$ is defined by
 K(u)=K_{\nu,\eta,\ell}(u):=\eta^2\frac{\left(\sqrt{2\nu}\frac{u}{\ell}\right)^{\nu}}{\Gamma(\nu)2^{\nu-1}}\mathcal{K}_{\nu}\left(\sqrt{2\nu}\frac{u}{\ell}\right)\ , u\geq0\label{eq:matern}
 \end{equation}
 where $\nu>0$ is the smoothness parameter, $\eta$ is the outputscale, $\ell$ is the lengthscale, and $\mathcal{K}_\nu$ is
-the modified Bessel function @DLMF. A multivariate extension $K(u)$, $u\in\mathbb{R}^d$ can be obtained by products of univariate covariance functions \eqref{eq:matern}.
+the modified Bessel function [DLMF 10.25]. A multivariate extension $K(u)$, $u\in\mathbb{R}^d$ can be obtained by products of univariate covariance functions \eqref{eq:matern}.
 \end{defn}
 ```
 The Matérn covariance function can be expressed analytically when $\nu$
