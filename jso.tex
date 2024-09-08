@@ -558,7 +558,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colframe=quarto-callout-note-color-frame, colbacktitle=quarto-callout-note-color!10!white, opacitybacktitle=0.6, arc=.35mm, colback=white, bottomtitle=1mm, opacityback=0, breakable, bottomrule=.15mm, rightrule=.15mm, left=2mm, toprule=.15mm, toptitle=1mm, titlerule=0mm, coltitle=black, leftrule=.75mm]
+\begin{tcolorbox}[enhanced jigsaw, toptitle=1mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, colback=white, breakable, colbacktitle=quarto-callout-note-color!10!white, bottomrule=.15mm, coltitle=black, opacityback=0, titlerule=0mm, leftrule=.75mm, bottomtitle=1mm, arc=.35mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, rightrule=.15mm, toprule=.15mm, left=2mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -1242,6 +1242,76 @@ one no longer has a single path to follow. Here we describe how to
 adjust to using the JSO optimiser for exploring high-dimensional data,
 and how to use the new metrics for evaluating a new index.
 
+\subsection{Using the JSO in a PPGT}\label{using-the-jso-in-a-ppgt}
+
+To use JSO for PPGT in the \texttt{tourr} package, specify
+\texttt{search\_f\ =\ search\_jellyfish} in the guided tour. Since
+multiple tour paths are explored by the jellyfish, the animation
+function \texttt{animate\_*()} will not render the tour path for JSO. To
+visualise path visited by each individual jellyfish, assign the
+animation to an object (\texttt{res\ \textless{}-\ animate\_xy(...)}).
+This will save the bases visited by the optimiser, along with relevant
+metadata, as a tibble data object (see Zhang et al. (2021) for more
+details on the data object). The bases visited for individual jellyfish
+can then be extracted and viewed as a planned tour. The following code
+uses JSO, with 20 jellyfish and a maximum of 50 tries, on the penguins
+data using the \texttt{lda\_pp} index.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# clean up the penguins data}
+\NormalTok{penguins\_cl }\OtherTok{\textless{}{-}}\NormalTok{ palmerpenguins}\SpecialCharTok{::}\NormalTok{penguins }\SpecialCharTok{|\textgreater{}} 
+  \FunctionTok{filter}\NormalTok{(}\SpecialCharTok{!}\FunctionTok{is.na}\NormalTok{(bill\_length\_mm)) }\SpecialCharTok{|\textgreater{}}
+  \FunctionTok{rename}\NormalTok{(}\AttributeTok{bl =}\NormalTok{ bill\_length\_mm, }\AttributeTok{bd =}\NormalTok{ bill\_depth\_mm,}
+         \AttributeTok{fl =}\NormalTok{ flipper\_length\_mm, }\AttributeTok{bm =}\NormalTok{ body\_mass\_g)}
+\NormalTok{penguins\_df }\OtherTok{\textless{}{-}}\NormalTok{ penguins\_cl }\SpecialCharTok{|\textgreater{}} \FunctionTok{select}\NormalTok{(bl}\SpecialCharTok{:}\NormalTok{bm) }\SpecialCharTok{|\textgreater{}} \FunctionTok{rescale}\NormalTok{()}
+\CommentTok{\# run the projection pursuit with JSO }
+\NormalTok{res }\OtherTok{\textless{}{-}} \FunctionTok{animate\_xy}\NormalTok{(penguins\_df, }
+                  \FunctionTok{guided\_tour}\NormalTok{(}\FunctionTok{lda\_pp}\NormalTok{(}\AttributeTok{cl =}\NormalTok{ penguins\_cl}\SpecialCharTok{$}\NormalTok{species),}
+                              \AttributeTok{search\_f =}\NormalTok{ search\_jellyfish, }
+                              \AttributeTok{n\_jellies =} \DecValTok{20}\NormalTok{, }\AttributeTok{max.tries =} \DecValTok{50}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+The bases visited by jellyfish No.~1 is extracted with
+\texttt{filter(loop\ =\ 1)} (the variable \texttt{loop} in the data
+object is the jellyfish ID) and the \texttt{check\_dup()} function
+removes the bases in the iteration without improvements. The bases are
+then supplied as a \texttt{planned\_tour()} in \texttt{animate\_xy()} to
+visualise the tour path of jellyfish No.1.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# extract the bases from the first jellyfish}
+\NormalTok{bases }\OtherTok{\textless{}{-}}\NormalTok{ res }\SpecialCharTok{|\textgreater{}} \FunctionTok{filter}\NormalTok{(loop }\SpecialCharTok{==} \DecValTok{1}\NormalTok{) }\SpecialCharTok{|\textgreater{}} \FunctionTok{pull}\NormalTok{(basis) }\SpecialCharTok{|\textgreater{}} \FunctionTok{check\_dup}\NormalTok{(}\FloatTok{0.1}\NormalTok{)}
+\CommentTok{\# visualise its path with a planned tour}
+\FunctionTok{animate\_xy}\NormalTok{(}\AttributeTok{data =}\NormalTok{ penguins\_df, }\AttributeTok{tour\_path =} \FunctionTok{planned\_tour}\NormalTok{(bases), }
+           \AttributeTok{col =}\NormalTok{ penguins\_cl}\SpecialCharTok{$}\NormalTok{species)}
+\end{Highlighting}
+\end{Shaded}
+
+Figure~\ref{fig-jso-penguins} shows six frames from the tour jellyfish
+No.1 animation. The Gentoo species (red) was mixed with Chinstrap
+(yellow) initially and gradually separated out as flipper length
+(\texttt{fl}) gaining more weights.
+
+\begin{figure}
+
+\centering{
+
+\includegraphics{jso_files/figure-pdf/fig-jso-penguins-1.pdf}
+
+}
+
+\caption{\label{fig-jso-penguins}Visualising the tour path of a single
+jellyfish (No.1) in the penguins data set. The projection pursuit is
+optimised by the JSO with 20 jellyfishes and a maximum of 50 tries. The
+bases visited by jellyfish No.1 is extracted and constructed as a
+planned tour. The jellyfish successfully finds the structure of the data
+set, separating the three species of penguins.}
+
+\end{figure}%
+
 \subsection{Computing the metrics for your new
 index}\label{computing-the-metrics-for-your-new-index}
 
@@ -1362,54 +1432,6 @@ function (\(\theta_1\) to \(\theta_4\)) and the squintability metric for
 the parametric case. For the non-parametric case, it shows the
 (\texttt{max\_d}), the corresponding projection distance
 (\texttt{max\_dist}), and teh squintability metric as their products.
-
-\subsection{Using the JSO in a PPGT}\label{using-the-jso-in-a-ppgt}
-
-(not done yet)
-
-The JSO can be used by specifying the argument
-\texttt{search\_f\ =\ search\_jellyfish} in the \texttt{guided\_tour()}
-function in the \texttt{tourr} package. In the example below, the
-\texttt{lda\_pp} index is used to cluster the penguins data set. When
-binding animation \texttt{animate\_xy()} to an object
-(\texttt{res\textless{}-}), it will save the visited bases of each
-jellyfish as a data object. The bases from each jellyfish can be
-extracted adn supplied as a planned tour to visualise its path. Figure
-Figure~\ref{fig-jso-penguins} shows the tour path of one particular
-jellyfish in the penguins data set. The jellyfish successfully finds the
-structure of the data set, separating the three species of penguins.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# run the projection pursuit with JSO }
-\NormalTok{res }\OtherTok{\textless{}{-}} \FunctionTok{animate\_xy}\NormalTok{(penguins\_df, }
-                  \FunctionTok{guided\_tour}\NormalTok{(}\FunctionTok{lda\_pp}\NormalTok{(}\AttributeTok{cl =}\NormalTok{ penguins\_cl}\SpecialCharTok{$}\NormalTok{species),}
-                              \AttributeTok{search\_f =}\NormalTok{ search\_jellyfish, }
-                              \AttributeTok{n\_jellies =} \DecValTok{20}\NormalTok{, }\AttributeTok{max.tries =} \DecValTok{50}\NormalTok{))}
-\CommentTok{\# extract the bases from the first jellyfish}
-\NormalTok{bases }\OtherTok{\textless{}{-}}\NormalTok{ res }\SpecialCharTok{|\textgreater{}} \FunctionTok{filter}\NormalTok{(loop }\SpecialCharTok{==} \DecValTok{1}\NormalTok{) }\SpecialCharTok{|\textgreater{}} \FunctionTok{pull}\NormalTok{(basis) }\SpecialCharTok{|\textgreater{}} \FunctionTok{check\_dup}\NormalTok{(}\FloatTok{0.1}\NormalTok{)}
-\CommentTok{\# visualise its path with a planned tour}
-\FunctionTok{animate\_xy}\NormalTok{(}\AttributeTok{data =}\NormalTok{ penguins\_df, }\AttributeTok{tour\_path =} \FunctionTok{planned\_tour}\NormalTok{(bases), }
-           \AttributeTok{col =}\NormalTok{ penguins\_cl}\SpecialCharTok{$}\NormalTok{species)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{figure}
-
-\centering{
-
-\includegraphics{jso_files/figure-pdf/fig-jso-penguins-1.pdf}
-
-}
-
-\caption{\label{fig-jso-penguins}Visualising the tour path of one
-particular jellyfish in the penguins data set. The jellyfish is
-optimised by the JSO with 20 jellyfishes and a maximum of 50 tries. The
-tour path is planned off-line and then followed in the guided tour. The
-jellyfish successfully finds the structure of the data set, separating
-the three species of penguins.}
-
-\end{figure}%
 
 \section{Conclusion}\label{sec-conclusion}
 
