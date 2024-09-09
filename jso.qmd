@@ -671,8 +671,9 @@ perfect view is close by. As such, low squintability implies rapid
 improvement in the index value when near the perfect view. For PP, a
 small squint angle is considered to be undesirable because it means that
 the optimiser needs to be very close to be able to "see" the optima.
-Thus, it could be difficult for the optimiser to find the optima. The
-mathematical formulation of this intuition is proposed below:
+Thus, it could be difficult for the optimiser to find the optima. <!--The
+mathematical formulation of this intuition is proposed below:-->
+
 
 It is expected that for a PP index with high squint angle, the
 optimization (@eq-optimization) should make substantial progress early
@@ -1145,7 +1146,7 @@ broom::tidy(mod1) |>
 
 # Practicalities {#sec-discussion}
 
-The simulation study illustrates how these metrics can be used to assess a PP index, and the optimisation process. In general, we would expect that the JSO is going to outperform most other optimisers. From an exploratory perspective, it take s shift in the GTPP practice because one no longer has a single path to follow. Here we describe how to adjust to using the JSO optimiser for exploring high-dimensional data, and how to use the new metrics for evaluating a new index.
+The simulation study illustrates how these metrics can be used to assess a PP index, and the optimisation process. In general, we would expect that the JSO is going to outperform most other optimisers. From an exploratory perspective, it take a shift in the GTPP practice because one no longer has a single path to follow. Here we describe how to adjust to using the JSO optimiser for exploring high-dimensional data, and how to use the new metrics for evaluating a new index.
 
 ## Using the JSO in a PPGT
 

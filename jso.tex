@@ -325,7 +325,7 @@ projection pursuit\sep jellyfish search optimiser
 (JSO)\sep optimisation\sep grand tour\sep high-dimensional data\sep 
 exploratory data analysis
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, enhanced, sharp corners, interior hidden, frame hidden, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, frame hidden, boxrule=0pt, breakable, enhanced]}{\end{tcolorbox}}\fi
 
 \setstretch{2}
 \hypertarget{introduction}{%
@@ -544,11 +544,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-<<<<<<< HEAD
-\begin{tcolorbox}[enhanced jigsaw, toptitle=1mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, colback=white, breakable, colbacktitle=quarto-callout-note-color!10!white, bottomrule=.15mm, coltitle=black, opacityback=0, titlerule=0mm, leftrule=.75mm, bottomtitle=1mm, arc=.35mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, rightrule=.15mm, toprule=.15mm, left=2mm]
-=======
-\begin{tcolorbox}[enhanced jigsaw, breakable, rightrule=.15mm, leftrule=.75mm, opacitybacktitle=0.6, arc=.35mm, toptitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colframe=quarto-callout-note-color-frame, toprule=.15mm, bottomrule=.15mm, coltitle=black, titlerule=0mm, bottomtitle=1mm, left=2mm, colbacktitle=quarto-callout-note-color!10!white, colback=white, opacityback=0]
->>>>>>> e54e8609eda22afb30d783cdb347f2b8e661e5ad
+\begin{tcolorbox}[enhanced jigsaw, bottomrule=.15mm, arc=.35mm, colbacktitle=quarto-callout-note-color!10!white, titlerule=0mm, opacitybacktitle=0.6, left=2mm, colframe=quarto-callout-note-color-frame, breakable, toprule=.15mm, opacityback=0, coltitle=black, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomtitle=1mm, rightrule=.15mm, colback=white, toptitle=1mm, leftrule=.75mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -748,7 +744,7 @@ used.
 \begin{defn}
 Let $\mathbf{A}=[A_1, \ldots, A_N] \in (\mathbf{R}^{p \times d})^N$ be d-dimensional projection bases, let $\mathbf{y}=[f(XA_1),\ldots,f(XA_N)]$ be the corresponding PP index values, and let $\mathbf{K}=[K_\theta(A_{i},A_{j})]_{1\leq i,j\leq N}\in\mathbb{R}^{N\times N}$ be the Matérn covariance matrix evaluated at the input bases, where the vector $\theta$ contains all the parameters of the multivariate Matérn covariance function $K$ (smoothness, outputscale, lengthscales). The log-likelihood of the parameters $\theta$ is defined by 
 \begin{equation}
-\mathcal{L}(\theta)=\log p(\mathbf{y}\left|\mathbf{A},\theta\right.)=-\frac{1}{2}\mathbf{y}^{\top}(\mathbf{K}+\sigma^{2}\mathbf{I})^{-1}\mathbf{y}-\frac{1}{2}\mathrm{\log}(\det(\mathbf{K}+\sigma^{2}\mathbf{I}))-\frac{N}{2}\log(2\pi)\,.\label{eq:gp_log_likelihood}
+\mathcal{L}(\theta)=\log p(\mathbf{y}\left|\mathbf{A},\theta\right.)=-\frac{1}{2}\mathbf{y}^{\top}(\mathbf{K}+\sigma^{2}\mathbf{I})^{-1}\mathbf{y}-\frac{1}{2}\mathrm{\log}(\det(\mathbf{K}+\sigma^{2}\mathbf{I}))-\frac{N}{2}\log(2\pi)\, \label{eq:gp_log_likelihood}
 \end{equation}
 where the nugget parameter $\sigma$ is the standard deviation of the intrinsic noise of the Gaussian process.
 The optimal parameters (including smoothness) are obtained by maximum log-likelihood
@@ -835,8 +831,7 @@ perfect view is close by. As such, low squintability implies rapid
 improvement in the index value when near the perfect view. For PP, a
 small squint angle is considered to be undesirable because it means that
 the optimiser needs to be very close to be able to ``see'' the optima.
-Thus, it could be difficult for the optimiser to find the optima. The
-mathematical formulation of this intuition is proposed below:
+Thus, it could be difficult for the optimiser to find the optima.
 
 It is expected that for a PP index with high squint angle, the
 optimization (\ref{eq-optimization}) should make substantial progress
@@ -903,8 +898,8 @@ with the results deferred to Section~\ref{sec-sim-res}.
 \hypertarget{sec-app-1}{%
 \subsection{Performance of JSO relative to CRS}\label{sec-app-1}}
 
-he performance of JSO is investigated both in comparison to the existing
-optimizer, CRS, and across various hyper-parameter values. The
+The performance of JSO is investigated both in comparison to the
+existing optimizer, CRS, and across various hyper-parameter values. The
 performance is measured by the success rate, defined as the proportion
 of simulations that achieves a final index value within 0.05 of the best
 index value found among all 50 simulations (see
@@ -1209,8 +1204,8 @@ one no longer has a single path to follow. Here we describe how to
 adjust to using the JSO optimiser for exploring high-dimensional data,
 and how to use the new metrics for evaluating a new index.
 
-<<<<<<< HEAD
-\subsection{Using the JSO in a PPGT}\label{using-the-jso-in-a-ppgt}
+\hypertarget{using-the-jso-in-a-ppgt}{%
+\subsection{Using the JSO in a PPGT}\label{using-the-jso-in-a-ppgt}}
 
 To use JSO for PPGT in the \texttt{tourr} package, specify
 \texttt{search\_f\ =\ search\_jellyfish} in the guided tour. Since
@@ -1265,9 +1260,7 @@ No.1 animation. The Gentoo species (red) was mixed with Chinstrap
 
 \begin{figure}
 
-\centering{
-
-\includegraphics{jso_files/figure-pdf/fig-jso-penguins-1.pdf}
+{\centering \includegraphics{jso_files/figure-pdf/fig-jso-penguins-1.pdf}
 
 }
 
@@ -1278,11 +1271,9 @@ bases visited by jellyfish No.1 is extracted and constructed as a
 planned tour. The jellyfish successfully finds the structure of the data
 set, separating the three species of penguins.}
 
-\end{figure}%
+\end{figure}
 
-=======
 \hypertarget{computing-the-metrics-for-your-new-index}{%
->>>>>>> e54e8609eda22afb30d783cdb347f2b8e661e5ad
 \subsection{Computing the metrics for your new
 index}\label{computing-the-metrics-for-your-new-index}}
 
@@ -1397,7 +1388,7 @@ over the projection distance before the fit. The following code samples
 # method:       nls
   theta1 theta2 theta3 theta4 squint
    <dbl>  <dbl>  <dbl>  <dbl>  <dbl>
-1  0.274  0.960   2.21  0.612  0.812
+1  0.274  0.960   2.21  0.612  0.203
 \end{verbatim}
 
 The output provides the estimated parameters for the scaled sigmoid
@@ -1406,59 +1397,8 @@ the parametric case. For the non-parametric case, it shows the
 (\texttt{max\_d}), the corresponding projection distance
 (\texttt{max\_dist}), and teh squintability metric as their products.
 
-<<<<<<< HEAD
-\section{Conclusion}\label{sec-conclusion}
-=======
-\hypertarget{using-the-jso-in-a-ppgt}{%
-\subsection{Using the JSO in a PPGT}\label{using-the-jso-in-a-ppgt}}
-
-(not done yet)
-
-The JSO can be used by specifying the argument
-\texttt{search\_f\ =\ search\_jellyfish} in the \texttt{guided\_tour()}
-function in the \texttt{tourr} package. In the example below, the
-\texttt{lda\_pp} index is used to cluster the penguins data set. When
-binding animation \texttt{animate\_xy()} to an object
-(\texttt{res\textless{}-}), it will save the visited bases of each
-jellyfish as a data object. The bases from each jellyfish can be
-extracted adn supplied as a planned tour to visualise its path. Figure
-Figure~\ref{fig-jso-penguins} shows the tour path of one particular
-jellyfish in the penguins data set. The jellyfish successfully finds the
-structure of the data set, separating the three species of penguins.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\# run the projection pursuit with JSO }
-\NormalTok{res }\OtherTok{\textless{}{-}} \FunctionTok{animate\_xy}\NormalTok{(penguins\_df, }
-                  \FunctionTok{guided\_tour}\NormalTok{(}\FunctionTok{lda\_pp}\NormalTok{(}\AttributeTok{cl =}\NormalTok{ penguins\_cl}\SpecialCharTok{$}\NormalTok{species),}
-                              \AttributeTok{search\_f =}\NormalTok{ search\_jellyfish, }
-                              \AttributeTok{n\_jellies =} \DecValTok{20}\NormalTok{, }\AttributeTok{max.tries =} \DecValTok{50}\NormalTok{))}
-\CommentTok{\# extract the bases from the first jellyfish}
-\NormalTok{bases }\OtherTok{\textless{}{-}}\NormalTok{ res }\SpecialCharTok{|\textgreater{}} \FunctionTok{filter}\NormalTok{(loop }\SpecialCharTok{==} \DecValTok{1}\NormalTok{) }\SpecialCharTok{|\textgreater{}} \FunctionTok{pull}\NormalTok{(basis) }\SpecialCharTok{|\textgreater{}} \FunctionTok{check\_dup}\NormalTok{(}\FloatTok{0.1}\NormalTok{)}
-\CommentTok{\# visualise its path with a planned tour}
-\FunctionTok{animate\_xy}\NormalTok{(}\AttributeTok{data =}\NormalTok{ penguins\_df, }\AttributeTok{tour\_path =} \FunctionTok{planned\_tour}\NormalTok{(bases), }
-           \AttributeTok{col =}\NormalTok{ penguins\_cl}\SpecialCharTok{$}\NormalTok{species)}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{figure}
-
-{\centering \includegraphics{jso_files/figure-pdf/fig-jso-penguins-1.pdf}
-
-}
-
-\caption{\label{fig-jso-penguins}Visualising the tour path of one
-particular jellyfish in the penguins data set. The jellyfish is
-optimised by the JSO with 20 jellyfishes and a maximum of 50 tries. The
-tour path is planned off-line and then followed in the guided tour. The
-jellyfish successfully finds the structure of the data set, separating
-the three species of penguins.}
-
-\end{figure}
-
 \hypertarget{sec-conclusion}{%
 \section{Conclusion}\label{sec-conclusion}}
->>>>>>> e54e8609eda22afb30d783cdb347f2b8e661e5ad
 
 This paper has presented new metrics to mathematically define desirable
 features of PP indexes, squintability and smoothness, and used these to
