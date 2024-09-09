@@ -578,7 +578,7 @@ usually done by maximum likelihood estimation. In this project, the
 \begin{defn}
 Let $\mathbf{A}=[A_1, \ldots, A_N] \in (\mathbf{R}^{p \times d})^N$ be d-dimensional projection bases, let $\mathbf{y}=[f(XA_1),\ldots,f(XA_N)]$ be the corresponding PP index values, and let $\mathbf{K}=[K_\theta(A_{i},A_{j})]_{1\leq i,j\leq N}\in\mathbb{R}^{N\times N}$ be the Matérn covariance matrix evaluated at the input bases, where the vector $\theta$ contains all the parameters of the multivariate Matérn covariance function $K$ (smoothness, outputscale, lengthscales). The log-likelihood of the parameters $\theta$ is defined by 
 \begin{equation}
-\mathcal{L}(\theta)=\log p(\mathbf{y}\left|\mathbf{A},\theta\right.)=-\frac{1}{2}\mathbf{y}^{\top}(\mathbf{K}+\sigma^{2}\mathbf{I})^{-1}\mathbf{y}-\frac{1}{2}\mathrm{\log}(\det(\mathbf{K}+\sigma^{2}\mathbf{I}))-\frac{N}{2}\log(2\pi)\,.\label{eq:gp_log_likelihood}
+\mathcal{L}(\theta)=\log p(\mathbf{y}\left|\mathbf{A},\theta\right.)=-\frac{1}{2}\mathbf{y}^{\top}(\mathbf{K}+\sigma^{2}\mathbf{I})^{-1}\mathbf{y}-\frac{1}{2}\mathrm{\log}(\det(\mathbf{K}+\sigma^{2}\mathbf{I}))-\frac{N}{2}\log(2\pi)\, \label{eq:gp_log_likelihood}
 \end{equation}
 where the nugget parameter $\sigma$ is the standard deviation of the intrinsic noise of the Gaussian process.
 The optimal parameters (including smoothness) are obtained by maximum log-likelihood
@@ -636,8 +636,7 @@ largest gradient of $-g$ and $\arg \max_{d} g'(d)$ represents the projection dis
 \end{defn}
 ```
 
-It is expected that these two
-values should be both high in the case of high squintability (fast
+It is expected that these two values should be both high in the case of high squintability (fast
 increase in $f$ early on), and both low in the case of low squintability
 (any substantial increase in $f$ happens very late, close to the optimal
 angle). This suggests that their product \eqref{eq-squintability} should
@@ -763,7 +762,7 @@ results deferred to @sec-sim-res.
 
 ## Performance of JSO relative to CRS {#sec-app-1}
 
-he performance of JSO is investigated both in comparison to the existing
+The performance of JSO is investigated both in comparison to the existing
 optimizer, CRS, and across various hyper-parameter values. The
 performance is measured by the success rate, defined as the proportion
 of simulations that achieves a final index value within 0.05 of the best
