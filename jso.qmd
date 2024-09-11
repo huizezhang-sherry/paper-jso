@@ -1,5 +1,5 @@
 ---
-title: Studying the Performance of the Jellyfish Search Optimiser for the Application of Projection Pursuit
+title: New Metrics for Assessing Projection Pursuit Indexes, and Guiding Optimisation Choices
 author:
   - name: H. Sherry Zhang
     email: huize.zhang@austin.utexas.edu
@@ -332,9 +332,9 @@ angle) and smoothness. Here, we mathematically define metrics for squintability 
 
 The paper is structured as follows. @sec-background introduces the
 background of the PPGT, reviews existing optimisers and index
-functions in the literature. @sec-theory describes JSO and introduces the 
+functions in the literature. @sec-PP-properties introduces the 
 metrics that measure different properties of PP indexes, smoothness and
-squintability. @sec-sim-deets summarises the results of two simulation experiments done to assess JSO's performance: one comparing JSO's performance improvements relative to an existing optimiser, Creeping Random Search (CRS), and the other studying the impact of different PP index properties on optimisation performance. @sec-sim-res presents the results. @sec-discussion discusses implementation details and insights for practitioners. @sec-conclusion summarises the work and provides suggestions for future
+squintability, and @sec-JSO describes the new JSO to be used for the PPGT. @sec-sim-deets summarises the results of two simulation experiments done to assess JSO's performance: one comparing JSO's performance improvements relative to an existing optimiser, Creeping Random Search (CRS), and the other studying the impact of different PP index properties on optimisation performance. @sec-sim-res presents the results. @sec-discussion discusses implementation details and insights for practitioners. @sec-conclusion summarises the work and provides suggestions for future
 directions.
 
 # Projection pursuit, tours, index functions and optimisation {#sec-background}
@@ -351,9 +351,16 @@ guided tour operates by geodesically interpolating to target planes
 optimiser. The geodesic interpolation means that the viewer sees a
 continuous sequence of projections of the data, so they can watch
 patterns of interest forming as the function is optimised. There are
-five (unsophisticated) optimisation methods implemented in the `tourr`
-package:
+five optimisation methods implemented in the `tourr`
+package: 
 
+- a pseudo-derivative, that searches locally for the best direction, based on differencing the index values for very close projections.
+- a brute-force optimisation (CRS). 
+- a modified brute force algorithm described in @posse95. 
+- an essentially simulated annealing [@Bertsimas93] where the search space is reduced as the optimisation.
+- a very localised search, to take tiny steps to get closer to the local maximum.
+    
+<!-- 
 -   `search_geodesic()`: provides a pseudo-derivative optimisation. It
     searches locally for the best direction, based on differencing the
     index values for very close projections. Then it follows the
@@ -368,15 +375,9 @@ package:
 -   `search_posse()`: implements the algorithm described in @posse95.
 -   `search_polish()`: is a very localised search, to take tiny steps to
     get closer to the local maximum.
+-->
 
-There are several PP index functions available: `holes()` and `cmass()`
-[@cook1993projection]; `lda_pp()` [@lee2005projection]; `pda_pp()`
-[@lee2010projection]; `dcor2d()` and `splines2d()` [@Grimm2016];
-`norm_bin()` and `norm_kol()` [@huber85]; `slice_index()`
-[@Laa:2020wkm]. Most are relatively simply defined, for any projection
-dimension, and implemented because they are relatively easy to optimise.
-A goal is to be able to incorporate more complex PP indexes, for
-example, based on scagnostics (@scag, @WW08).
+There are numerous PP index functions available: introduced in @cook1993projection, @lee2005projection, @lee2010projection, @Grimm2016, @huber85, @Laa:2020wkm. Most are relatively simply defined, for any projection dimension, and implemented because they are relatively easy to optimise. A goal is to develop PP indexes based on scagnostics (@scag, @WW08), but the blockage is optimisation that these tend to be noisy, with potentially small squint angles.
 
 An initial investigation of PP indexes, and the potential for
 scagnostics is described in @laa_using_2020. To be useful here an
@@ -388,91 +389,7 @@ by. One last aspect that is useful is for an optimiser to return local
 maxima in addition to global because data can contain many different and
 interesting features.
 
-# The jellyfish optimiser and properties of PP indexes {#sec-theory}
-
-JSO mimics the natural movements of jellyfish, which include passive and
-active motions driven by ocean currents and their swimming patterns,
-respectively. In the context of optimization, these movements are
-abstracted to explore the search space, aiming to balance exploration
-(searching new areas) and exploitation (focusing on promising areas).
-The algorithm aims to find the optimal solution by adapting the
-behaviour of jellyfish to navigate towards the best solution over
-iterations [@chou_novel_2021].
-
-To solve the optimisation problem embedded in the PP guided tour, a
-starting projection, an index function, the number of jellyfish, and the
-maximum number of trials (tries) are provided as input. Then, the
-current projection is evaluated by the index function. The projection is
-then moved in a direction determined by a random factor, influenced by
-how far along we are in the optimisation process. Occasionally,
-completely new directions may be taken like a jellyfish might with ocean
-currents. A new projection is accepted if it is an improvement compared
-to the current one, rejected otherwise. This process continues and
-iteratively improves the projection, until the pre-specified maximum
-number of trials is reached.
-
-::: {.callout-note icon="false"}
-## Algorithm: Jellyfish Optimizer Pseudo Code
-
-**Input**: `current_projections`, `index_function`, `trial_id`,
-`max_trial`
-
-**Output**: `optimised_projection`
-
-**Initialize** `current_best` as the projection with the best index
-value from `current_projections`, and `current_idx` as the array of
-index values for each projection in `current_projections`
-
-**for** each `trial_id` in 1 to `max_tries` **do**
-
-> Calculate the time control value, $c_t$, based on `current_idx` and
-> `max_trial`
-
-> **if** $c_t$ is greater than or equal to $0.5$ **then**
->
-> > Define trend based on the `current_best` and `current_projections`
->
-> > Update each projection towards the trend using a random factor and
-> > orthonormalisation
->
-> **else**
->
-> > **if** a random number is greater than $1 - c_t$ **then**
-> >
-> > > Slightly adjust each projection with a small random factor
-> > > (passive)
-> >
-> > **else**
-> >
-> > > For each projection, compare with a random jellyfish and adjust
-> > > towards or away from it (active)
->
-> Update the orientation of each projection to maintain consistency
->
-> Evaluate the new projections using the index function
-
-> **if** any new projection is worse than the current, revert to the
-> `current_projections` for that case
->
-> > Determine the projection with the best index value as the new
-> > `current_best`
-
-> **if** `trial_id` $\ge$ `max_trial`, print the last best projection
-> **exit**
-
-**return** the set of projections with the updated `current_best` as the
-`optimised_projection`
-:::
-
-<!-- Var names in the function and in the text needs to be consistent??? -->
-
-The JSO implementation involves several key parameters that control its
-search process in optimization problems. These parameters are designed
-to guide the exploration and exploitation phases of the algorithm. While
-the specific implementation details can vary depending on the version of
-the algorithm or its application, the focus is on two main parameters
-that are most relevant to our application: the number of jellyfish and
-the maximum number of tries.
+# Properties of PP indexes {#sec-PP-properties}
 
 @laa_using_2020 has proposed five criteria for assessing projection
 pursuit indexes (smoothness, squintability, flexibility, rotation
@@ -749,6 +666,93 @@ numerically estimate the angle at which $-f'$ attains its highest value.
 <!-- index function (for instance, in big O notation, with respect to the -->
 
 <!-- sample size) of computing the index function. -->
+
+
+# The jellyfish optimiser {#sec-JSO}
+
+JSO mimics the natural movements of jellyfish, which include passive and active motions driven by ocean currents and their swimming patterns,
+respectively. In the context of optimization, these movements are
+abstracted to explore the search space, aiming to balance exploration
+(searching new areas) and exploitation (focusing on promising areas).
+The algorithm aims to find the optimal solution by adapting the
+behaviour of jellyfish to navigate towards the best solution over
+iterations [@chou_novel_2021].
+
+To solve the optimisation problem embedded in the PP guided tour, a
+starting projection, an index function, the number of jellyfish, and the
+maximum number of trials (tries) are provided as input. Then, the
+current projection is evaluated by the index function. The projection is
+then moved in a direction determined by a random factor, influenced by
+how far along we are in the optimisation process. Occasionally,
+completely new directions may be taken like a jellyfish might with ocean
+currents. A new projection is accepted if it is an improvement compared
+to the current one, rejected otherwise. This process continues and
+iteratively improves the projection, until the pre-specified maximum
+number of trials is reached.
+
+::: {.callout-note icon="false"}
+## Algorithm: Jellyfish Optimizer Pseudo Code
+
+**Input**: `current_projections`, `index_function`, `trial_id`,
+`max_trial`
+
+**Output**: `optimised_projection`
+
+**Initialize** `current_best` as the projection with the best index
+value from `current_projections`, and `current_idx` as the array of
+index values for each projection in `current_projections`
+
+**for** each `trial_id` in 1 to `max_tries` **do**
+
+> Calculate the time control value, $c_t$, based on `current_idx` and
+> `max_trial`
+
+> **if** $c_t$ is greater than or equal to $0.5$ **then**
+>
+> > Define trend based on the `current_best` and `current_projections`
+>
+> > Update each projection towards the trend using a random factor and
+> > orthonormalisation
+>
+> **else**
+>
+> > **if** a random number is greater than $1 - c_t$ **then**
+> >
+> > > Slightly adjust each projection with a small random factor
+> > > (passive)
+> >
+> > **else**
+> >
+> > > For each projection, compare with a random jellyfish and adjust
+> > > towards or away from it (active)
+>
+> Update the orientation of each projection to maintain consistency
+>
+> Evaluate the new projections using the index function
+
+> **if** any new projection is worse than the current, revert to the
+> `current_projections` for that case
+>
+> > Determine the projection with the best index value as the new
+> > `current_best`
+
+> **if** `trial_id` $\ge$ `max_trial`, print the last best projection
+> **exit**
+
+**return** the set of projections with the updated `current_best` as the
+`optimised_projection`
+:::
+
+<!-- Var names in the function and in the text needs to be consistent??? -->
+
+The JSO implementation involves several key parameters that control its
+search process in optimization problems. These parameters are designed
+to guide the exploration and exploitation phases of the algorithm. While
+the specific implementation details can vary depending on the version of
+the algorithm or its application, the focus is on two main parameters
+that are most relevant to our application: the number of jellyfish and
+the maximum number of tries.
+
 
 # Simulation study {#sec-sim-deets}
 
@@ -1059,9 +1063,9 @@ simulation. The column "smooth" is used as the smoothness metric and the
 column "squint" is calculated as equation (@eq-squintability-parametric)
 as the squintability metric. @tbl-mod-output presents the results of
 fitting a generalised linear model with a binomial family and a logit
-link function to a sample of data in @tbl-mod-data, where all the three
+link function.<!--, where all the three
 components (success rate, JS hyper-parameters, and index properties) are
-combined. The model suggests that JSO success rate is positively
+combined.--> The model suggests that JSO success rate is positively
 associated with the two hyper-parameters, as well as with the index
 properties: smoothness and squintability. Specifically, using 10 more
 jellyfish and 10 more tries increases the odd ratio of success by
@@ -1107,9 +1111,10 @@ dt |>
   kable_styling(font_size = 10) 
 ```
 
+<!-- 
 ```{r}
 #| label: tbl-mod-data
-#| tbl-cap: The first 7 rows of the datasets processed for modelling. 
+#| tbl-cap: Data constructed to store simulation results (the first 7 rows) includes name of index, dimension, index metrics, JSO parameters, and performance metrics. 
 sim_df |> 
   dplyr::select(index, d, smoothness, 
     squintability, n_jellies, max_tries, 
@@ -1128,6 +1133,7 @@ sim_df |>
   kable_styling(#latex_options = "hold_position",
     font_size = 10)
 ```
+-->
 
 ```{r}
 #| label: tbl-mod-output
@@ -1146,14 +1152,14 @@ broom::tidy(mod1) |>
 
 # Practicalities {#sec-discussion}
 
-The simulation study illustrates how these metrics can be used to assess a PP index, and the optimisation process. In general, we would expect that the JSO is going to outperform most other optimisers. From an exploratory perspective, it take a shift in the GTPP practice because one no longer has a single path to follow. Here we describe how to adjust to using the JSO optimiser for exploring high-dimensional data, and how to use the new metrics for evaluating a new index.
+The simulation study demonstrated the that these metrics can be used to assess a PP index, and compare optimisers. Here we explain how they can be used for new index and optimiser development. Using the JSO optimiser for GTPP requires a change in user behaviour. For all the existing optimisers a single optimisation path is followed. The JSO has multiple optimisation paths, and needs additional tools to incorporate into the PPGT, as explained here.
 
 ## Using the JSO in a PPGT
 
-To use JSO for PPGT in the `tourr` package, specify `search_f = search_jellyfish` in the guided tour. Since multiple tour paths are explored by the jellyfish, the animation function `animate_*()` will not render the tour path for JSO. To visualise path visited by each individual jellyfish, assign the animation to an object (`res <- animate_xy(...)`). This will save the bases visited by the optimiser, along with relevant metadata, as a tibble data object (see @RJ-2021-105 for more details on the data object). The bases visited for individual jellyfish can then be extracted and viewed as a planned tour. The following code uses JSO, with 20 jellyfish and a maximum of 50 tries, on the penguins data using the `lda_pp` index. 
+To use JSO for PPGT in the `tourr` package, specify `search_f = search_jellyfish` in the guided tour. Since multiple tour paths are generated by the jellyfish, the animation function `animate_*()` will not render the tour path for JSO. To visualise path visited by each individual jellyfish, assign the animation to an object (`res <- animate_xy(...)`). This will save the bases visited by the optimiser, along with relevant metadata, as a tibble data object (see @RJ-2021-105 for more details on the data object). The bases visited for individual jellyfish can then be extracted and viewed using the `planned_tour()` function. <!-- The following code uses JSO, with 20 jellyfish and a maximum of 50 tries, on the penguins data using the `lda_pp` index.--> 
 
 ```{r}
-#| echo: true
+#| echo: false
 #| eval: false
 # clean up the penguins data
 penguins_cl <- palmerpenguins::penguins |> 
@@ -1171,7 +1177,7 @@ res <- animate_xy(penguins_df,
 The bases visited by jellyfish No. 1 is extracted with `filter(loop = 1)` (the variable `loop` in the data object is the jellyfish ID) and the `check_dup()` function removes the bases in the iteration without improvements. The bases are then supplied as a `planned_tour()` in `animate_xy()` to visualise the tour path of jellyfish No.1.
  
 ```{r}
-#| echo: true
+#| echo: false
 #| eval: false
 # extract the bases from the first jellyfish
 bases <- res |> filter(loop == 1) |> pull(basis) |> check_dup(0.1)
@@ -1180,7 +1186,7 @@ animate_xy(data = penguins_df, tour_path = planned_tour(bases),
            col = penguins_cl$species)
 ```
 
-@fig-jso-penguins shows six frames from the tour jellyfish No.1 animation. The Gentoo species (red) was mixed with Chinstrap (yellow) initially and gradually separated out as flipper length (`fl`) gaining more weights. 
+<!-- @fig-jso-penguins shows six frames from the tour jellyfish No.1 animation. The Gentoo species (red) was mixed with Chinstrap (yellow) initially and gradually separated out as flipper length (`fl`) gaining more weights.--> 
 
 ```{r}
 #| echo: false
@@ -1223,6 +1229,7 @@ render(
 )
 ```
 
+<!-- 
 ```{r}
 #| label: fig-jso-penguins
 #| fig-cap: "Visualising the tour path of a single jellyfish (No.1) in the penguins data set. The projection pursuit is optimised by the JSO with 20 jellyfishes and a maximum of 50 tries. The bases visited by jellyfish No.1 is extracted and constructed as a planned tour. The jellyfish successfully finds the structure of the data set, separating the three species of penguins."
@@ -1232,18 +1239,19 @@ rl <- lapply(ani, png::readPNG)
 gl <-  lapply(rl, grid::rasterGrob)
 wrap_plots(gl)
 ```
-
+-->
 
 ## Computing the metrics for your new index
 
-The `ferrn` package provides functionality for computing the smoothness and squintability metrics. Both cases require sampling random bases using the `sample_bases()` function, followed by  calculating the specific metric with either `calc_smoothness()` or `calc_squintability()`. 
+The `ferrn` package [@RJ-2021-105] provides functionality for computing the smoothness and squintability metrics. Both cases require sampling random bases using the `sample_bases()` function, followed by  calculating the specific metric with either `calc_smoothness()` or `calc_squintability()`. 
 
 ### Smoothness
 
-To sample bases for calculating smoothness, the required arguments include `idx` (the index function used), `data` (the dataset), `n_basis` (the number of random bases to sample), and `best` (the best basis to compute projection distance). The following code samples 300 bases for using the `holes` index to find the pipe shape in the 6D `sine1000` dataset: 
+To sample bases for calculating smoothness, the required arguments include `idx` (the index function used), `data` (the dataset), `n_basis` (the number of random bases to sample), and `best` (the best basis to compute projection distance). <!--The following code samples 300 bases for using the `holes` index to find the pipe shape in the 6D `sine1000` dataset: -->
 
 ```{r}
-#| echo: true
+#| echo: false
+#| eval: false
 library(GpGp)
 library(fields)
 library(tourr)
@@ -1256,10 +1264,11 @@ basis_smoothness |> head(3)
 
 The output of `sample_bases()` is a data frame with four columns: `id` (the basis ID), `basis` (the basis matrix sampled), `dist` (the projection distance to the best basis), and `index` (the index value). To speed up the computation of index values,  parallellasation is available through the `parallel = TRUE` argument.
 
-The `calc_smoothness()` function takes the output from `sample_bases()` and fits a Gaussian process model to the index values against the projection distances to compute the smoothness metric. The starting parameter for the fit can be specified using the `start_params` argument, and additional Gaussian process arguments can be provided through `other_gp_params`. The following code calculates the smoothness metric from the previously sampled bases:
+The `calc_smoothness()` function takes the output from `sample_bases()` and fits a Gaussian process model to the index values against the projection distances to compute the smoothness metric. The starting parameter for the fit can be specified using the `start_params` argument, and additional Gaussian process arguments can be provided through `other_gp_params`. <!--The following code calculates the smoothness metric from the previously sampled bases:-->
 
 ```{r}
-#| echo: true
+#| echo: false
+#| eval: false
 (sm_res <- calc_smoothness(basis_smoothness))
 ```
 
@@ -1269,10 +1278,11 @@ The smoothness metric is the smoothness parameter from the Gussian process and a
 
 Sampling bases for calculating squintability includes an additional step of interpolating between the sampled bases and the best basis. This is specified through setting the `step_size` and `min_proj_dist` arguments in the `sample_bases()` function to non-NA numerical values. Since the projection distance typically ranges from 0 to 2, it is recommended to set `step_size` to 0.1 or lower, and `min_proj_dist` to be at least 0.5 to ensure a meaningful interpolation length.
 
-The `calc_squintability()` function computes squintability using two methods: 1) parametrically, by fitting a scaled sigmoid function through non-linear least square (`method = "nls"`), and 2) non-parametrically, using kernel smoothing (`method = "ks"`). A `bin_width` argument is required to average the index values over the projection distance before the fit. The following code samples 100 bases for calculating squintability in the same scenario: 
+The `calc_squintability()` function computes squintability using two methods: 1) parametrically, by fitting a scaled sigmoid function through non-linear least square (`method = "nls"`), and 2) non-parametrically, using kernel smoothing (`method = "ks"`). A `bin_width` argument is required to average the index values over the projection distance before the fit. <!-- The following code samples 100 bases for calculating squintability in the same scenario:--> 
 
 ```{r}
-#| echo: true
+#| echo: false
+#| eval: false
 basis_squint <- sample_bases(
    idx = "holes", data = sine1000, n_basis = 100, 
   best = matrix(c(0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 1), nrow = 6),
@@ -1338,7 +1348,7 @@ Main findings:
 
 The article is created using Quarto [@Allaire_Quarto_2022] in R [@R].
 The source code for reproducing the work reported in this paper can be
-found at: <https://github.com/huizezhang-sherry/paper-jso>. Nicolas
+found at: [https://github.com/huizezhang-sherry/paper-jso](https://github.com/huizezhang-sherry/paper-jso). Nicolas
 Langrené acknowledges the partial support of the Guangdong Provincial
 Key Laboratory IRADS (2022B1212010006, R0400001-22) and the UIC Start-up
 Research Fund UICR0700041-22.
