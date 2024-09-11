@@ -1093,7 +1093,7 @@ sq_basis_dist_idx |>
 
 ```{r}
 #| label: tbl-smoothness-squintability
-#| tbl-cap: Parameters estimated from the Gaussian process (including variance, range, smoothness, and nugget) and scaled logistic function ($\theta_1$ to $\theta_4$) for the pipe-finding and sine-wave finding problems.  The column "smooth" and "squint" represent the smoothness and squintability measures. 
+#| tbl-cap: Parameters estimated from the Gaussian process (outputscale $\eta$, lengthscale $\ell$, smoothness $\nu$, and nugget $\sigma$) and scaled logistic function ($\theta_1$ to $\theta_4$ and $\varsigma$) for the pipe-finding and sine-wave finding problems.  The columns $\nu$ and $\varsigma$ represent the smoothness and squintability measures respectively. 
 dt <- tibble(shape = c(rep("pipe", 4), rep("sine", 8)), smoothness) |>
   left_join(squintability) |> 
   rename(d = n, smooth = smoothness) |> 
@@ -1103,8 +1103,8 @@ dt |>
     digits = 2, format = "latex", 
     col.names = c(
       "shape", "index", "d",
-      "variance", "range", "smooth", "nugget",
-      "$\\theta_1$", "$\\theta_2$", "$\\theta_3$", "$\\theta_4$", "squint"), linesep = "",
+      "$\\eta$", "$\\ell$", "$\\nu$", "$\\sigma$",
+      "$\\theta_1$", "$\\theta_2$", "$\\theta_3$", "$\\theta_4$", "$\\varsigma$"), linesep = "",
     booktabs = T, escape = FALSE, row.names = TRUE) |> 
   column_spec(1, border_left = TRUE) |> 
   column_spec(c(4, 8, 13), border_right = TRUE) |> 
