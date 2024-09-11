@@ -857,22 +857,6 @@ over 30 seconds, and 3) re-coding the success rate for the `stringy`
 index as 0, because none of the 50 simulations correctly identified the
 sine-wave shape.
 
-<!-- **Projection distance**: The projection distance between projection -->
-
-<!-- bases and the optimal best basis (or the empirical best basis if -->
-
-<!-- the optimal is unknown) measures how close a visited basis is to  -->
-
-<!-- the best basis and it is calculated as the Frobenius norm in equation -->
-
-<!-- (@eq-proj-dist). Plotting projection distances against index values for the  -->
-
-<!-- bases visited reveals how the index value changes as the basis -->
-
-<!-- approaches the optimal basis, helping to calculate the squintability -->
-
-<!-- measure. -->
-
 ```{r}
 #| label: fig-smoothness
 #| out.width: 100%
@@ -1063,9 +1047,7 @@ simulation. The column "smooth" is used as the smoothness metric and the
 column "squint" is calculated as equation (@eq-squintability-parametric)
 as the squintability metric. @tbl-mod-output presents the results of
 fitting a generalised linear model with a binomial family and a logit
-link function.<!--, where all the three
-components (success rate, JS hyper-parameters, and index properties) are
-combined.--> The model suggests that JSO success rate is positively
+link function. The model suggests that JSO success rate is positively
 associated with the two hyper-parameters, as well as with the index
 properties: smoothness and squintability. Specifically, using 10 more
 jellyfish and 10 more tries increases the odd ratio of success by
@@ -1097,7 +1079,10 @@ sq_basis_dist_idx |>
 dt <- tibble(shape = c(rep("pipe", 4), rep("sine", 8)), smoothness) |>
   left_join(squintability) |> 
   rename(d = n, smooth = smoothness) |> 
-  mutate(index = ifelse(index == "dcor2d_2", "dcor2d", index)) 
+  mutate(index = ifelse(index == "dcor2d_2", "dcor", index),
+         index = ifelse(index == "loess2d", "loess", index),
+         index = ifelse(index == "splines2d", "splines", index),
+         variance = sqrt(variance)) 
 dt |> 
   knitr::kable(
     digits = 2, format = "latex", 
@@ -1105,38 +1090,15 @@ dt |>
       "shape", "index", "d",
       "$\\eta$", "$\\ell$", "$\\nu$", "$\\sigma$",
       "$\\theta_1$", "$\\theta_2$", "$\\theta_3$", "$\\theta_4$", "$\\varsigma$"), linesep = "",
-    booktabs = T, escape = FALSE, row.names = TRUE) |> 
+    booktabs = TRUE, escape = FALSE, row.names = TRUE, align = "c") |> 
   column_spec(1, border_left = TRUE) |> 
   column_spec(c(4, 8, 13), border_right = TRUE) |> 
   kable_styling(font_size = 10) 
 ```
 
-<!-- 
-```{r}
-#| label: tbl-mod-data
-#| tbl-cap: Data constructed to store simulation results (the first 7 rows) includes name of index, dimension, index metrics, JSO parameters, and performance metrics. 
-sim_df |> 
-  dplyr::select(index, d, smoothness, 
-    squintability, n_jellies, max_tries, 
-    -I_max, P_J, time) |> 
-  mutate(time = as.numeric(time)) |>
-  arrange(index, d, n_jellies, max_tries) |> 
-  head(7) |> 
-  kable(digits = 2, format = "latex", 
-        col.names = c("index", "d", 
-          "smoothness", "squintability", 
-          "n. jellyfish", 
-          "max. tries", 
-          "success rate", "time (sec)"),
-        linesep = "",
-        booktabs = T) |> 
-  kable_styling(#latex_options = "hold_position",
-    font_size = 10)
-```
--->
-
 ```{r}
 #| label: tbl-mod-output
+#| results: "asis"
 #| tbl-cap: Model estimates of proportion of jellyfish success on index properties and jellyfish hyper-parameters from the generalised linear model with a binomial family and a logit link function. The variable smoothness, squintability, number of jellyfish and maximum number of tries are positively associated with JSO success rate while data dimension and being flagged as long runtime are negatively associated with the success rate. The variable squintability and dimension are significant, suggesting their importance relative to jellyfish hyper-parameters in the optimisation success.
 broom::tidy(mod1) |> 
   mutate(term = c("Intercept", "Smoothness",
