@@ -20,7 +20,7 @@
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
 \fi
 \usepackage{lmodern}
-\ifPDFTeX\else
+\ifPDFTeX\else  
     % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
@@ -298,7 +298,7 @@ calculate smoothness and squintability are available in the
 \begin{keywords}
 \def\sep{;\ }
 projection pursuit\sep jellyfish search optimiser
-(JSO)\sep optimisation\sep grand tour\sep high-dimensional data\sep
+(JSO)\sep optimisation\sep grand tour\sep high-dimensional data\sep 
 exploratory data analysis
 \end{keywords}
 
@@ -606,7 +606,7 @@ likelihood estimation. In this project, the \texttt{GpGp} package is
 used.
 
 \begin{defn}
-Let $\mathbf{A}=[A_1, \ldots, A_N] \in (\mathbf{R}^{p \times d})^N$ be d-dimensional projection bases, let $\mathbf{y}=[f(XA_1),\ldots,f(XA_N)]$ be the corresponding PP index values, and let $\mathbf{K}=[K_\theta(A_{i},A_{j})]_{1\leq i,j\leq N}\in\mathbb{R}^{N\times N}$ be the Matérn covariance matrix evaluated at the input bases, where the vector $\theta$ contains all the parameters of the multivariate Matérn covariance function $K$ (smoothness, outputscale, lengthscales). The log-likelihood of the parameters $\theta$ is defined by
+Let $\mathbf{A}=[A_1, \ldots, A_N] \in (\mathbf{R}^{p \times d})^N$ be d-dimensional projection bases, let $\mathbf{y}=[f(XA_1),\ldots,f(XA_N)]$ be the corresponding PP index values, and let $\mathbf{K}=[K_\theta(A_{i},A_{j})]_{1\leq i,j\leq N}\in\mathbb{R}^{N\times N}$ be the Matérn covariance matrix evaluated at the input bases, where the vector $\theta$ contains all the parameters of the multivariate Matérn covariance function $K$ (smoothness, outputscale, lengthscales). The log-likelihood of the parameters $\theta$ is defined by 
 \begin{equation}
 \mathcal{L}(\theta)=\log p(\mathbf{y}\left|\mathbf{A},\theta\right.)=-\frac{1}{2}\mathbf{y}^{\top}(\mathbf{K}+\sigma^{2}\mathbf{I})^{-1}\mathbf{y}-\frac{1}{2}\mathrm{\log}(\det(\mathbf{K}+\sigma^{2}\mathbf{I}))-\frac{N}{2}\log(2\pi)\, \label{eq:gp_log_likelihood}
 \end{equation}
@@ -629,11 +629,11 @@ given, before the definition of squintability. Two approaches to compute
 this metric numerically, are described.
 
 \begin{defn}[projection distance]\label{def:proj-dist}
-Recall that $A \in \mathbf{R}^{p \times d}$ is a $d$-dimensional orthonormal matrix. Let $A^*$ be the optimal matrix that achieves the maximum index value for a given data. The projection distance $d(A, A^*)$ between $A$
-and $A^*$ is defined as
+Recall that $A \in \mathbf{R}^{p \times d}$ is a $d$-dimensional orthonormal matrix. Let $A^*$ be the optimal matrix that achieves the maximum index value for a given data. The projection distance $d(A, A^*)$ between $A$ 
+and $A^*$ is defined as 
 $d(A, A^*) = \lVert AA^\prime - A^*A^{*\prime}\  \rVert _F$
 where $\lVert . \rVert _F$ denotes the Frobenius norm, given by
-$\lVert M \rVert _F = \sqrt{\sum_{ij} M_{ij}^2}$.
+$\lVert M \rVert _F = \sqrt{\sum_{ij} M_{ij}^2}$. 
 \end{defn}
 
 \begin{defn}[squint angle]\label{def:squint-angle}
@@ -646,14 +646,14 @@ with respect to the projection distance \(d(A, A^*)\), over the course
 of the JSO:
 
 \begin{defn}[squintability]\label{def:squintability}
-Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance $d(A, A^*)$ to the index value $f(XA)$, such that $g(d(A, A^*)) = f(XA)$. For brevity, denote $g(d)$ as $g(d(A, A^*))$. The squintability of an index function $f(XA)$ is defined as
+Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance $d(A, A^*)$ to the index value $f(XA)$, such that $g(d(A, A^*)) = f(XA)$. For brevity, denote $g(d)$ as $g(d(A, A^*))$. The squintability of an index function $f(XA)$ is defined as 
 
 \begin{equation}
 \varsigma(f) = -c \times \max_{d} g'(d) \times \arg \max_{d} g'(d)
 \label{eq-squintability}
 \end{equation}
 
-where $c$ is a constant scaling factor, $-\max_d g'(d)$ represents the
+where $c$ is a constant scaling factor, $-\max_d g'(d)$ represents the 
 largest gradient of $-g$ and $\arg \max_{d} g'(d)$ represents the projection distance at which this largest gradient is attained.
 
 \end{defn}
@@ -769,7 +769,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, bottomtitle=1mm, coltitle=black, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colback=white, breakable, toptitle=1mm, colframe=quarto-callout-note-color-frame, leftrule=.75mm, left=2mm, bottomrule=.15mm, rightrule=.15mm, toprule=.15mm, colbacktitle=quarto-callout-note-color!10!white, arc=.35mm, titlerule=0mm, opacityback=0]
+\begin{tcolorbox}[enhanced jigsaw, rightrule=.15mm, breakable, toprule=.15mm, bottomtitle=1mm, colframe=quarto-callout-note-color-frame, arc=.35mm, titlerule=0mm, coltitle=black, bottomrule=.15mm, opacityback=0, opacitybacktitle=0.6, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colbacktitle=quarto-callout-note-color!10!white, left=2mm, colback=white, leftrule=.75mm, toptitle=1mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -922,9 +922,8 @@ projection pursuit.
 Smoothness and squintability are computed following the procedures
 outlined in Section~\ref{sec-smoothness} and
 Section~\ref{sec-squintability} and as illustrated in
-Figure~\ref{fig-smoothness} and Figure~\ref{fig-squintability}.
-
-To compute smoothness, 300 random bases are simulated. Index values and
+Figure~\ref{fig-smoothness} and Figure~\ref{fig-squintability}. To
+compute smoothness, 300 random bases are simulated. Index values and
 projection distance (to the optimal basis) are calculated for each
 random basis before fitting the Gaussian process model to obtain the
 smoothness measure for the index.
@@ -1132,45 +1131,45 @@ represent the smoothness and squintability measures respectively.}
 
 \centering{
 
-\centering
-
-
-\begin{tabular}{@{\extracolsep{5pt}}lc}
-\\[-1.8ex]\hline
-\hline \\[-1.8ex]
- & \multicolumn{1}{c}{\textit{Dependent variable:}} \\
-\cline{2-2}
-\\[-1.8ex] & proportion \\
-\hline \\[-1.8ex]
- Smoothness & 1.195 \\
-  & (1.915) \\
-  & \\
- Squintability & 2.060$^{***}$ \\
-  & (0.684) \\
-  & \\
- Dimension & $-$0.628$^{**}$ \\
-  & (0.255) \\
-  & \\
- Long runtime & $-$0.874 \\
-  & (1.286) \\
-  & \\
- Number of jellyfish & 0.216$^{*}$ \\
-  & (0.127) \\
-  & \\
- Maximum number of tries & 0.113 \\
-  & (0.150) \\
-  & \\
- Constant & $-$4.523 \\
-  & (5.332) \\
-  & \\
-\hline \\[-1.8ex]
-Observations & 52 \\
-Log Likelihood & $-$18.224 \\
-Akaike Inf. Crit. & 50.447 \\
-\hline
-\hline \\[-1.8ex]
-\textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\
-\end{tabular}
+[H] \centering 
+   
+   
+\begin{tabular}{@{\extracolsep{5pt}}lc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{1}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-2} 
+\\[-1.8ex] & proportion \\ 
+\hline \\[-1.8ex] 
+ Smoothness & 1.195 \\ 
+  & (1.915) \\ 
+  & \\ 
+ Squintability & 2.060$^{***}$ \\ 
+  & (0.684) \\ 
+  & \\ 
+ Dimension & $-$0.628$^{**}$ \\ 
+  & (0.255) \\ 
+  & \\ 
+ Long runtime & $-$0.874 \\ 
+  & (1.286) \\ 
+  & \\ 
+ Number of jellyfish & 0.216$^{*}$ \\ 
+  & (0.127) \\ 
+  & \\ 
+ Maximum number of tries & 0.113 \\ 
+  & (0.150) \\ 
+  & \\ 
+ Constant & $-$4.523 \\ 
+  & (5.332) \\ 
+  & \\ 
+\hline \\[-1.8ex] 
+Observations & 52 \\ 
+Log Likelihood & $-$18.224 \\ 
+Akaike Inf. Crit. & 50.447 \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
 
 }
 
@@ -1200,13 +1199,6 @@ details on the data object). The bases visited for individual jellyfish
 can then be extracted and viewed using the \texttt{planned\_tour()}
 function.
 
-The bases visited by jellyfish No.~1 is extracted with
-\texttt{filter(loop\ =\ 1)} (the variable \texttt{loop} in the data
-object is the jellyfish ID) and the \texttt{check\_dup()} function
-removes the bases in the iteration without improvements. The bases are
-then supplied as a \texttt{planned\_tour()} in \texttt{animate\_xy()} to
-visualise the tour path of jellyfish No.1.
-
 \subsection{Computing the metrics for your new
 index}\label{computing-the-metrics-for-your-new-index}
 
@@ -1218,26 +1210,20 @@ function, followed by calculating the specific metric with either
 
 \subsubsection{Smoothness}\label{smoothness}
 
-To sample bases for calculating smoothness, the required arguments
-include \texttt{idx} (the index function used), \texttt{data} (the
-dataset), \texttt{n\_basis} (the number of random bases to sample), and
-\texttt{best} (the best basis to compute projection distance). The
-output of \texttt{sample\_bases()} is a data frame with four columns:
-\texttt{id} (the basis ID), \texttt{basis} (the basis matrix sampled),
-\texttt{dist} (the projection distance to the best basis), and
-\texttt{index} (the index value). To speed up the computation of index
-values, parallellasation is available through the
-\texttt{parallel\ =\ TRUE} argument.
+To sample bases for calculating smoothness, four arguments are required:
+1) the index function, the dataset, the number of random bases to
+sample, and the best basis to compute projection distance. The output of
+\texttt{sample\_bases()} is a data frame containing columns/
+list-columns of sampled basis matrix, calculated projection distance and
+index value. Parallellasation is available through the
+\texttt{parallel\ =\ TRUE} argument to speed up the computation.
 
 The \texttt{calc\_smoothness()} function takes the output from
 \texttt{sample\_bases()} and fits a Gaussian process model to the index
 values against the projection distances to compute the smoothness
-metric. The starting parameter for the fit can be specified using the
-\texttt{start\_params} argument, and additional Gaussian process
-arguments can be provided through \texttt{other\_gp\_params}. The
-smoothness metric is the smoothness parameter from the Gussian process
-and all details of the fit can be accessed using
-\texttt{attr(sm\_res,\ "fit\_res")}.
+metric. Starting parameters and additional Gaussian process arguments
+can be specified and details of the fit can be accessed through the
+\texttt{fit\_res} attribute of the \texttt{calc\_smoothness()} output.
 
 \subsubsection{Squintability}\label{squintability}
 
@@ -1258,9 +1244,9 @@ non-parametrically, using kernel smoothing (\texttt{method\ =\ "ks"}). A
 over the projection distance before the fit. The output provides the
 estimated parameters for the scaled sigmoid function (\(\theta_1\) to
 \(\theta_4\)) and the squintability metric for the parametric case. For
-the non-parametric case, it shows the (\texttt{max\_d}), the
-corresponding projection distance (\texttt{max\_dist}), and teh
-squintability metric as their products.
+the non-parametric case, it shows the maximum gradient
+attained(\texttt{max\_d}), the corresponding projection distance
+(\texttt{max\_dist}), and the squintability metric as their products.
 
 \section{Conclusion}\label{sec-conclusion}
 
