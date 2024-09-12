@@ -141,6 +141,7 @@
 \usepackage{xcolor}
 \usepackage{orcidlink}
 \usepackage{algorithm}
+\usepackage{float}
 \usepackage{amsmath}
 \usepackage{amsthm}
 \usepackage{amssymb}
@@ -768,7 +769,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colback=white, opacityback=0, left=2mm, toprule=.15mm, breakable, leftrule=.75mm, toptitle=1mm, bottomtitle=1mm, titlerule=0mm, coltitle=black, arc=.35mm, colframe=quarto-callout-note-color-frame, rightrule=.15mm, colbacktitle=quarto-callout-note-color!10!white, bottomrule=.15mm]
+\begin{tcolorbox}[enhanced jigsaw, toptitle=1mm, colback=white, colbacktitle=quarto-callout-note-color!10!white, titlerule=0mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, leftrule=.75mm, colframe=quarto-callout-note-color-frame, toprule=.15mm, rightrule=.15mm, breakable, left=2mm, coltitle=black, bottomrule=.15mm, bottomtitle=1mm, arc=.35mm, opacityback=0, opacitybacktitle=0.6]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -1127,34 +1128,49 @@ represent the smoothness and squintability measures respectively.}
 
 \begin{table}
 
-\caption{\label{tbl-mod-output}Model estimates of proportion of
-jellyfish success on index properties and jellyfish hyper-parameters
-from the generalised linear model with a binomial family and a logit
-link function. The variable smoothness, squintability, number of
-jellyfish and maximum number of tries are positively associated with JSO
-success rate while data dimension and being flagged as long runtime are
-negatively associated with the success rate. The variable squintability
-and dimension are significant, suggesting their importance relative to
-jellyfish hyper-parameters in the optimisation success.}
+\caption{\label{tbl-mod-output}Model estimates of proportion of jellyfish success on index properties and jellyfish hyper-parameters from the generalised linear model with a binomial family and a logit link function.The variable smoothness, squintability, number of jellyfish and maximum number of tries are positively associated with JSO success rate while data dimension and being flagged as long runtime are negatively associated with the success rate. The variable squintability and dimension are significant, suggesting their importance relative to jellyfish hyper-parameters in the optimisation success. }
 
 \centering{
 
-\centering\begingroup\fontsize{10}{12}\selectfont
-
-\begin{tabular}{|>{}lrrr>{}r|}
-\toprule
-term & estimate & std.error & statistic & p.value\\
-\midrule
-Intercept & -4.52 & 5.33 & -0.85 & 0.40\\
-Smoothness & 1.19 & 1.92 & 0.62 & 0.53\\
-Squintability & 2.06 & 0.68 & 3.01 & 0.00\\
-Dimension (d) & -0.63 & 0.26 & -2.46 & 0.01\\
-Long time & -0.87 & 1.29 & -0.68 & 0.50\\
-N. jellyfish & 0.22 & 0.13 & 1.70 & 0.09\\
-Max. tries & 0.11 & 0.15 & 0.75 & 0.45\\
-\bottomrule
-\end{tabular}
-\endgroup{}
+[H] \centering 
+   
+   
+\begin{tabular}{@{\extracolsep{5pt}}lc} 
+\\[-1.8ex]\hline 
+\hline \\[-1.8ex] 
+ & \multicolumn{1}{c}{\textit{Dependent variable:}} \\ 
+\cline{2-2} 
+\\[-1.8ex] & proportion \\ 
+\hline \\[-1.8ex] 
+ smoothness & 1.195 \\ 
+  & (1.915) \\ 
+  & \\ 
+ squintability & 2.060$^{***}$ \\ 
+  & (0.684) \\ 
+  & \\ 
+ d & $-$0.628$^{**}$ \\ 
+  & (0.255) \\ 
+  & \\ 
+ long\_time & $-$0.874 \\ 
+  & (1.286) \\ 
+  & \\ 
+ n\_jellies & 0.216$^{*}$ \\ 
+  & (0.127) \\ 
+  & \\ 
+ max\_tries & 0.113 \\ 
+  & (0.150) \\ 
+  & \\ 
+ Constant & $-$4.523 \\ 
+  & (5.332) \\ 
+  & \\ 
+\hline \\[-1.8ex] 
+Observations & 52 \\ 
+Log Likelihood & $-$18.224 \\ 
+Akaike Inf. Crit. & 50.447 \\ 
+\hline 
+\hline \\[-1.8ex] 
+\textit{Note:}  & \multicolumn{1}{r}{$^{*}$p$<$0.1; $^{**}$p$<$0.05; $^{***}$p$<$0.01} \\ 
+\end{tabular} 
 
 }
 

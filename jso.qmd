@@ -64,6 +64,7 @@ editor_options:
   chunk_output_type: console
 header-includes:
    - \usepackage{algorithm}
+   - \usepackage{float} 
    - \usepackage{amsmath}
    - \usepackage{amsthm}
    - \usepackage{amssymb}
@@ -193,9 +194,6 @@ sqa4 <- ggplot(randu_huber$proj_df, aes(x = x)) +
 sqa1 + sqa2 + sqa3 + sqa4 + plot_layout(ncol=2, widths=c(2,2))
 
 ```
-
-
-
 
 Optimisation of PP is often discussed when new indexes are proposed [@posse1995; @marie-sainte2010; @grochowski2011]. @cook1995grand tied the optimisation more closely to the index, when they introduced the PPGT, which monitors the optimisation visually so that the user can see the projected data leading in and out of the optima. An implementation is available in the `tourr` package [@tourr] in R [@R]. @RJ-2021-105 illustrated how to diagnose optimisation processes, particularly focusing on the guided tour, and revealed a need for improved optimisation. While improving the quality of the optimisation solutions in the tour is essential, it is also important to be able to view the data projections as the optimisation progresses. Integrating the guided tour with a global optimisation algorithm that is efficient in finding the global optimal and enables viewing of the projected data during the exploration process is a goal.
 
@@ -948,9 +946,10 @@ sim_df2 <- sim_df |>
   mutate(n_jellies = n_jellies/10,
          max_tries = max_tries/10,
          long_time = ifelse(time > 20, 1, 0),
-         P_J = ifelse(index == "stringy", 0, P_J))
+         P_J = ifelse(index == "stringy", 0, P_J)) |> 
+  rename(proportion = P_J)
 
-mod1 <- glm(P_J ~ smoothness + squintability + d + long_time + n_jellies + max_tries, data = sim_df2, family = binomial)
+mod1 <- glm(proportion ~ smoothness + squintability + d + long_time + n_jellies + max_tries, data = sim_df2, family = binomial)
 ```
 
 The index properties, including smoothness and squintability, offer
@@ -1012,21 +1011,14 @@ dt |>
   kable_styling(font_size = 10) 
 ```
 
+
 ```{r}
-#| label: tbl-mod-output
 #| results: "asis"
-#| tbl-cap: Model estimates of proportion of jellyfish success on index properties and jellyfish hyper-parameters from the generalised linear model with a binomial family and a logit link function. The variable smoothness, squintability, number of jellyfish and maximum number of tries are positively associated with JSO success rate while data dimension and being flagged as long runtime are negatively associated with the success rate. The variable squintability and dimension are significant, suggesting their importance relative to jellyfish hyper-parameters in the optimisation success.
-broom::tidy(mod1) |> 
-  mutate(term = c("Intercept", "Smoothness",
-   "Squintability", "Dimension (d)", 
-   "Long time", "N. jellyfish", 
-   "Max. tries")) |>
-  kable(digits = 2, format = "latex", 
-    linesep = "", booktabs = T) |> 
-  column_spec(c(1,5), border_right = TRUE) |> 
-  column_spec(1, border_left = TRUE) |> 
-  kable_styling(font_size = 10) 
+stargazer::stargazer(mod1, header = FALSE, label = "tbl-mod-output",
+                     table.placement = "H", 
+                     title = "Model estimates of proportion of jellyfish success on index properties and jellyfish hyper-parameters from the generalised linear model with a binomial family and a logit link function.The variable smoothness, squintability, number of jellyfish and maximum number of tries are positively associated with JSO success rate while data dimension and being flagged as long runtime are negatively associated with the success rate. The variable squintability and dimension are significant, suggesting their importance relative to jellyfish hyper-parameters in the optimisation success. ")
 ```
+
 
 # Practicalities {#sec-discussion}
 
@@ -1054,17 +1046,6 @@ The `calc_smoothness()` function takes the output from `sample_bases()` and fits
 Sampling bases for calculating squintability includes an additional step of interpolating between the sampled bases and the best basis. This is specified through setting the `step_size` and `min_proj_dist` arguments in the `sample_bases()` function to non-NA numerical values. Since the projection distance typically ranges from 0 to 2, it is recommended to set `step_size` to 0.1 or lower, and `min_proj_dist` to be at least 0.5 to ensure a meaningful interpolation length.
 
 The `calc_squintability()` function computes squintability using two methods: 1) parametrically, by fitting a scaled sigmoid function through non-linear least square (`method = "nls"`), and 2) non-parametrically, using kernel smoothing (`method = "ks"`). A `bin_width` argument is required to average the index values over the projection distance before the fit. The output provides the estimated parameters for the scaled sigmoid function ($\theta_1$ to $\theta_4$) and the squintability metric for the parametric case. For the non-parametric case, it shows the (`max_d`), the corresponding projection distance (`max_dist`), and teh squintability metric as their products.
-
-
-<!--
-This section discusses the insights in implementation yielded from the previous sections to guide the usage of projection pursuit guided tour amongst practitioners. Smoothness and squintability in a projection pursuit problem can now be measured given the target shape, the chosen index function, and the data dimension. In practice, these metrics can be used to characterise the difficulty of the optimisation task and inform the choice of optimiser. For instance, a large squintability value indicates a distinct difference in index values between optimal regions and others. When one jellyfish enters the optimal region, the high index value it generates will be clearly distinguishable from spurious values due to this pronounced difference and lead other jellyfish to move toward the optimal region. In contrast, a smaller squintability value results in a less distinct separation between desirable and undesirable regions, making it more difficult for other jellyfish to accurately navigate toward the target area. In addition, a larger smoothness value implies a smoother index function, which suggests the use of both gradient-based and random sampling optimisers. 
-
-This study enables comparison of new indices with existing indices with the proposed smoothness and squintability measures, as well as benchmarking with existing well-known data sets. Note that when comparing between multiple optimisers, the smoothness and squintability metrics proposed in this paper are relative. Comparison should be made with common parameters, i.e. the same seed for generating random bases and the same binning width for squintability. Furthermore, the range of the index values should be standardised to the [0, 1] interval as demonstrated for the `holes` and `TIC` indexes.
-
-As a population-based metaheuristic method, JSO requires evaluating multiple jellyfish in each iteration, which increased its computational complexity compared to single-candidate random sampling methods. This additional computational costs should be taken into consideration when choosing optimisers. Tuning JSO hyperparameters, such as the number of jellyfish and the maximum number of attempts, can enhance the likelihood of finding the optimal region at the expense of computational costs. However, in some cases, increasing these parameters may not be effective if the index surface is complex or has low squintability.
-
-The new JSO is integrated with the current implementation of the projection pursuit guided tour in the `tourr` package, and can be further examined using PP optimisation diagnostics in the `ferrn` package. The recommended approach is to conduct the optimisation off-line, extract the bases of a selected jellyfish, and then use the planned tour to follow selected jellyfish. These tools are also available in the `tourr` package.
--->
 
 # Conclusion {#sec-conclusion}
 
