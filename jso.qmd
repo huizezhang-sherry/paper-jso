@@ -923,8 +923,7 @@ suggesting its advantage in exploring high-dimensional spaces.
 
 The success rate calculated at each hyper-parameter combination (number
 of jellyfish and the maximum number of tries) is presented in
-@fig-proportion. As the number of jellyfish and maximum tries increase,
-the success rate also increases. For simpler problems (6 dimensions),
+@fig-proportion. The uncertainty is quantified through 500 bootstrap replicates for each case. As the number of jellyfish and maximum tries increase, the success rate also increases. For simpler problems (6 dimensions),
 small parameter values (20 jellyfishes and a maximum of 50 tries) can
 already achieve a high success rate. However, larger parameter values
 (i.e. 100 jellyfishes and a maximum of 100 tries) are necessary for
@@ -997,10 +996,10 @@ p2 <- bbb |>
 
 ```{r}
 #| label = fig-proportion,
-#| fig.width = 6,
-#| fig.height = 2.5,
+#| fig.width = 8,
+#| fig.height = 3.5,
 #| fig.align = "center",
-#| fig.cap = "Proportion of simulations reaches near-optimal index values in the pipe-finding problem using the holes index. The proportion is calculated based on the number of simulations, out of 50, that achieve an index value within 0.05 of the best-performing simulation. As the dimensionality increases, the proportion of simulations reaching the optimal index value increases."
+#| fig.cap = "The proportion of simulations that reach near-optimal index values in the pipe-finding problem using the holes index. The proportion is calculated based on the number of simulations, out of 50, that achieve an index value within 0.05 of the best-performing simulation. To quantify uncertainty, Bootstrap samples with 500 are generated. The thin lines represent the proportion for each of the 500 bootstrap replicates, while the thicker lines represent the mean of these bootstrap samples, connnected by lines. As the dimensionality increases, the proportion of simulations reaching the optimal index value increases."
 pipe_sim_best <- sim_pipe_run_best |> 
   group_by(n_jellies, max_tries, d) |>
   summarise(I_best = max(I_max))
@@ -1012,19 +1011,56 @@ pipe_res <- sim_pipe_run_best |>
   summarise(proportion = sum(diff) / n()) |> 
   mutate(d = as.factor(d), n_jellies = as.factor(n_jellies))
 
-pipe_res |> 
-  rename(`max # of tries` = max_tries) |>
-  ggplot(aes(x = n_jellies, y = proportion, 
-             group = interaction(d, `max # of tries`),
-             color = d)) + 
-  geom_line() + 
+res_df <- sim_pipe_run_best |> 
+  left_join(pipe_sim_best |> ungroup() |> mutate(case_id = row_number()),
+            by = c("n_jellies", "max_tries", "d")) |> 
+  ungroup() |> 
+  group_split(case_id)
+
+resampling <- function(dt, size = size, replace = TRUE){
+  row_id <- sample(1:50, size = size, replace = replace)
+  
+  dt |> filter(row_number() %in% row_id) |> 
+    mutate(diff = abs(I_max - I_best) < 0.05) |> 
+    summarise(proportion = sum(diff) / n()) |> 
+    pull(proportion)
+  
+}
+
+res_interval_df <- tibble(df = res_df) |> 
+  crossing(rep = 1:500) |> 
+  rowwise() |> 
+  mutate(proportion = resampling(df, size = 50)) 
+
+res_quantile <- res_interval_df |> 
+  unnest(df) |> 
+  group_by(n_jellies, max_tries, case_id, d) |> 
+  select(-I_max, -id) |> 
+  distinct() |> 
+  mutate(d = as.factor(d),
+         n_jellies = ifelse(d == 10, n_jellies - 1, n_jellies),
+         n_jellies = ifelse(d == 12, n_jellies + 1, n_jellies)) |> 
+  rename(`max # of tries` = max_tries) 
+  
+res_quantile |> 
+  ungroup() |> 
+  ggplot(aes(x = n_jellies - 0.5, y = proportion, 
+             group = d, color = d)) + 
+  geom_segment(aes(xend = n_jellies + 0.5), size = 0.05) + 
+  geom_segment(aes(x = n_jellies - 1, xend = n_jellies + 1), 
+               data = res_quantile |> summarise(proportion = mean(proportion)), 
+               size = 2) + 
+  geom_line(aes(x = n_jellies), 
+               data = res_quantile |> summarise(proportion = mean(proportion)), 
+            alpha = 0.3) + 
   scale_color_brewer(palette = "Dark2", name = "dimension") +
+  scale_x_continuous(breaks = c(20, 50, 100), labels = c("20", "50", "100")) +
   facet_wrap(vars(`max # of tries`), 
              labeller = "label_both") + 
-  theme_bw() + 
+  theme_bw() +
+  theme(panel.grid.minor = element_blank()) + 
   xlab("Number of jellyfish") + 
   ylab("Proportion of success")
-
 ```
 
 ```{r}

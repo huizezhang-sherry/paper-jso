@@ -768,7 +768,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-note-color!10!white, coltitle=black, leftrule=.75mm, rightrule=.15mm, bottomrule=.15mm, bottomtitle=1mm, toptitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, opacitybacktitle=0.6, breakable, arc=.35mm, titlerule=0mm, toprule=.15mm, opacityback=0, left=2mm, colframe=quarto-callout-note-color-frame, colback=white]
+\begin{tcolorbox}[enhanced jigsaw, colback=white, opacityback=0, colbacktitle=quarto-callout-note-color!10!white, toptitle=1mm, left=2mm, arc=.35mm, breakable, bottomrule=.15mm, bottomtitle=1mm, colframe=quarto-callout-note-color-frame, rightrule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, coltitle=black, opacitybacktitle=0.6, toprule=.15mm, titlerule=0mm, leftrule=.75mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -1012,16 +1012,18 @@ spaces.
 
 The success rate calculated at each hyper-parameter combination (number
 of jellyfish and the maximum number of tries) is presented in
-Figure~\ref{fig-proportion}. As the number of jellyfish and maximum
-tries increase, the success rate also increases. For simpler problems (6
-dimensions), small parameter values (20 jellyfishes and a maximum of 50
-tries) can already achieve a high success rate. However, larger
-parameter values (i.e.~100 jellyfishes and a maximum of 100 tries) are
-necessary for higher-dimensional problems (8, 10, and 12 dimensions).
-Increasing both parameters enhances the performance of JSO, but it also
-extends the computational time required for the optimisation, which can
-be computationally intensive when evaluating the index function (such as
-scagnostic indexes) multiple times across numerous iterations.
+Figure~\ref{fig-proportion}. The uncertainty is quantified through 500
+bootstrap replicates for each case. As the number of jellyfish and
+maximum tries increase, the success rate also increases. For simpler
+problems (6 dimensions), small parameter values (20 jellyfishes and a
+maximum of 50 tries) can already achieve a high success rate. However,
+larger parameter values (i.e.~100 jellyfishes and a maximum of 100
+tries) are necessary for higher-dimensional problems (8, 10, and 12
+dimensions). Increasing both parameters enhances the performance of JSO,
+but it also extends the computational time required for the
+optimisation, which can be computationally intensive when evaluating the
+index function (such as scagnostic indexes) multiple times across
+numerous iterations.
 
 \begin{figure}
 
@@ -1052,12 +1054,16 @@ than the CRS}
 
 }
 
-\caption{\label{fig-proportion}Proportion of simulations reaches
+\caption{\label{fig-proportion}The proportion of simulations that reach
 near-optimal index values in the pipe-finding problem using the holes
 index. The proportion is calculated based on the number of simulations,
 out of 50, that achieve an index value within 0.05 of the
-best-performing simulation. As the dimensionality increases, the
-proportion of simulations reaching the optimal index value increases.}
+best-performing simulation. To quantify uncertainty, Bootstrap samples
+with 500 are generated. The thin lines represent the proportion for each
+of the 500 bootstrap replicates, while the thicker lines represent the
+mean of these bootstrap samples, connnected by lines. As the
+dimensionality increases, the proportion of simulations reaching the
+optimal index value increases.}
 
 \end{figure}%
 
