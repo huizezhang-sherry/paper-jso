@@ -1014,9 +1014,11 @@ dt |>
 
 ```{r}
 #| results: "asis"
-stargazer::stargazer(mod1, header = FALSE, label = "tbl-mod-output",
-                     table.placement = "H", 
-                     title = "Model estimates of proportion of jellyfish success on index properties and jellyfish hyper-parameters from the generalised linear model with a binomial family and a logit link function.The variable smoothness, squintability, number of jellyfish and maximum number of tries are positively associated with JSO success rate while data dimension and being flagged as long runtime are negatively associated with the success rate. The variable squintability and dimension are significant, suggesting their importance relative to jellyfish hyper-parameters in the optimisation success. ")
+stargazer::stargazer(
+  mod1, header = FALSE, label = "tbl-mod-output",
+  table.placement = "H", 
+  covariate.labels = c("Smoothness", "Squintability", "Dimension", "Long runtime", "Number of jellyfish", "Maximum number of tries"),
+  title = "Model estimates of proportion of jellyfish success on index properties and jellyfish hyper-parameters from the generalised linear model with a binomial family and a logit link function.The variable smoothness, squintability, number of jellyfish and maximum number of tries are positively associated with JSO success rate while data dimension and being flagged as long runtime are negatively associated with the success rate. The variable squintability and dimension are significant, suggesting their importance relative to jellyfish hyper-parameters in the optimisation success. ")
 ```
 
 
