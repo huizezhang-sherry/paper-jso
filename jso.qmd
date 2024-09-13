@@ -632,7 +632,7 @@ that are most relevant to our application: the number of jellyfish and
 the maximum number of tries.
 
 
-# Simulation study {#sec-sim-deets}
+# Assessing optimisers: a simulation study {#sec-sim-deets}
 
 The JSO performance is compared with an existing optimiser, Creeping
 Random Search (CRS) [@RJ-2021-105; @laa_using_2020] used in the PP
@@ -779,15 +779,9 @@ knitr::include_graphics(here::here("figures", "squintability.png"))
 
 # Results {#sec-sim-res}
 
-The results from the first simulation described in @sec-sim-deets are
-analysed based on the final projections across two optimisers (JSO and
-CRS) and the success rate across JSO hyper-parameters. In the second
-simulation, smoothness and squintability are calculated across a
-collection of pipe-finding and sine-wave finding problems to construct
-the relationship between success rate, JSO hyper-parameters, and index
-properties.
+## Performance of JSO relative to CRS 
 
-The final projections found by the two optimisers (JSO and CRS) are
+Performance is assessed based on the final projections across two optimisers (JSO and CRS) and the success rate across JSO hyper-parameters. The final projections found by the two optimisers (JSO and CRS) are
 presented in @fig-proj, broken down by 10th quantile, faceted by the
 data dimensions. In the 6-dimensional data scenario, JSO consistently
 identifies a clear pipe shape. The CRS also finds the pipe shape but
@@ -798,11 +792,9 @@ cases. Compared to CRS, JSO achieves higher index values and clearer
 pipe shapes across all quantiles in data of 8, 10, 12 dimensions,
 suggesting its advantage in exploring high-dimensional spaces.
 
-The success rate calculated at each hyper-parameter combination (number
-of jellyfish and the maximum number of tries) is presented in
-@fig-proportion. The uncertainty is quantified through 500 bootstrap replicates for each case. As the number of jellyfish and maximum tries increase, the success rate also increases. For simpler problems (6 dimensions),
-small parameter values (20 jellyfishes and a maximum of 50 tries) can
-already achieve a high success rate. However, larger parameter values
+## Factors affecting JSO success rate: index properties and jellyfish hyper-parameters
+
+Smoothness and squintability are calculated across a collection of pipe-finding and sine-wave finding problems to construct the relationship between success rate, JSO hyper-parameters, and index properties. The success rate calculated at each hyper-parameter combination (number of jellyfish and the maximum number of tries) is presented in @fig-proportion. The uncertainty is quantified through 500 bootstrap replicates for each case. As the number of jellyfish and maximum tries increase, the success rate also increases. For simpler problems (6 dimensions), small parameter values (20 jellyfishes and a maximum of 50 tries) can already achieve a high success rate. However, larger parameter values
 (i.e. 100 jellyfishes and a maximum of 100 tries) are necessary for
 higher-dimensional problems (8, 10, and 12 dimensions). Increasing both
 parameters enhances the performance of JSO, but it also extends the
@@ -951,29 +943,11 @@ sim_df2 <- sim_df |>
 mod1 <- glm(proportion ~ smoothness + squintability + d + long_time + n_jellies + max_tries, data = sim_df2, family = binomial)
 ```
 
-The index properties, including smoothness and squintability, offer
-numerical metrics to characterise the complexity of projection pursuit
-optimisation problems. @tbl-smoothness-squintability presents the
-parameters for calculating both metrics estimated from the Gaussian
-process (variance, range, smooth, and nugget) and the scaled logistic
-function ($\theta_1$ to $\theta_4$) for each case considered in the
-simulation. The column "smooth" is used as the smoothness metric and the
+The index properties, smoothness and squintability, numerically characterise the complexity of projection pursuit index, and hence potential optimisation problems. @tbl-smoothness-squintability presents the parameters for calculating both metrics estimated from the Gaussian process (variance, range, smooth, and nugget) and the scaled logistic function ($\theta_1$ to $\theta_4$) for each case considered in the simulation. The column "smooth" is used as the smoothness metric and the
 column "squint" is calculated as equation (@eq-squintability-parametric)
-as the squintability metric. @tbl-mod-output presents the results of
-fitting a generalised linear model with a binomial family and a logit
-link function. The model suggests that JSO success rate is positively
-associated with the two hyper-parameters, as well as with the index
-properties: smoothness and squintability. Specifically, using 10 more
-jellyfish and 10 more tries increases the odd ratio of success by
-`r round(100 * (exp(broom::tidy(mod1)$estimate[6])-1), 2)`% and
-`r round(100 * (exp(broom::tidy(mod1)$estimate[7])-1), 2)`%,
-respectively. However, being flagged with long runtime and an increase
-of data dimension reduce the success rate by
-`r round(exp(broom::tidy(mod1)$estimate[5]) * 100, 2)`% and
-`r round(exp(broom::tidy(mod1)$estimate[4]) * 100, 2)`%, respectively.
-The variable `squintability` and `dimension` are significant, suggesting
-their importance relative to JSO hyper-parameters in the optimisation
-success.
+as the squintability metric. 
+
+@tbl-mod-output presents the results from fitting a logistic regression model using proportion of success as the response and smoothness, squintability, dimension, running time, number of jellyfish and maximum number of tries, as predictors. Long runtime is a binary variable, where greater than 20 seconds is labelled 1. The fit suggests that JSO success rate is only affected by squintability, dimension and number of jellies. Interestingly, the smoothness of the index is not a problem for the JSO - this is promising! Running the optimisation longer and allowing more tries also does not affect success rate.  An increase in squintability of one unit increases the success rate by `r round(exp(broom::tidy(mod1)$estimate[3]) * 100, 0)`%. As dimension increases by one the success rate halves. Increasing the number of jellies by 10, increases the succes rate by `r round(100 * (exp(broom::tidy(mod1)$estimate[6])-1), 0)`%. 
 
 ```{r fig-idx-proj-dist, eval = FALSE}
 #| fig.width = 9,
@@ -1010,18 +984,22 @@ dt |>
   kable_styling(font_size = 10) 
 ```
 
-
 ```{r}
-#| results: "asis"
 #| label: tbl-mod-output
-stargazer::stargazer(
-  mod1, header = FALSE, 
-  table.placement = "H", 
-  float = FALSE,
-  covariate.labels = c("Smoothness", "Squintability", "Dimension", "Long runtime", "Number of jellyfish", "Maximum number of tries"),
-  title = "Model estimates of proportion of jellyfish success on index properties and jellyfish hyper-parameters from the generalised linear model with a binomial family and a logit link function.The variable smoothness, squintability, number of jellyfish and maximum number of tries are positively associated with JSO success rate while data dimension and being flagged as long runtime are negatively associated with the success rate. The variable squintability and dimension are significant, suggesting their importance relative to jellyfish hyper-parameters in the optimisation success. ")
+#| tbl-cap: "Jellyfish success rate relative to index properties and jellyfish hyper-parameters. This is the summary from a logistic regression fit to smoothness, squintability, dimension, running time, number of jellyfish and maximum number of tries. Interestingly, squintability and dimension strongly affect jellyfish optimisation success. The number of jellies marginally affects success, but index smoothness, running longer and increasing the number of tries do not."
+#| fig-pos: t
+library(gtsummary)
+set_gtsummary_theme(theme_gtsummary_journal("jama"))
+mod1 |> tbl_regression(exponentiate=TRUE, 
+                       pvalue_fun = label_style_pvalue(digits = 3),
+                       label = list(smoothness = "Smoothness", 
+                                    squintability = "Squintability",
+                                    d = "Dimension", 
+                                    long_time = "Long runtime", 
+                                    n_jellies = "Number of jellyfish", 
+                                    max_tries = "Maximum number of tries")) |>
+  bold_p(t = 0.1)
 ```
-
 
 # Practicalities {#sec-discussion}
 
@@ -1099,7 +1077,7 @@ Research Fund UICR0700041-22.
 
 # Supplementary materials {-}
 
-The supplementary materials include: 1) description of all the index functions used in the simulations and 2) the script that complements the Practicalities section for using JSO in a PPGT and calculating smoothness and squintability.
+The supplementary materials available at <https://github.com/huizezhang-sherry/paper-jso> include: 1) details of the indexes used in the simulation study, 2) the script to get started with using JSO in a PPGT and calculating smoothness and squintability, as explained in @sec-discussion, and the full code to reproduce the plots and summaries in this paper.
 
 
 # References
