@@ -1077,7 +1077,7 @@ Research Fund UICR0700041-22.
 
 # Supplementary materials {-}
 
-The supplementary materials available at <https://github.com/huizezhang-sherry/paper-jso> include: 1) details of the indexes used in the simulation study, 2) the script to get started with using JSO in a PPGT and calculating smoothness and squintability, as explained in @sec-discussion, and the full code to reproduce the plots and summaries in this paper.
+The supplementary materials available at <https://github.com/huizezhang-sherry/paper-jso> include: 1) details of the indexes used in the simulation study, 2) the script to get started with using JSO in a PPGT and calculating smoothness and squintability, as explained in @sec-discussion, and (3) the full code to reproduce the plots and summaries in this paper.
 
 
 # References
