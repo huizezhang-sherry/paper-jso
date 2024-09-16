@@ -1015,7 +1015,7 @@ The `ferrn` package [@RJ-2021-105] provides functionality for computing the smoo
 
 ### Smoothness
 
-To sample bases for calculating smoothness, four arguments are required: 1) the index function, the dataset, the number of random bases to sample, and the best basis to compute projection distance. The output of `sample_bases()` is a data frame containing columns/ list-columns of sampled basis matrix, calculated projection distance and index value. Parallellasation is available through the `parallel = TRUE` argument to speed up the computation. 
+To sample bases for calculating smoothness, four arguments are required: the index function, the dataset, the number of random bases to sample, and the best basis to compute projection distance. The output of `sample_bases()` is a data frame containing columns/ list-columns of sampled basis matrix, calculated projection distance and index value. Parallellasation is available through the `parallel = TRUE` argument to speed up the computation. 
 
 The `calc_smoothness()` function takes the output from `sample_bases()` and fits a Gaussian process model to the index values against the projection distances to compute the smoothness metric. Starting parameters and additional Gaussian process arguments can be specified and details of the fit can be accessed through the `fit_res` attribute of the `calc_smoothness()` output.
 
@@ -1023,7 +1023,7 @@ The `calc_smoothness()` function takes the output from `sample_bases()` and fits
 
 Sampling bases for calculating squintability includes an additional step of interpolating between the sampled bases and the best basis. This is specified through setting the `step_size` and `min_proj_dist` arguments in the `sample_bases()` function to non-NA numerical values. Since the projection distance typically ranges from 0 to 2, it is recommended to set `step_size` to 0.1 or lower, and `min_proj_dist` to be at least 0.5 to ensure a meaningful interpolation length.
 
-The `calc_squintability()` function computes squintability using two methods: 1) parametrically, by fitting a scaled sigmoid function through non-linear least square (`method = "nls"`), and 2) non-parametrically, using kernel smoothing (`method = "ks"`). A `bin_width` argument is required to average the index values over the projection distance before the fit. The output provides the estimated parameters for the scaled sigmoid function ($\theta_1$ to $\theta_4$) and the squintability metric for the parametric case. For the non-parametric case, it shows the maximum gradient attained(`max_d`), the corresponding projection distance (`max_dist`), and the squintability metric as their products.
+The `calc_squintability()` function computes squintability using two methods: 1) parametrically, by fitting a scaled sigmoid function through non-linear least square (`method = "nls"`), and 2) non-parametrically, using kernel smoothing (`method = "ks"`). A `bin_width` argument is required to average the index values over the projection distance before the fit. The output provides the estimated parameters for the scaled sigmoid function ($\theta_1$ to $\theta_4$) and the squintability metric for the parametric case. For the non-parametric case, it shows the maximum gradient attained (`max_d`), the corresponding projection distance (`max_dist`), and the squintability metric as their products.
 
 # Conclusion {#sec-conclusion}
 

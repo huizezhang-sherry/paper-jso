@@ -288,7 +288,7 @@ projection pursuit\sep jellyfish search optimiser
 (JSO)\sep optimisation\sep grand tour\sep high-dimensional data\sep 
 exploratory data analysis
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, breakable, boxrule=0pt, sharp corners, enhanced, interior hidden, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, frame hidden, enhanced, interior hidden]}{\end{tcolorbox}}\fi
 
 \setstretch{2}
 \hypertarget{introduction}{%
@@ -756,7 +756,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, rightrule=.15mm, bottomrule=.15mm, colbacktitle=quarto-callout-note-color!10!white, opacityback=0, colframe=quarto-callout-note-color-frame, colback=white, toptitle=1mm, breakable, coltitle=black, opacitybacktitle=0.6, arc=.35mm, toprule=.15mm, left=2mm, bottomtitle=1mm, leftrule=.75mm, titlerule=0mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}]
+\begin{tcolorbox}[enhanced jigsaw, breakable, bottomrule=.15mm, colframe=quarto-callout-note-color-frame, toptitle=1mm, opacityback=0, opacitybacktitle=0.6, colback=white, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, leftrule=.75mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, coltitle=black, arc=.35mm, toprule=.15mm, rightrule=.15mm, left=2mm, bottomtitle=1mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -1179,8 +1179,8 @@ function, followed by calculating the specific metric with either
 \subsubsection{Smoothness}\label{smoothness}}
 
 To sample bases for calculating smoothness, four arguments are required:
-1) the index function, the dataset, the number of random bases to
-sample, and the best basis to compute projection distance. The output of
+the index function, the dataset, the number of random bases to sample,
+and the best basis to compute projection distance. The output of
 \texttt{sample\_bases()} is a data frame containing columns/
 list-columns of sampled basis matrix, calculated projection distance and
 index value. Parallellasation is available through the
@@ -1213,8 +1213,8 @@ non-parametrically, using kernel smoothing (\texttt{method\ =\ "ks"}). A
 over the projection distance before the fit. The output provides the
 estimated parameters for the scaled sigmoid function (\(\theta_1\) to
 \(\theta_4\)) and the squintability metric for the parametric case. For
-the non-parametric case, it shows the maximum gradient
-attained(\texttt{max\_d}), the corresponding projection distance
+the non-parametric case, it shows the maximum gradient attained
+(\texttt{max\_d}), the corresponding projection distance
 (\texttt{max\_dist}), and the squintability metric as their products.
 
 \hypertarget{sec-conclusion}{%
