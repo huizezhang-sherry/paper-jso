@@ -40,7 +40,7 @@ author:
           country: Australia
           postal-code: 3800
 abstract: |
-  The projection pursuit (PP) guided tour interactively optimises a criterion function known as the PP index, to explore high-dimensional data by revealing interesting projections. Optimisation of some PP indexes can be non-trivial, if they are non-smooth functions, or the optima has a small "squint angle", detectable only from close proximity. To address these challenges, this study investigates the performance of a recently introduced swarm-based algorithm, Jellyfish Search Optimiser (JSO), for optimising PP indexes. The performance of JSO for visualising data is evaluated across various hyper-parameter settings and compared with existing optimisers. Additionally, methods for calculating the smoothness and squintability properties of the PP index are proposed. They are used to assess the optimiser performance in the presence of PP index complexities. A simulation study illustrates the use of these performance metrics to compare the JSO with existing optimisation methods available for the guided tour. The JSO algorithm has been implemented in the R package, `tourr`, and functions to calculate smoothness and squintability are available in the `ferrn` package. 
+  The projection pursuit (PP) guided tour interactively optimises a criterion function known as the PP index, to explore high-dimensional data by revealing interesting projections. Optimisation of some PP indexes can be non-trivial, if they are non-smooth functions, or the optimum has a small "squint angle", detectable only from close proximity. To address these challenges, this study investigates the performance of a recently introduced swarm-based algorithm, Jellyfish Search Optimiser (JSO), for optimising PP indexes. The performance of JSO for visualising data is evaluated across various hyper-parameter settings and compared with existing optimisers. Additionally, methods for calculating the smoothness and squintability properties of the PP index are proposed. They are used to assess the optimiser performance in the presence of PP index complexities. A simulation study illustrates the use of these performance metrics to compare the JSO with existing optimisation methods available for the guided tour. The JSO algorithm has been implemented in the R package, `tourr`, and functions to calculate smoothness and squintability are available in the `ferrn` package. 
 keywords: 
   - projection pursuit
   - jellyfish search optimiser (JSO)
@@ -134,7 +134,7 @@ $$ {#eq-optimization}
 
 It is interesting to note that when using PP visually, one cares less about $A$ than the plane described by $A$, because the orientation in the plane is irrelevant. The space of planes belongs to a Grassmann manifold. This is usually how the projection pursuit guided tour (PPGT) [@cook1995grand] operates, when using geodesic interpolation between starting and target planes. It interpolates plane to plane, removing irrelevant within plane spin, and is agnostic to the basis ($A$) used to define the plane. Thus, indexes which are used for the PPGT should be rotationally invariant.
 
-Index functions are quite varied in form, partially depending on the data that is being projected. @fig-example-functions shows two examples. Huber plots [@huberplot] of 2D data sets are in (a) and (c), showing the PP index values for all 1D projections of the 2D data in polar coordinates, which reveals the form of these functions. The dashed circle is a baseline set at the average value, and the straight line marks the optimal projection. Plots (b) and (d) show the respective best projections of the data as histograms. Indexes like the holes, central mass and skewness [@cook1993projection] are generally smooth for most data sets, but capture only large patterns. Many indexes noisy and non-convex, requiring an effective and efficient optimisation procedure to explore the data landscape and achieve a globally optimal viewpoint of the data. The skewness index computed for trimodal data, in (a), is smooth with a large squint angle but has three modes, and thus is not convex. The binned normality index (a simple version of a non-normality index as described in @huber85) computed on the famous RANDU data, in (c), is noisier and has a very small squint angle. The discreteness cannot be seen unless the optimiser is very close to the optimal projection.
+Index functions are quite varied in form, partially depending on the data that is being projected. @fig-example-functions shows two examples. Huber plots [@huberplot] of 2D data sets are in (a) and (c), showing the PP index values for all 1D projections of the 2D data in polar coordinates, which reveals the form of these functions. The dashed circle is a baseline set at the average value, and the straight line marks the optimal projection. Plots (b) and (d) show the respective best projections of the data as histograms. Indexes like the holes, central mass and skewness [@cook1993projection] are generally smooth for most data sets, but capture only large patterns. Many indexes are noisy and non-convex, requiring an effective and efficient optimisation procedure to explore the data landscape and achieve a globally optimal viewpoint of the data. The skewness index computed for trimodal data, in (a), is smooth with a large squint angle but has three modes, and thus is not convex. The binned normality index (a simple version of a non-normality index as described in @huber85) computed on the famous RANDU data, in (c), is noisier and has a very small squint angle. The discreteness cannot be seen unless the optimiser is very close to the optimal projection.
 
 ```{r}
 #| label: fig-example-functions
@@ -195,7 +195,7 @@ sqa1 + sqa2 + sqa3 + sqa4 + plot_layout(ncol=2, widths=c(2,2))
 
 ```
 
-Optimisation of PP is often discussed when new indexes are proposed [@posse95; @marie-sainte2010; @grochowski2011]. @cook1995grand tied the optimisation more closely to the index, when they introduced the PPGT, which monitors the optimisation visually so that the user can see the projected data leading in and out of the optima. An implementation is available in the `tourr` package [@tourr] in R [@R]. @RJ-2021-105 illustrated how to diagnose optimisation processes, particularly focusing on the guided tour, and revealed a need for improved optimisation. While improving the quality of the optimisation solutions in the tour is essential, it is also important to be able to view the data projections as the optimisation progresses. Integrating the guided tour with a global optimisation algorithm that is efficient in finding the global optimal and enables viewing of the projected data during the exploration process is a goal.
+Optimisation of PP is often discussed when new indexes are proposed [@posse95; @marie-sainte2010; @grochowski2011]. @cook1995grand tied the optimisation more closely to the index, when they introduced the PPGT, which monitors the optimisation visually so that the user can see the projected data leading in and out of the optimum. An implementation is available in the `tourr` package [@tourr] in R [@R]. @RJ-2021-105 illustrated how to diagnose optimisation processes, particularly focusing on the guided tour, and revealed a need for improved optimisation. While improving the quality of the optimisation solutions in the tour is essential, it is also important to be able to view the data projections as the optimisation progresses. Integrating the guided tour with a global optimisation algorithm that is efficient in finding the global optimal and enables viewing of the projected data during the exploration process is a goal.
 
 Here, the potential for a Jellyfish Search Optimiser (JSO) (see @chou_novel_2021, and @rajwar_exhaustive_2023) for the PPGT is explored. JSO, inspired by the search behaviour of jellyfish in the ocean, is a swarm-based metaheuristic designed to solve global optimisation problems. Compared to traditional methods, JSO has demonstrated stronger search ability and faster
 convergence, and requires fewer tuning parameters. These practicalities
@@ -203,8 +203,8 @@ make JSO a promising candidate for enhancing PP optimisation.
 
 The primary goal of the study reported here is to investigate the
 performance of JSO in PP optimisation for the guided tour. It is of
-interest to assess how quickly and closely the optimiser reaches a gobal
-optima, for various PP indexes that may have differing complexities. To
+interest to assess how quickly and closely the optimiser reaches a global
+optimum, for various PP indexes that may have differing complexities. To
 observe the performance of JSO with different types of PP indexes,
 metrics are introduced to capture specific properties of the index
 including squintability (based on @barnett1981interpreting's squint
@@ -235,7 +235,7 @@ package:
 - a pseudo-derivative, that searches locally for the best direction, based on differencing the index values for very close projections.
 - a brute-force optimisation (CRS). 
 - a modified brute force algorithm described in @posse95. 
-- an essentially simulated annealing [@Bertsimas93] where the search space is reduced as the optimisation.
+- an essentially simulated annealing [@Bertsimas93] where the search space is reduced during the optimisation.
 - a very localised search, to take tiny steps to get closer to the local maximum.
     
 <!-- 
@@ -255,16 +255,16 @@ package:
     get closer to the local maximum.
 -->
 
-There are numerous PP index functions available: introduced in @cook1993projection, @lee2005projection, @lee2010projection, @Grimm2016, @huber85, @Laa:2020wkm. Most are relatively simply defined, for any projection dimension, and implemented because they are relatively easy to optimise. A goal is to develop PP indexes based on scagnostics (@scag, @WW08), but the blockage is optimisation that these tend to be noisy, with potentially small squint angles.
+There are numerous PP index functions available: introduced in @huber85, @cook1993projection, @lee2005projection, @lee2010projection, @Grimm2016, @Laa:2020wkm. Most are relatively simply defined, for any projection dimension, and implemented because they are relatively easy to optimise. A goal is to develop PP indexes based on scagnostics (@scag, @WW08), but the blockage is their optimisation as these tend to be noisy, with potentially small squint angles.
 
 An initial investigation of PP indexes, and the potential for
 scagnostics is described in @laa_using_2020. To be useful here an
-optimiser needs to be able to handle index functions which are possibly
+optimiser needs to be able to handle index functions that are possibly
 not very smooth. In addition, because data structures might be
 relatively fine, the optimiser needs to be able to find maxima that
 occur with a small squint angle, that can only be seen from very close
 by. One last aspect that is useful is for an optimiser to return local
-maxima in addition to global because data can contain many different and
+maxima in addition to the global one because data can contain many different and
 interesting features.
 
 # Properties of PP indexes {#sec-PP-properties}
@@ -322,10 +322,10 @@ the Gaussian field.
 \begin{defn}
 The Matérn covariance function $K$ is defined by
 \begin{equation}
-K(u)=K_{\nu,\eta,\ell}(u):=\eta^2\frac{\left(\sqrt{2\nu}\frac{u}{\ell}\right)^{\nu}}{\Gamma(\nu)2^{\nu-1}}\mathcal{K}_{\nu}\left(\sqrt{2\nu}\frac{u}{\ell}\right)\ , u\geq0\label{eq:matern}
+K(u)=K_{\nu,\eta,\ell}(u):=\eta^2\frac{\left(\sqrt{2\nu}\frac{\left\Vert u\right\Vert}{\ell}\right)^{\nu}}{\Gamma(\nu)2^{\nu-1}}\mathcal{K}_{\nu}\left(\sqrt{2\nu}\frac{\left\Vert u\right\Vert}{\ell}\right)\ ,\label{eq:matern}
 \end{equation}
-where $\nu>0$ is the smoothness parameter, $\eta$ is the outputscale, $\ell$ is the lengthscale, and $\mathcal{K}_\nu$ is
-the modified Bessel function [DLMF 10.25]. A multivariate extension $K(u)$, $u\in\mathbb{R}^d$ can be obtained by products of univariate covariance functions \eqref{eq:matern}.
+where $\left\Vert u\right\Vert$ is the Euclidean norm of $u\in\mathbb{R}^{p{\times}d}$, $\nu>0$ is the smoothness parameter, $\eta$ is the outputscale, $\ell$ is the lengthscale, and $\mathcal{K}_\nu$ is
+the modified Bessel function [DLMF 10.25].
 \end{defn}
 ```
 The Matérn covariance function can be expressed analytically when $\nu$
@@ -338,7 +338,7 @@ function $f$ has a Sobolev index of $k$, then the smoothness parameter
 estimate $\nu$ in \eqref{eq:matern} cannot be asymptotically less than
 $k$. See the survey @porcu2024matern for additional results on the connection between the Matérn model and Sobolev spaces. An interesting result is that the asymptotic case
 $\nu\rightarrow\infty$ coincides with the Gaussian kernel:
-$K_\infty(u)=\exp(-u^{2}/2)$.
+$K_\infty(u)=\exp(-{\left\Vert u\right\Vert}^{2}/2)$.
 
 
 
@@ -365,13 +365,13 @@ prior with Matérn covariance on a dataset generated by random
 evaluations of the index function, as done at the initialization stage
 of the jellyfish search optimization. There exist several R packages,
 such as `GpGp` [@guinness2021gpgp] or `ExaGeoStatR` [@abdulah2023large],
-to fit the hyperparameters of a GP covariance function on data, which is
+to fit the hyper-parameters of a GP covariance function on data, which is
 usually done by maximum likelihood estimation. In this project, the
 `GpGp` package is used.
 
 ```{=tex}
 \begin{defn}
-Let $\mathbf{A}=[A_1, \ldots, A_N] \in (\mathbf{R}^{p \times d})^N$ be d-dimensional projection bases, let $\mathbf{y}=[f(XA_1),\ldots,f(XA_N)]$ be the corresponding PP index values, and let $\mathbf{K}=[K_\theta(A_{i},A_{j})]_{1\leq i,j\leq N}\in\mathbb{R}^{N\times N}$ be the Matérn covariance matrix evaluated at the input bases, where the vector $\theta$ contains all the parameters of the multivariate Matérn covariance function $K$ (smoothness, outputscale, lengthscales). The log-likelihood of the parameters $\theta$ is defined by 
+Let $\mathbf{A}=[A_1, \ldots, A_N] \in (\mathbf{R}^{p \times d})^N$ be d-dimensional projection bases, let $\mathbf{y}=[f(XA_1),\ldots,f(XA_N)]$ be the corresponding PP index values, and let $\mathbf{K}=[K_\theta(A_{i}-A_{j})]_{1\leq i,j\leq N}\in\mathbb{R}^{N\times N}$ be the Matérn covariance matrix evaluated at the input bases, where the vector $\theta$ contains all the parameters of the multivariate Matérn covariance function $K$ (smoothness, outputscale, lengthscales). The log-likelihood of the parameters $\theta$ is defined by 
 \begin{equation}
 \mathcal{L}(\theta)=\log p(\mathbf{y}\left|\mathbf{A},\theta\right.)=-\frac{1}{2}\mathbf{y}^{\top}(\mathbf{K}+\sigma^{2}\mathbf{I})^{-1}\mathbf{y}-\frac{1}{2}\mathrm{\log}(\det(\mathbf{K}+\sigma^{2}\mathbf{I}))-\frac{N}{2}\log(2\pi)\, \label{eq:gp_log_likelihood}
 \end{equation}
@@ -390,15 +390,14 @@ index function.
 
 ## Squintability {#sec-squintability}
 
-Here the formal definition of projection distance and squint angle are given, before the definition of squintability. Two approaches to compute this metric numerically,
-are described.
+Here the formal definitions of projection distance and squint angle are given, before the definition of squintability. Two approaches to compute this metric numerically are described.
 
 
 ```{=tex}
 \begin{defn}[projection distance]\label{def:proj-dist}
 Recall that $A \in \mathbf{R}^{p \times d}$ is a $d$-dimensional orthonormal matrix. Let $A^*$ be the optimal matrix that achieves the maximum index value for a given data. The projection distance $d(A, A^*)$ between $A$ 
 and $A^*$ is defined as 
-$d(A, A^*) = \lVert AA^\prime - A^*A^{*\prime}\  \rVert _F$
+$d(A, A^*) = \lVert AA^\prime - A^*A^{*\prime}\,\rVert _F$
 where $\lVert . \rVert _F$ denotes the Frobenius norm, given by
 $\lVert M \rVert _F = \sqrt{\sum_{ij} M_{ij}^2}$. 
 \end{defn}
@@ -421,19 +420,19 @@ JSO:
 Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance $d(A, A^*)$ to the index value $f(XA)$, such that $g(d(A, A^*)) = f(XA)$. For brevity, denote $g(d)$ as $g(d(A, A^*))$. The squintability of an index function $f(XA)$ is defined as 
 
 \begin{equation}
-\varsigma(f) = -c \times \max_{d} g'(d) \times \arg \max_{d} g'(d)
+\varsigma(f) = -4 \times \max_{d} g'(d) \times \arg \max_{d} g'(d)
 \label{eq-squintability}
 \end{equation}
 
-where $c$ is a constant scaling factor, $-\max_d g'(d)$ represents the 
+where $4$ is a constant scaling factor, $-\max_d g'(d)$ represents the 
 largest gradient of $-g$ and $\arg \max_{d} g'(d)$ represents the projection distance at which this largest gradient is attained.
 
 \end{defn}
 ```
 
 It is expected that these two values should be both high in the case of high squintability (fast
-increase in $f$ early on), and both low in the case of low squintability
-(any substantial increase in $f$ happens very late, close to the optimal
+increase in $g$ early on), and both low in the case of low squintability
+(any substantial increase in $g$ happens very late, close to the optimal
 angle). This suggests that their product \eqref{eq-squintability} should
 provide a sensible measure of squintability. The multiplicative constant
 $4$, which can be deemed arbitrary, does not change the interpretation
@@ -453,7 +452,7 @@ For a convex function, $g_1'(d) < 0 \; \forall d$ and is non-decreasing. For a c
 Suppose both functions achieve the same maximum gradient $-g_{\max}$, i.e., $\max g'_1(d_1) = \max g'_2(d_2) = -g_{\max}$,
 
 $$
-\varsigma(g_1(d_1)) = -c  \max g'_1(d_1)  d_1 = -c  (-g_{\max}) d_1 \leq -c  (-g_{\max}) d_2 = -c \max g'_2(d_2)  d_2 = \varsigma(g_2(d_2))
+\varsigma(g_1(d_1)) = -4  \max g'_1(d_1)  d_1 = -4  (-g_{\max}) d_1 \leq -4  (-g_{\max}) d_2 = -4 \max g'_2(d_2)  d_2 = \varsigma(g_2(d_2))
 $$
 
 \end{prop}
@@ -465,8 +464,8 @@ means that the PP index value improves substantially only when the
 perfect view is close by. As such, low squintability implies rapid
 improvement in the index value when near the perfect view. For PP, a
 small squint angle is considered to be undesirable because it means that
-the optimiser needs to be very close to be able to "see" the optima.
-Thus, it could be difficult for the optimiser to find the optima. <!--The
+the optimiser needs to be very close to be able to "see" the optimum.
+Thus, it could be difficult for the optimiser to find the optimum. <!--The
 mathematical formulation of this intuition is proposed below:-->
 
 
@@ -477,7 +476,7 @@ long while for the optimization to make substantial progress, as the
 candidate projections would need to be very close to the optimal one for
 the structure of the index function to be visible enough to be amenable
 to efficient optimization. This observation suggests that the extreme
-values of $f'$ (the ones for which $f''=0$, assuming that $f$ is twice
+values of $g'$ (the ones for which $g''=0$, assuming that $g$ is twice
 differentiable), and the projection distances for which these values are
 attained, are crucial in the mathematical definition of squintability.  
 
@@ -495,7 +494,7 @@ attained, are crucial in the mathematical definition of squintability.
 
 To compute the squintability metric \eqref{eq-squintability} in practice,
 several approaches are possible. The first one is to propose a
-parametric model for $f$, and use it to obtain an explicit formula for
+parametric model for $g$, and use it to obtain an explicit formula for
 $\varsigma$. Numerical experiments suggest a scaled sigmoid shape as
 described below. Define
 
@@ -508,11 +507,11 @@ $\theta_2$ and $\theta_3$, such that $\ell(\theta_{2})=\frac{1}{2}$.
 Then, define
 
 $$
-f(x)=(\theta_{1}-\theta_{4})\frac{\ell(x)-\ell(x_{\max})}{\ell(0)-\ell(x_{\max})}+\theta_{4}\ ,
+g(x)=(\theta_{1}-\theta_{4})\frac{\ell(x)-\ell(x_{\max})}{\ell(0)-\ell(x_{\max})}+\theta_{4}\ ,
 $$ {#eq-parametric}
 
 which depends on three additional parameters, $\theta_1$, $\theta_2$,
-and $x_{\max}$, such that $f(0)=\theta_1$ and $f(x_{\max})=\theta_4$.
+and $x_{\max}$, such that $g(0)=\theta_1$ and $g(x_{\max})=\theta_4$.
 Under the parametric model (@eq-parametric), the squintability metric
 \eqref{eq-squintability} can be shown to be equal to
 
@@ -526,8 +525,8 @@ used to evaluate $\varsigma$ as in equation
 (@eq-squintability-parametric).
 
 Alternatively, one can estimate \eqref{eq-squintability} in a nonparametric
-way, for example by fitting $f$ using kernel regression, then
-numerically estimate the angle at which $-f'$ attains its highest value.
+way, for example by fitting $g$ using kernel regression, then
+numerically estimate the angle at which $-g'$ attains its highest value.
 
 <!-- \textcolor{orange}{See whether further details are needed for the nonparametric approach.} -->
 
@@ -1034,18 +1033,18 @@ metrics will be generally useful for characterising PP indexes, and help
 with developing new indexes.
 
 In the comparison of the JSO against the currently used CRS, as expected
-the JSO vastly out-performs CRS, and provides a high probability of
-finding the global optima. The JSO obtains the maximum more cleanly,
+the JSO vastly outperforms CRS, and provides a high probability of
+finding the global optimum. The JSO obtains the maximum more cleanly,
 with a slightly higher index value, and plot of the projected data
 showing the structure more clearly.
 
 The JSO performance is affected by the hyper-parameters, with a higher
-chance of reaching the global optima when more jellyfish are used and
+chance of reaching the global optimum when more jellyfish are used and
 the maximum number of tries is increased. However, it comes at a
 computational cost, as expected. The performance declines if the
 projection dimension increases and if the PP index has low
 squintability. The higher the squintability the better chance the JSO
-can find the optima. However, interestingly smoothness does not affect
+can find the optimum. However, interestingly smoothness does not affect
 the JSO performance.
 
 
