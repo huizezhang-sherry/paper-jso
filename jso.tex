@@ -264,7 +264,7 @@ Interdisciplinary Research and Application for Data Science,
 BNU-HKBU~United~International~College, Zhuhai, China
 \begin{abstract}
 The projection pursuit (PP) guided tour interactively optimises a
-criteria function known as the PP index, to explore high-dimensional
+criterion function known as the PP index, to explore high-dimensional
 data by revealing interesting projections. Optimisation of some PP
 indexes can be non-trivial, if they are non-smooth functions, or the
 optima has a small ``squint angle'', detectable only from close
@@ -288,7 +288,7 @@ projection pursuit\sep jellyfish search optimiser
 (JSO)\sep optimisation\sep grand tour\sep high-dimensional data\sep 
 exploratory data analysis
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, breakable, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, frame hidden, enhanced, interior hidden]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, interior hidden, frame hidden, enhanced, sharp corners]}{\end{tcolorbox}}\fi
 
 \setstretch{2}
 \hypertarget{introduction}{%
@@ -301,7 +301,7 @@ high-dimensional data, and creating plots of the data that reveal the
 main features to use for publication. The method involves optimising an
 objective function known as the PP index (e.g. Hall (1989), Cook, Buja,
 and Cabrera (1993), Lee and Cook (2010), Loperfido (2018), Loperfido
-(2020)), which defines the criteria for what constitutes interesting or
+(2020)), which defines the criterion for what constitutes interesting or
 informative projections. Let \(X \in \mathbb{R}^{n\times p}\) be the
 data matrix, \(A \in\mathbb{R}^{p \times d}\) be an orthonormal matrix,
 where \(A\) belongs to the Stiefel manifold
@@ -364,7 +364,7 @@ projections in polar coordinates.}
 \end{figure}
 
 Optimisation of PP is often discussed when new indexes are proposed
-(Posse 1995a; Marie-Sainte, Berro, and Ruiz-Gazen 2010; Grochowski and
+(Posse 1995; Marie-Sainte, Berro, and Ruiz-Gazen 2010; Grochowski and
 Duch 2011). Cook et al. (1995) tied the optimisation more closely to the
 index, when they introduced the PPGT, which monitors the optimisation
 visually so that the user can see the projected data leading in and out
@@ -445,7 +445,7 @@ five optimisation methods implemented in the \texttt{tourr} package:
 \item
   a brute-force optimisation (CRS).
 \item
-  a modified brute force algorithm described in Posse (1995b).
+  a modified brute force algorithm described in Posse (1995).
 \item
   an essentially simulated annealing (Bertsimas and Tsitsiklis 1993)
   where the search space is reduced as the optimisation.
@@ -756,7 +756,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, breakable, bottomrule=.15mm, colframe=quarto-callout-note-color-frame, toptitle=1mm, opacityback=0, opacitybacktitle=0.6, colback=white, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, leftrule=.75mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, coltitle=black, arc=.35mm, toprule=.15mm, rightrule=.15mm, left=2mm, bottomtitle=1mm]
+\begin{tcolorbox}[enhanced jigsaw, arc=.35mm, breakable, toprule=.15mm, left=2mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, titlerule=0mm, bottomrule=.15mm, colbacktitle=quarto-callout-note-color!10!white, leftrule=.75mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, colback=white, bottomtitle=1mm, opacityback=0, rightrule=.15mm, toptitle=1mm, coltitle=black]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -1275,7 +1275,7 @@ full code to reproduce the plots and summaries in this paper.
 Abdulah, Sameh, Yuxiao Li, Jian Cao, Hatem Ltaief, David Keyes, Marc
 Genton, and Ying Sun. 2023. {``Large-Scale Environmental Data Science
 with {ExaGeoStatR}.''} \emph{Environmetrics} 34 (1): e2770.
-https://doi.org/\url{https://doi.org/10.1002/env.2770}.
+\url{https://doi.org/10.1002/env.2770}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-adams2003sobolev}{}}%
 Adams, Robert, and John Fournier. 2003. \emph{Sobolev Spaces}. Vol. 140.
@@ -1314,9 +1314,10 @@ DLMF. 2024. {``{NIST Digital Library of Mathematical Functions}.''}
 \url{https://dlmf.nist.gov/10.25}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-FT74}{}}%
-Friedman, J. H., and J. W. Tukey. 1974. {``{A} {P}rojection {P}ursuit
-{A}lgorithm for {E}xploratory {D}ata {A}nalysis.''} \emph{IEEE
-Transactions on Computing C} 23: 881--89.
+Friedman, J. H., and J. W. Tukey. 1974. {``A Projection Pursuit
+Algorithm for Exploratory Data Analysis.''} \emph{IEEE Transactions on
+Computers} C-23 (9): 881--90.
+\url{https://doi.org/10.1109/T-C.1974.224051}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-Grimm2016}{}}%
 Grimm, Katrin. 2016. {``Kennzahlenbasierte Grafikauswahl.''} Doctoral
@@ -1327,6 +1328,7 @@ Grochowski, Marek, and Włodzisław Duch. 2011. {``Fast Projection Pursuit
 Based on Quality of Projected Clusters.''} In \emph{Adaptive and Natural
 Computing Algorithms}, edited by Andrej Dobnikar, Uroš Lotrič, and
 Branko Šter, 89--97. Berlin, Heidelberg: Springer Berlin Heidelberg.
+\url{https://doi.org/10.1007/978-3-642-20267-4_10}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-guinness2021gpgp}{}}%
 Guinness, Joseph, Matthias Katzfuss, and Youssef Fahmy. 2021. {``{GpGp}:
@@ -1339,8 +1341,9 @@ Exploratory Projection Pursuit.''} \emph{The Annals of Statistics} 17
 (2): 589--605. \url{https://doi.org/10.1214/aos/1176347127}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-huber85}{}}%
-Huber, Peter J. 1985. {``Projection Pursuit.''} \emph{Ann. Statist.} 13
-(2): 435--75. \url{https://doi.org/10.1214/aos/1176349519}.
+Huber, Peter J. 1985. {``Projection Pursuit.''} \emph{The Annals of
+Statistics} 13 (2): 435--75.
+\url{https://doi.org/10.1214/aos/1176349519}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-huberplot}{}}%
 ---------. 1990. {``Data Analysis and Projection Pursuit.''} Technical
@@ -1351,6 +1354,7 @@ Technology.
 Karvonen, Toni. 2023. {``Asymptotic Bounds for Smoothness Parameter
 Estimates in {G}aussian Process Interpolation.''} \emph{SIAM/ASA Journal
 on Uncertainty Quantification} 11 (4): 1225--57.
+\url{https://doi.org/10.1137/22M149288X}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-kr69}{}}%
 Kruskal, J. B. 1969. {``Toward a Practical Method Which Helps Uncover
@@ -1358,6 +1362,7 @@ the Structure of a Set of Observations by Finding the Line
 Transformation Which Optimizes a New {`Index of Condensation'}.''} In
 \emph{Statistical Computation}, edited by R. C. Milton and J. A. Nelder,
 427--40. New York: Academic Press.
+\url{https://doi.org/10.1016/B978-0-12-498150-8.50024-0}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-laa_using_2020}{}}%
 Laa, Ursula, and Dianne Cook. 2020. {``Using Tours to Visually
@@ -1367,8 +1372,8 @@ Application to Problems in Physics.''} \emph{Computational Statistics}
 
 \leavevmode\vadjust pre{\hypertarget{ref-lee2010projection}{}}%
 Lee, Eun-Kyung, and Dianne Cook. 2010. {``A Projection Pursuit Index for
-Large p Small n Data.''} \emph{Statistics and Computing} 20 (3):
-381--92. \url{https://doi.org/10.1007/s11222-009-9131-1}.
+Large {\(p\)} Small {\(n\)} Data.''} \emph{Statistics and Computing} 20
+(3): 381--92. \url{https://doi.org/10.1007/s11222-009-9131-1}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-lee2005projection}{}}%
 Lee, Eun-Kyung, Dianne Cook, Sigbert Klinke, and Thomas Lumley. 2005.
@@ -1380,13 +1385,13 @@ Lee, Eun-Kyung, Dianne Cook, Sigbert Klinke, and Thomas Lumley. 2005.
 Loperfido, Nicola. 2018. {``Skewness-Based Projection Pursuit: A
 Computational Approach.''} \emph{Computational Statistics and Data
 Analysis} 120 (C): 42--57.
-https://doi.org/\url{https://doi.org/10.1016/j.csda.2017.11.001}.
+\url{https://doi.org/10.1016/j.csda.2017.11.001}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-Loperfido2020}{}}%
 ---------. 2020. {``Kurtosis-Based Projection Pursuit for Outlier
 Detection in Financial Time Series.''} \emph{The European Journal of
 Finance} 26 (2-3): 142--64.
-https://doi.org/\url{https://doi.org/10.1080/1351847X.2019.1647864}.
+\url{https://doi.org/10.1080/1351847X.2019.1647864}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-marie-sainte2010}{}}%
 Marie-Sainte, Souad Larabi, Alain Berro, and Anne Ruiz-Gazen. 2010.
@@ -1395,23 +1400,18 @@ Projection Pursuit Indices.''} In \emph{Swarm Intelligence}, edited by
 Marco Dorigo, Mauro Birattari, Gianni A. Di Caro, René Doursat, Andries
 P Engelbrecht, Dario Floreano, Luca Maria Gambardella, et al., 60--71.
 Berlin, Heidelberg: Springer Berlin Heidelberg.
+\url{https://doi.org/10.1007/978-3-642-15461-4_6}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-porcu2024matern}{}}%
 Porcu, Emilio, Moreno Bevilacqua, Robert Schaback, and Chris Oates.
 2024. {``The {M}atérn Model: A Journey Through Statistics, Numerical
 Analysis and Machine Learning.''} \emph{Statistical Science} 39 (3):
-469--92.
+469--92. \url{https://doi.org/10.1214/24-STS923}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-posse95}{}}%
-Posse, Christian. 1995b. {``Projection Pursuit Exploratory Data
+Posse, Christian. 1995. {``Projection Pursuit Exploratory Data
 Analysis.''} \emph{Computational Statistics and Data Analysis} 20 (6):
-669--87.
-https://doi.org/\url{https://doi.org/10.1016/0167-9473(95)00002-8}.
-
-\leavevmode\vadjust pre{\hypertarget{ref-posse1995}{}}%
----------. 1995a. {``Projection Pursuit Exploratory Data Analysis.''}
-\emph{Computational Statistics \& Data Analysis} 20 (6): 669--87.
-https://doi.org/\url{https://doi.org/10.1016/0167-9473(95)00002-8}.
+669--87. \url{https://doi.org/10.1016/0167-9473(95)00002-8}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-R}{}}%
 R Core Team. 2023. \emph{R: A Language and Environment for Statistical
@@ -1446,7 +1446,7 @@ Statistics} 31 (3): 739--52.
 Wickham, H., D. Cook, H. Hofmann, and A. Buja. 2011. {``{tourr}: An {R}
 Package for Exploring Multivariate Data with Projections.''}
 \emph{Journal of Statistical Software} 40 (2): 1--18.
-\url{http://doi.org/10.18637/jss.v040.i02}.
+\url{https://doi.org/10.18637/jss.v040.i02}.
 
 \leavevmode\vadjust pre{\hypertarget{ref-scag}{}}%
 Wilkinson, L., A. Anand, and R. Grossman. 2005. {``Graph-Theoretic
