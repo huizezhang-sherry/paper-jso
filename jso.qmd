@@ -943,8 +943,8 @@ sim_df2 <- sim_df |>
 mod1 <- glm(proportion ~ smoothness + squintability + d + long_time + n_jellies + max_tries, data = sim_df2, family = binomial)
 ```
 
-The index properties, smoothness and squintability, numerically characterise the complexity of projection pursuit index, and hence potential optimisation problems. @tbl-smoothness-squintability presents the parameters for calculating both metrics estimated from the Gaussian process (variance, range, smooth, and nugget) and the scaled logistic function ($\theta_1$ to $\theta_4$) for each case considered in the simulation. The column "smooth" is used as the smoothness metric and the
-column "squint" is calculated as equation (@eq-squintability-parametric)
+The index properties, smoothness and squintability, numerically characterise the complexity of projection pursuit index, and hence potential optimisation problems. @tbl-smoothness-squintability presents the parameters for calculating both metrics estimated from the Gaussian process (variance, range, smooth, and nugget) and the scaled logistic function ($\theta_1$ to $\theta_4$) for each case considered in the simulation. The column $\nu$ is used as the smoothness metric and the
+column $\varsigma$ is calculated as equation (@eq-squintability-parametric)
 as the squintability metric. 
 
 @tbl-mod-output presents the results from fitting a logistic regression model using proportion of success as the response and smoothness, squintability, dimension, running time, number of jellyfish and maximum number of tries, as predictors. Long runtime is a binary variable, where greater than 20 seconds is labelled 1. The fit suggests that JSO success rate is only affected by squintability, dimension and number of jellies. Interestingly, the smoothness of the index is not a problem for the JSO - this is promising! Running the optimisation longer and allowing more tries also does not affect success rate.  An increase in squintability of one unit increases the success rate by `r round(exp(broom::tidy(mod1)$estimate[3]) * 100, 0)`%. As dimension increases by one the success rate halves. Increasing the number of jellies by 10, increases the succes rate by `r round(100 * (exp(broom::tidy(mod1)$estimate[6])-1), 0)`%. 
@@ -1003,7 +1003,7 @@ mod1 |> tbl_regression(exponentiate=TRUE,
 
 # Practicalities {#sec-discussion}
 
-The simulation study demonstrated the that these metrics can be used to assess a PP index, and compare optimisers. Here we explain how they can be used for new index and optimiser development. Using the JSO optimiser for GTPP requires a change in user behaviour. For all the existing optimisers a single optimisation path is followed. The JSO has multiple optimisation paths, and needs additional tools to incorporate into the PPGT, as explained here.
+The simulation study demonstrated that these metrics can be used to assess a PP index, and compare optimisers. Here we explain how they can be used for new index and optimiser development. Using the JSO optimiser for PPGT requires a change in user behaviour. For all the existing optimisers a single optimisation path is followed. The JSO has multiple optimisation paths, and needs additional tools to incorporate into the PPGT, as explained here.
 
 ## Using the JSO in a PPGT
 
