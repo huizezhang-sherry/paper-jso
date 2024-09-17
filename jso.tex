@@ -288,7 +288,7 @@ projection pursuit\sep jellyfish search optimiser
 (JSO)\sep optimisation\sep grand tour\sep high-dimensional data\sep 
 exploratory data analysis
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[interior hidden, sharp corners, boxrule=0pt, frame hidden, breakable, borderline west={3pt}{0pt}{shadecolor}, enhanced]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, frame hidden, sharp corners, enhanced]}{\end{tcolorbox}}\fi
 
 \setstretch{2}
 \hypertarget{introduction}{%
@@ -636,12 +636,12 @@ of the JSO:
 Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance $d(A, A^*)$ to the index value $f(XA)$, such that $g(d(A, A^*)) = f(XA)$. For brevity, denote $g(d)$ as $g(d(A, A^*))$. The squintability of an index function $f(XA)$ is defined as 
 
 \begin{equation}
-\varsigma(f) = -4 \times \max_{d} g'(d) \times \arg \max_{d} g'(d)
+\varsigma(f) = -4 \times \min_{d} g'(d) \times \arg \min_{d} g'(d)
 \label{eq-squintability}
 \end{equation}
 
-where $4$ is a constant scaling factor, $-\max_d g'(d)$ represents the 
-largest gradient of $-g$ and $\arg \max_{d} g'(d)$ represents the projection distance at which this largest gradient is attained.
+where $4$ is a constant scaling factor, $-\min_d g'(d)$ represents the 
+largest gradient of $-g$ and $\arg \min_{d} g'(d)$ represents the projection distance at which this largest gradient is attained.
 
 \end{defn}
 
@@ -659,19 +659,15 @@ obtained later on.
 From the definition, the following proposition can be derived:
 
 \begin{prop}\label{prop:convex-concave}
-Let $g_1(d)$ be a convex decreasing function and $g_2(d)$ be a concave decreasing function both defined on [0, 1] where $d \in [0, D]$. Let $d_1 := \underset{d}{\arg \max} |g_1'(d)|$ and $d_2 := \underset{d}{\arg \max} |g_2'(d)|$.
-
+Let $g_1$ be a convex, strictly decreasing function and $g_2$ be a concave, strictly decreasing function, both defined on $[0, D]$ where $D>0$, and taking values in $[0, 1]$. Then
 $$\varsigma(g_1) < \varsigma(g_2)$$
-
-For a convex function, $g_1'(d) < 0 \; \forall d$ and is non-decreasing. For a concave function, $g_2'(d) < 0 \; \forall d$ and is non-increasing. As such, it follows that $d_1 < d_2$.
-
-Suppose both functions achieve the same maximum gradient $-g_{\max}$, i.e., $\max g'_1(d_1) = \max g'_2(d_2) = -g_{\max}$,
-
-$$
-\varsigma(g_1(d_1)) = -4  \max g'_1(d_1)  d_1 = -4  (-g_{\max}) d_1 \leq -4  (-g_{\max}) d_2 = -4 \max g'_2(d_2)  d_2 = \varsigma(g_2(d_2))
-$$
-
 \end{prop}
+
+\begin{proof}
+Let $d_1 := \underset{d}{\arg \min }\,g_1'(d)$ and $d_2 := \underset{d}{\arg \min }\,g_2'(d)$.
+Since $g_1$ is convex, $g_1''(d) >= 0 \; \forall d \in [0, D]$, meaning that $g_1'$ is an increasing function, taking its minimum for $d_1=0$. As a result, $\varsigma(g_1)=-4 \times g'(0) \times 0 =0$.
+Since $g_2$ is concave, $g_2''(d) <= 0 \; \forall d \in [0, D]$, meaning that $g_2'$ is a decreasing function, taking its minimum for $d_2=D>0$. Since $g_2$ is strictly decreasing, $g_2'(d) < 0 \; \forall d \in [0, D]$. In particular $g_2'(D)<0$. As a result $\varsigma(g_2)=-4 \times g'(D) \times D >0$. This proves that $\varsigma(g_1) < \varsigma(g_2)$.
+\end{proof}
 
 From Tukey and Tukey (1981) and Laa and Cook (2020), a large squint
 angle implies that the objective function value is close to optimal even
@@ -757,7 +753,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colbacktitle=quarto-callout-note-color!10!white, left=2mm, titlerule=0mm, rightrule=.15mm, opacityback=0, bottomrule=.15mm, leftrule=.75mm, colback=white, colframe=quarto-callout-note-color-frame, bottomtitle=1mm, toptitle=1mm, arc=.35mm, opacitybacktitle=0.6, breakable, toprule=.15mm, coltitle=black]
+\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-note-color!10!white, bottomtitle=1mm, leftrule=.75mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, rightrule=.15mm, opacityback=0, breakable, coltitle=black, colframe=quarto-callout-note-color-frame, left=2mm, toprule=.15mm, bottomrule=.15mm, toptitle=1mm, titlerule=0mm, arc=.35mm, opacitybacktitle=0.6, colback=white]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
