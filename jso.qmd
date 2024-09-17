@@ -425,7 +425,7 @@ Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the p
 \end{equation}
 
 where $4$ is a constant scaling factor, $-\min_d g'(d)$ represents the 
-largest gradient of $-g$ and $\arg \min_{d} g'(d)$ represents the projection distance at which this largest gradient is attained.
+largest gradient of $-g$ and $\arg \min_{d} g'(d)$ represents the projection distance at which this largest gradient is attained. If the set $\mathcal{D}:=\arg \min_{d} g'(d)$ contains more than one value $d$, the largest value $\max(\mathcal{D})$ is used in equation \eqref{eq-squintability}.
 
 \end{defn}
 ```
@@ -474,28 +474,14 @@ long while for the optimization to make substantial progress, as the
 candidate projections would need to be very close to the optimal one for
 the structure of the index function to be visible enough to be amenable
 to efficient optimization. This observation suggests that the extreme
-values of $g'$ (the ones for which $g''=0$, assuming that $g$ is twice
-differentiable), and the projection distances for which these values are
+values of $g'$ and the projection distances for which these values are
 attained, are crucial in the mathematical definition of squintability.  
-
-
-<!-- Noticing that $f$ is expected to be a decreasing function, the -->
-<!-- squintability metric is proposed as follows: -->
-
-<!-- $$ -->
-<!-- \varsigma:=-4\min_{x}f'(x)\times\underset{x}{\arg\min}f'(x)\ . -->
-<!-- $$ {#eq-squintability} -->
-
-<!-- $-\min_{x}f'(x)$ represents the largest value of the gradient of $-f$ -->
-<!-- and $\underset{x}{\arg\min}f'(x)$ represents the projection distance at -->
-<!-- which this largest gradient is attained.  -->
 
 To compute the squintability metric \eqref{eq-squintability} in practice,
 several approaches are possible. The first one is to propose a
 parametric model for $g$, and use it to obtain an explicit formula for
 $\varsigma$. Numerical experiments suggest a scaled sigmoid shape as
 described below. Define
-
 $$
 \ell(x):=\frac{1}{1+\exp(\theta_{3}(x-\theta_{2}))}\ ,
 $$ {#eq-logistic}
@@ -503,7 +489,6 @@ $$ {#eq-logistic}
 which is a decreasing logistic function depending on two parameters
 $\theta_2$ and $\theta_3$, such that $\ell(\theta_{2})=\frac{1}{2}$.
 Then, define
-
 $$
 g(x)=(\theta_{1}-\theta_{4})\frac{\ell(x)-\ell(x_{\max})}{\ell(0)-\ell(x_{\max})}+\theta_{4}\ ,
 $$ {#eq-parametric}
@@ -512,7 +497,6 @@ which depends on three additional parameters, $\theta_1$, $\theta_2$,
 and $x_{\max}$, such that $g(0)=\theta_1$ and $g(x_{\max})=\theta_4$.
 Under the parametric model (@eq-parametric), the squintability metric
 \eqref{eq-squintability} can be shown to be equal to
-
 $$
 \varsigma=\frac{(\theta_{1}-\theta_{4})\theta_{2}\theta_{3}}{\ell(0)-\ell(x_{\max})}\ .
 $$ {#eq-squintability-parametric}
@@ -715,8 +699,8 @@ smoothness measure for the index.
 To compute squintability, 50 random bases are sampled and interpolated
 to the optimal basis with a step size of 0.005. Index values and
 projection distances are calculated for these interpolated bases and the
-index values are averaged with a bin width of 0.005. A four-parameter
-scaled logistic function is fitted to the index values against
+index values are averaged with a bin width of 0.005. The four-parameter
+scaled logistic function (@eq-parametric) is fitted to the index values against
 projection distances, estimated by non-linear least squares. The
 squintability measure is then calculated as
 (@eq-squintability-parametric).
@@ -865,7 +849,7 @@ p2 <- bbb |>
 #| fig.width = 8,
 #| fig.height = 3.5,
 #| fig.align = "center",
-#| fig.cap = "The proportion of simulations that reach near-optimal index values in the pipe-finding problem using the holes index. The proportion is calculated based on the number of simulations, out of 50, that achieve an index value within 0.05 of the best-performing simulation. To quantify uncertainty, Bootstrap samples with 500 are generated. The thin lines represent the proportion for each of the 500 bootstrap replicates, while the thicker lines represent the mean of these bootstrap samples, connnected by lines. As the dimensionality increases, the proportion of simulations reaching the optimal index value increases."
+#| fig.cap = "The proportion of simulations that reach near-optimal index values in the pipe-finding problem using the holes index. The proportion is calculated based on the number of simulations, out of 50, that achieve an index value within 0.05 of the best-performing simulation. To quantify uncertainty, 500 bootstrap samples are generated. The thin segments represent the proportion for each of the 500 bootstrap replicates, while the thicker segments represent the mean of these bootstrap samples, connnected by lines. As the dimensionality increases, the proportion of simulations reaching the optimal index value decreases."
 pipe_sim_best <- sim_pipe_run_best |> 
   group_by(n_jellies, max_tries, d) |>
   summarise(I_best = max(I_max))
@@ -944,7 +928,7 @@ The index properties, smoothness and squintability, numerically characterise the
 column $\varsigma$ is calculated as equation (@eq-squintability-parametric)
 as the squintability metric. 
 
-@tbl-mod-output presents the results from fitting a logistic regression model using proportion of success as the response and smoothness, squintability, dimension, running time, number of jellyfish and maximum number of tries, as predictors. Long runtime is a binary variable, where greater than 20 seconds is labelled 1. The fit suggests that JSO success rate is only affected by squintability, dimension and number of jellies. Interestingly, the smoothness of the index is not a problem for the JSO - this is promising! Running the optimisation longer and allowing more tries also does not affect success rate.  An increase in squintability of one unit increases the success rate by `r round(exp(broom::tidy(mod1)$estimate[3]) * 100, 0)`%. As dimension increases by one the success rate halves. Increasing the number of jellies by 10, increases the succes rate by `r round(100 * (exp(broom::tidy(mod1)$estimate[6])-1), 0)`%. 
+@tbl-mod-output presents the results from fitting a logistic regression model using the proportion of success as the response and smoothness, squintability, dimension, running time, number of jellyfish and maximum number of tries, as predictors. Long runtime is a binary variable, where greater than 20 seconds is labelled 1. The fit suggests that JSO success rate is only affected by squintability, dimension and number of jellies. Interestingly, the smoothness of the index is not a problem for the JSO - this is promising! Running the optimisation longer and allowing more tries also does not affect success rate.  An increase in squintability of one unit increases the success rate by `r round(exp(broom::tidy(mod1)$estimate[3]) * 100, 0)`%. As dimension increases by one the success rate halves. Increasing the number of jellies by 10, increases the succes rate by `r round(100 * (exp(broom::tidy(mod1)$estimate[6])-1), 0)`%. 
 
 ```{r fig-idx-proj-dist, eval = FALSE}
 #| fig.width = 9,
