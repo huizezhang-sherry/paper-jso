@@ -764,7 +764,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, toptitle=1mm, rightrule=.15mm, arc=.35mm, colback=white, opacitybacktitle=0.6, colbacktitle=quarto-callout-note-color!10!white, toprule=.15mm, leftrule=.75mm, breakable, bottomrule=.15mm, colframe=quarto-callout-note-color-frame, opacityback=0, left=2mm, titlerule=0mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomtitle=1mm, coltitle=black]
+\begin{tcolorbox}[enhanced jigsaw, toprule=.15mm, bottomtitle=1mm, opacityback=0, left=2mm, toptitle=1mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, title={Algorithm: Jellyfish Optimizer Pseudo Code}, rightrule=.15mm, coltitle=black, titlerule=0mm, breakable, arc=.35mm, colback=white, bottomrule=.15mm, leftrule=.75mm, colbacktitle=quarto-callout-note-color!10!white]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -918,10 +918,9 @@ Smoothness and squintability are computed following the procedures
 outlined in Section~\ref{sec-smoothness} and
 Section~\ref{sec-squintability} and as illustrated in
 Figure~\ref{fig-smoothness} and Figure~\ref{fig-squintability}. To
-compute smoothness, 300 random bases are simulated. Index values and
-projection distance (to the optimal basis) are calculated for each
-random basis before fitting the Gaussian process model to obtain the
-smoothness measure for the index.
+compute smoothness, 500 random bases are simulated. Index values are
+calculated for each random basis before fitting the Gaussian process
+model to obtain the smoothness measure for the index.
 
 To compute squintability, 50 random bases are sampled and interpolated
 to the optimal basis with a step size of 0.005. Index values and
@@ -953,10 +952,10 @@ correctly identified the sine-wave shape.
 \caption{\label{fig-smoothness}Illustration of steps to calculate
 smoothness. For a given projection pursuit problem defined by the shape
 to find, data dimension and the index function, 1) sample random bases
-given the orthonormality contraint, 2) calculate the projection distance
-and the index value for each random basis, and 3) fit a Gaussian process
-model of index values against projection distances to obtain the
-smoothness measure.}
+given the orthonormality contraint and calculate the index value
+associated with each random basis, and 2) fit a Gaussian process model
+of index values against projection distances to obtain the smoothness
+measure.}
 
 \end{figure}%
 

@@ -690,9 +690,8 @@ pursuit.
 
 Smoothness and squintability are computed following the procedures
 outlined in @sec-smoothness and @sec-squintability and as illustrated in
-@fig-smoothness and @fig-squintability. To compute smoothness, 300 random
-bases are simulated. Index values and
-projection distance (to the optimal basis) are calculated for each
+@fig-smoothness and @fig-squintability. To compute smoothness, 500 random
+bases are simulated. Index values are calculated for each
 random basis before fitting the Gaussian process model to obtain the
 smoothness measure for the index.
 
@@ -718,7 +717,7 @@ sine-wave shape.
 ```{r}
 #| label: fig-smoothness
 #| out.width: 100%
-#| fig.cap: "Illustration of steps to calculate smoothness. For a given projection pursuit problem defined by the shape to find, data dimension and the index function, 1) sample random bases given the orthonormality contraint, 2) calculate the projection distance and the index value for each random basis, and 3) fit a Gaussian process model of index values against projection distances to obtain the smoothness measure. "
+#| fig.cap: "Illustration of steps to calculate smoothness. For a given projection pursuit problem defined by the shape to find, data dimension and the index function, 1) sample random bases given the orthonormality contraint and calculate the index value associated with each random basis, and 2) fit a Gaussian process model of index values against projection distances to obtain the smoothness measure. "
 # basis_smoothness <- sample_bases(idx = "splines2d", n_basis = 1000)
 # basis_smoothness |>
 #    ggplot(aes(x = dist, y = index)) +
