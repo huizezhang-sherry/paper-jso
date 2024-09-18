@@ -18,7 +18,7 @@ smoothness_holes <- tibble::tibble(
               matrix(c(rep(0, 20), 1, 0, 0, 1), nrow = 12, byrow = TRUE))) |>
   dplyr::mutate(basis_df = purrr::pmap(
     list(data, best),
-    function(data, best, n){sample_bases("holes", data = data, best = best)}))
+    function(data, best, n){sample_bases("holes", data = data, best = best, n_basis = 500)}))
 
 holes_tidy <- smoothness_holes |>
   rowwise() |>
@@ -27,12 +27,12 @@ holes_tidy <- smoothness_holes |>
 
 idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "stringy", "splines2d")
 smoothness_sine <- tibble::tibble(
-  n = 6, index = idx_names[6], data = list(sine1000),
+  n = 6, index = idx_names, data = list(sine1000),
   best = list(matrix(c(rep(0, 8), 1, 0, 0, 1), nrow = 6, byrow = TRUE))) |>
   dplyr::bind_rows(sine_8d_tbl("MIC")) |>
   dplyr::bind_rows(sine_8d_tbl("TIC")) |>
   rowwise() |>
-  dplyr::mutate(basis_df = list(sample_bases(index)))
+  dplyr::mutate(basis_df = list(sample_bases(index, n_basis = 500)))
 
 sine_tidy <- smoothness_sine |>
   rowwise() |>

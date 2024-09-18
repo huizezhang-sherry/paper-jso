@@ -635,7 +635,7 @@ illustration). This comparison is based on projection pursuit to find
 the pipe shape investigated by @laa_using_2020 using the `holes` index.
 
 Fifty simulations are conducted with both JSO and CRS, in four different
-data dimensions ($d = 6, 8, 10, 12$). JSO uses 100 jellyfishes with a
+data dimensions ($d = 6, 8, 10, 12$). JSO uses 100 jellyfish with a
 maximum of 100 tries, while the CRS allows a maximum of 1000 samples at
 each iteration before the algorithm terminates. The different numbers
 account for the multiple paths of JSO to enable fairer comparison with
@@ -711,7 +711,7 @@ generalised linear model is fitted using a binomial family and a logit
 link function. The data is pre-processed by 1) scaling the JSO
 hyper-parameters by a factor of 10 for interpretation, 2) creating a new
 binary variable `long_time` to indicate cases with an average run time
-over 30 seconds, and 3) re-coding the success rate for the `stringy`
+over 20 seconds, and 3) re-coding the success rate for the `stringy`
 index as 0, because none of the 50 simulations correctly identified the
 sine-wave shape.
 
@@ -775,8 +775,8 @@ suggesting its advantage in exploring high-dimensional spaces.
 
 ## Factors affecting JSO success rate: index properties and jellyfish hyper-parameters
 
-Smoothness and squintability are calculated across a collection of pipe-finding and sine-wave finding problems to construct the relationship between success rate, JSO hyper-parameters, and index properties. The success rate calculated at each hyper-parameter combination (number of jellyfish and the maximum number of tries) is presented in @fig-proportion. The uncertainty is quantified through 500 bootstrap replicates for each case. As the number of jellyfish and maximum tries increase, the success rate also increases. For simpler problems (6 dimensions), small parameter values (20 jellyfishes and a maximum of 50 tries) can already achieve a high success rate. However, larger parameter values
-(i.e. 100 jellyfishes and a maximum of 100 tries) are necessary for
+Smoothness and squintability are calculated across a collection of pipe-finding and sine-wave finding problems to construct the relationship between success rate, JSO hyper-parameters, and index properties. The success rate calculated at each hyper-parameter combination (number of jellyfish and the maximum number of tries) is presented in @fig-proportion. The uncertainty is quantified through 500 bootstrap replicates for each case. As the number of jellyfish and maximum tries increase, the success rate also increases. For simpler problems (6 dimensions), small parameter values (20 jellyfish and a maximum of 50 tries) can already achieve a high success rate. However, larger parameter values
+(i.e. 100 jellyfish and a maximum of 100 tries) are necessary for
 higher-dimensional problems (8, 10, and 12 dimensions). Increasing both
 parameters enhances the performance of JSO, but it also extends the
 computational time required for the optimisation, which can be
@@ -788,7 +788,7 @@ scagnostic indexes) multiple times across numerous iterations.
 #| fig.width = 10,
 #| label = fig-proj,
 #| fig.align = "center",
-#| fig.cap = "Projections found by the JSO and CRS at each 10th quantile across 50 simulations. The projection pursuit problem is to find the pipe shape using the holes index in the 6, 8, 10, and 12-dimensional spaces. The JSO uses 100 jellyfishes and a maximum number of tries of 100. The CRS uses a maximum of 1000 tries in each step of random sampling step before the algorithm terminates. In the 6-D data space, JSO always finds a clear pipe shape while the CRS also finds the pipe shape but with a wide rim. At higher data dimensions, JSO finds a higher index value and a clearer pipe shape across all the quantiles than the CRS"
+#| fig.cap = "Projections found by the JSO and CRS at each 10th quantile across 50 simulations. The projection pursuit problem is to find the pipe shape using the holes index in the 6, 8, 10, and 12-dimensional spaces. The JSO uses 100 jellyfish and a maximum number of tries of 100. The CRS uses a maximum of 1000 tries in each step of random sampling step before the algorithm terminates. In the 6-D data space, JSO always finds a clear pipe shape while the CRS also finds the pipe shape but with a wide rim. At higher data dimensions, JSO finds a higher index value and a clearer pipe shape across all the quantiles than the CRS"
 
 aaa <- map_dfr(
   list(pipe1000, pipe1000_8d, pipe1000_10d, pipe1000_12d), 
