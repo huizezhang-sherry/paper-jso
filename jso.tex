@@ -632,9 +632,9 @@ given, before the definition of squintability. Two approaches to compute
 this metric numerically are described.
 
 \begin{defn}[projection distance]\label{def:proj-dist}
-Recall that $A \in \mathbf{R}^{p \times d}$ is a $d$-dimensional orthonormal matrix. Let $A^*$ be the optimal matrix that achieves the maximum index value for a given data. The projection distance $d(A, A^*)$ between $A$ 
+Recall that $A \in \mathbf{R}^{p \times d}$ is a $d$-dimensional orthonormal matrix. Let $A^*$ be the optimal matrix that achieves the maximum index value for a given data. The projection distance $r(A, A^*)$ between $A$ 
 and $A^*$ is defined as 
-$d(A, A^*) = \lVert AA^\prime - A^*A^{*\prime}\,\rVert _F$
+$r(A, A^*) = \lVert AA^\prime - A^*A^{*\prime}\,\rVert _F$
 where $\lVert . \rVert _F$ denotes the Frobenius norm, given by
 $\lVert M \rVert _F = \sqrt{\sum_{ij} M_{ij}^2}$. 
 \end{defn}
@@ -645,19 +645,19 @@ Let $A$ and $B$ be two $d$-dimensional orthonormal matrices in $\mathbb{R}^p$. T
 \end{defn}
 
 Squintability can be defined as how the index value \(f(XA)\) changes
-with respect to the projection distance \(d(A, A^*)\), over the course
+with respect to the projection distance \(r(A, A^*)\), over the course
 of the JSO:
 
 \begin{defn}[squintability]\label{def:squintability}
-Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance $d(A, A^*)$ to the index value $f(XA)$, such that $g(d(A, A^*)) = f(XA)$. For brevity, denote $g(d)$ as $g(d(A, A^*))$. The squintability of an index function $f(XA)$ is defined as 
+Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance $r(A, A^*)$ to the index value $f(XA)$, such that $g(r(A, A^*)) = f(XA)$. For brevity, denote $g(r)$ as $g(r(A, A^*))$. The squintability of an index function $f(XA)$ is defined as 
 
 \begin{equation}
-\varsigma(f) = -4 \times \min_{d} g'(d) \times \arg \min_{d} g'(d)
+\varsigma(f) = -4 \times \min_{r} g'(r) \times \arg \min_{r} g'(r)
 \label{eq-squintability}
 \end{equation}
 
-where $4$ is a constant scaling factor, $-\min_d g'(d)$ represents the 
-largest gradient of $-g$ and $\arg \min_{d} g'(d)$ represents the projection distance at which this largest gradient is attained. If the set $\mathcal{D}:=\arg \min_{d} g'(d)$ contains more than one value $d$, the largest value $\max(\mathcal{D})$ is used in equation \eqref{eq-squintability}.
+where $4$ is a constant scaling factor, $-\min_r g'(r)$ represents the 
+largest gradient of $-g$ and $\arg \min_{r} g'(r)$ represents the projection distance at which this largest gradient is attained. If the set $\mathcal{D}:=\arg \min_{r} g'(r)$ contains more than one value $r$, the largest value $\max(\mathcal{D})$ is used in equation \eqref{eq-squintability}.
 
 \end{defn}
 
@@ -680,9 +680,9 @@ $$\varsigma(g_1) < \varsigma(g_2)$$
 \end{prop}
 
 \begin{proof}
-Let $d_1 := \underset{d}{\arg \min }\,g_1'(d)$ and $d_2 := \underset{d}{\arg \min }\,g_2'(d)$.
-Since $g_1$ is convex, $g_1''(d) >= 0 \; \forall d \in [0, D]$, meaning that $g_1'$ is an increasing function, taking its minimum for $d_1=0$. As a result, $\varsigma(g_1)=-4 \times g'(0) \times 0 =0$.
-Since $g_2$ is concave, $g_2''(d) <= 0 \; \forall d \in [0, D]$, meaning that $g_2'$ is a decreasing function, taking its minimum for $d_2=D>0$. Since $g_2$ is strictly decreasing, $g_2'(d) < 0 \; \forall d \in [0, D]$. In particular $g_2'(D)<0$. As a result $\varsigma(g_2)=-4 \times g'(D) \times D >0$. This proves that $\varsigma(g_1) < \varsigma(g_2)$.
+Let $r_1 := \underset{r}{\arg \min }\,g_1'(r)$ and $r_2 := \underset{r}{\arg \min }\,g_2'(r)$.
+Since $g_1$ is convex, $g_1''(r) >= 0 \; \forall r \in [0, D]$, meaning that $g_1'$ is an increasing function, taking its minimum for $r_1=0$. As a result, $\varsigma(g_1)=-4 \times g'(0) \times 0 =0$.
+Since $g_2$ is concave, $g_2''(r) <= 0 \; \forall r \in [0, D]$, meaning that $g_2'$ is a decreasing function, taking its minimum for $r_2=D>0$. Since $g_2$ is strictly decreasing, $g_2'(r) < 0 \; \forall r \in [0, D]$. In particular $g_2'(D)<0$. As a result $\varsigma(g_2)=-4 \times g'(D) \times D >0$. This proves that $\varsigma(g_1) < \varsigma(g_2)$.
 \end{proof}
 
 From Tukey and Tukey (1981) and Laa and Cook (2020), a large squint
@@ -764,7 +764,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, toprule=.15mm, bottomtitle=1mm, opacityback=0, left=2mm, toptitle=1mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, title={Algorithm: Jellyfish Optimizer Pseudo Code}, rightrule=.15mm, coltitle=black, titlerule=0mm, breakable, arc=.35mm, colback=white, bottomrule=.15mm, leftrule=.75mm, colbacktitle=quarto-callout-note-color!10!white]
+\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, colback=white, bottomtitle=1mm, breakable, colframe=quarto-callout-note-color-frame, left=2mm, toptitle=1mm, arc=.35mm, opacityback=0, leftrule=.75mm, rightrule=.15mm, titlerule=0mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomrule=.15mm, coltitle=black, toprule=.15mm, colbacktitle=quarto-callout-note-color!10!white]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
