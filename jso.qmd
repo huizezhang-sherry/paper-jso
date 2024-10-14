@@ -1003,9 +1003,9 @@ dt |>
       "shape", "index", "d",
       "$\\eta$", "$\\ell$", "$\\nu$", "$\\sigma$",
       "$\\theta_1$", "$\\theta_2$", "$\\theta_3$", "$\\theta_4$", "$\\varsigma$"), linesep = "",
-    booktabs = TRUE, escape = FALSE, row.names = TRUE, align = "c") |> 
-  column_spec(1, border_left = TRUE) |> 
-  column_spec(c(4, 8, 13), border_right = TRUE) |> 
+    booktabs = TRUE, escape = FALSE, row.names = FALSE, align = "|llr|rrrr|rrrrr") |> 
+  #column_spec(1, border_left = TRUE) |> 
+  #column_spec(c(4, 8, 13), border_right = TRUE) |> 
   kable_styling(font_size = 10) 
 ```
 
