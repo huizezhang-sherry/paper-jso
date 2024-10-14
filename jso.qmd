@@ -662,7 +662,7 @@ of the best index value found among all 50 simulations (see
 projection pursuit to find the pipe shape investigated by
 @laa_using_2020 using the `holes` index.
 
-## Performance of JSO relative to CRS  {#sec-app-1}
+## Performance of JSO relative to CRS {#sec-app-1}
 
 The JSO performance is investigated both in comparison to the existing
 optimizer, CRS, in a pipe-finding problem using the holes index in the
@@ -703,7 +703,7 @@ value, projection basis, random seed, and computation time.
 knitr::include_graphics(here::here("figures", "success-rate.png"))
 ```
 
-## Factors affecting JSO success rate: JSO hyper-parameters and index properties  {#sec-app-2}
+## Factors affecting JSO success rate: JSO hyper-parameters and index properties {#sec-app-2}
 
 To examine JSO's performance across various hyper-parameter
 combinations, the pipe-finding problem using the holes index is repeated
@@ -725,17 +725,17 @@ Smoothness and squintability are computed following the procedures
 outlined in @sec-smoothness and @sec-squintability and as illustrated in
 @fig-smoothness and @fig-squintability. To compute smoothness, 500
 random bases are simulated. Index values are calculated for each random
-basis before fitting the Gaussian process model to obtain the smoothness
-measure for the index.
+basis, followed by fitting a Gaussian process model to obtain the
+smoothness measure for the index.
 
 To compute squintability, 50 random bases are sampled and interpolated
 to the optimal basis with a step size of 0.005. Index values and
-projection distances are calculated for these interpolated bases and the
-index values are averaged with a bin width of 0.005. The four-parameter
-scaled logistic function (@eq-parametric) is fitted to the index values
-against projection distances, estimated by non-linear least squares. The
-squintability measure is then calculated as
-(@eq-squintability-parametric).
+projection distances are calculated for these interpolated bases. A
+binning procedure is applied to average the index values within each
+0.005 projection distance bin. The four-parameter scaled logistic
+function (@eq-parametric) is fitted to the index values against
+projection distances, estimated by non-linear least squares to obtain
+the squintability measure as Equation @eq-squintability-parametric.
 
 To construct a relationship among success rate, smoothness,
 squintability, and JSO hyper-parameters, a generalised linear model is
@@ -749,7 +749,7 @@ the 50 simulations correctly identified the sine-wave shape.
 ```{r}
 #| label: fig-smoothness
 #| out.width: 100%
-#| fig.cap: "Steps for calculating smoothness in a projection pursuit problem. Given the target shape, data dimension and the index function: (1) sample random bases given the orthonormality contraint and calculate their corresponding index values, and (2) fit a Gaussian process model of index values against the sampled bases to obtain the smoothness measure."
+#| fig.cap: "Steps for calculating smoothness in a projection pursuit problem. Given the target shape, data dimension and the index function: 1) sample random bases given the orthonormality contraint and calculate their corresponding index values, and 2) fit a Gaussian process model of index values against the sampled bases to obtain the smoothness measure."
 # basis_smoothness <- sample_bases(idx = "splines2d", n_basis = 1000)
 # basis_smoothness |>
 #    ggplot(aes(x = dist, y = index)) +
@@ -764,7 +764,7 @@ knitr::include_graphics(here::here("figures", "smoothness.png"))
 #| label: fig-squintability
 #| out.width: 100%
 #| fig.cap: |
-#|   Steps for calculating squintability in a projection pursuit problem. Given the target shape, data dimension and the index function: (1) sample random bases given the orthonormality and projection distance contraint, (2) interpolate the sampled bases to the optimal basis to calculate the projection distance and the index value. (3) bin the index values by projection distances to obtain the average index value for each bin, (4) fit the scaled sigmoid function in equation \eqref{eq-squintability} to the binned index values against projection distances using non-linear least square, 5) calculate the squintability measure using equation (@eq-squintability-parametric) with parameters estimated from the model.
+#|   Steps for calculating squintability in a projection pursuit problem. Given the target shape, data dimension and the index function: 1) sample random bases given the orthonormality and projection distance contraint and calculates their corresponding index values, 2) interpolate the sampled bases to the optimal basis and calculate the projection distance and the index value. 3) bin the index values by projection distances through averaging index value, 4) fit the scaled sigmoid function in equation \eqref{eq-squintability} to the binned index values against projection distances using non-linear least square to obtian the squintability measure using equation (@eq-squintability-parametric).
 # p1 <- sim_sine_6d_spline_projdist |> 
 #   ggplot(aes(x = proj_dist, y = index_val)) +
 #   geom_point(size = 0.1, alpha = 0.5) + 
@@ -806,7 +806,7 @@ clearer pipe shapes across all quantiles in data of 8, 10, 12
 dimensions, suggesting its advantage in exploring high-dimensional
 spaces.
 
-## Factors affecting JSO success rate: JSO hyper-parameters and index properties 
+## Factors affecting JSO success rate: JSO hyper-parameters and index properties
 
 The effect of JSO hyper–parameters (number of jellyfish and the maximum
 number of tries) on the success rate is presented in @fig-proportion.
