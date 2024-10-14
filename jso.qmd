@@ -721,6 +721,20 @@ in a total of `r nrow(sim_df)` scenarios, comprising of
 JSO is run 50 times for each scenario to calculate the success rate for
 each PP problem.
 
+```{r}
+#| label: fig-plot-data
+#| fig-width: 10
+#| fig-height: 5
+#| fig-cap: "The sine and pipe structures in the example data, along with index values for these projections."
+data("sine1000")
+sine1000 <- as_tibble(sine1000)
+dp1 <- ggplot(sine1000, aes(x=V5, y=V6)) + geom_point()
+data("pipe1000")
+pipe1000 <- as_tibble(pipe1000)
+dp2 <- ggplot(pipe1000, aes(x=V5, y=V6)) + geom_point()
+dp1 + dp2 + plot_layout(ncol=2)
+```
+
 Smoothness and squintability are computed following the procedures
 outlined in @sec-smoothness and @sec-squintability and as illustrated in
 @fig-smoothness and @fig-squintability. To compute smoothness, 500
@@ -834,11 +848,11 @@ used as the smoothness metric and the column $\varsigma$ is calculated
 as equation (@eq-squintability-parametric) as the squintability metric.
 
 ```{r}
-#| fig.height = 7.5,
-#| fig.width = 10,
-#| label = fig-proj,
-#| fig.align = "center",
-#| fig.cap = "Projections found by the JSO and CRS at each 10th quantile across 50 simulations. The projection pursuit problem is to find the pipe shape using the holes index in the 6, 8, 10, and 12-dimensional spaces. The JSO uses 100 jellyfish and a maximum number of tries of 100. The CRS uses a maximum of 1000 tries in each step of random sampling step before the algorithm terminates. In the 6-D data space, JSO always finds a clear pipe shape while the CRS also finds the pipe shape but with a wide rim. At higher data dimensions, JSO finds a higher index value and a clearer pipe shape across all the quantiles than the CRS"
+#| fig.height: 7.5
+#| fig.width: 10
+#| label: fig-proj
+#| fig.align: "center"
+#| fig.cap: "Projections found by the JSO and CRS at each 10th quantile across 50 simulations. The projection pursuit problem is to find the pipe shape using the holes index in the 6, 8, 10, and 12-dimensional spaces. The JSO uses 100 jellyfish and a maximum number of tries of 100. The CRS uses a maximum of 1000 tries in each step of random sampling step before the algorithm terminates. In the 6-D data space, JSO always finds a clear pipe shape while the CRS also finds the pipe shape but with a wide rim. At higher data dimensions, JSO finds a higher index value and a clearer pipe shape across all the quantiles than the CRS"
 
 aaa <- map_dfr(
   list(pipe1000, pipe1000_8d, pipe1000_10d, pipe1000_12d), 
@@ -895,11 +909,11 @@ p2 <- bbb |>
 ```
 
 ```{r}
-#| label = fig-proportion,
-#| fig.width = 8,
-#| fig.height = 3.5,
-#| fig.align = "center",
-#| fig.cap = "The proportion of simulations that reach near-optimal index values in the pipe-finding problem using the holes index. The proportion is calculated based on the number of simulations, out of 50, that achieve an index value within 0.05 of the best-performing simulation. To quantify uncertainty, 500 bootstrap samples are generated. The thin segments represent the proportion for each of the 500 bootstrap replicates, while the thicker segments represent the mean of these bootstrap samples, connnected by lines. As the dimensionality increases, the proportion of simulations reaching the optimal index value decreases."
+#| label: fig-proportion
+#| fig.width: 8
+#| fig.height: 3.5
+#| fig.align: "center"
+#| fig.cap: "The proportion of simulations that reach near-optimal index values in the pipe-finding problem using the holes index. The proportion is calculated based on the number of simulations, out of 50, that achieve an index value within 0.05 of the best-performing simulation. To quantify uncertainty, 500 bootstrap samples are generated. The thin segments represent the proportion for each of the 500 bootstrap replicates, while the thicker segments represent the mean of these bootstrap samples, connnected by lines. As the dimensionality increases, the proportion of simulations reaching the optimal index value decreases."
 pipe_sim_best <- sim_pipe_run_best |> 
   group_by(n_jellies, max_tries, d) |>
   summarise(I_best = max(I_max))
@@ -964,6 +978,7 @@ res_quantile |>
 ```
 
 ```{r}
+#| label: fit-logistic
 sim_df2 <- sim_df |>   
   mutate(n_jellies = n_jellies/10,
          max_tries = max_tries/10,
@@ -974,10 +989,12 @@ sim_df2 <- sim_df |>
 mod1 <- glm(proportion ~ smoothness + squintability + d + long_time + n_jellies + max_tries, data = sim_df2, family = binomial)
 ```
 
-```{r fig-idx-proj-dist, eval = FALSE}
-#| fig.width = 9,
-#| fig.height = 5,
-#| fig.cap = "Index values versus projection distance for the 12 pipe/sine-wave finding problem, after the binning procedure for calculating the squintability measure. The index values, averaged at bin width of 0.005, are scaled from 0 to 1 for comparison (holes, TIC, and stringy). The `MIC` and `TIC` index curves are convex while others are concave. The stringy curve shows an instantaneous jump to the optimum when aproaching the best basis." 
+```{r}
+#| label: fig-idx-proj-dist
+#| fig.width: 9
+#| fig.height: 5
+#| eval: false
+#| fig.cap: "Index values versus projection distance for the 12 pipe/sine-wave finding problem, after the binning procedure for calculating the squintability measure. The index values, averaged at bin width of 0.005, are scaled from 0 to 1 for comparison (holes, TIC, and stringy). The `MIC` and `TIC` index curves are convex while others are concave. The stringy curve shows an instantaneous jump to the optimum when aproaching the best basis." 
 sq_basis_dist_idx |>
   ggplot(aes(x = dist, y = index, group = index_name)) +
   geom_line() + 

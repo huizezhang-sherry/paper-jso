@@ -722,7 +722,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, rightrule=.15mm, bottomrule=.15mm, coltitle=black, leftrule=.75mm, left=2mm, arc=.35mm, colframe=quarto-callout-note-color-frame, opacityback=0, toprule=.15mm, breakable, colbacktitle=quarto-callout-note-color!10!white, bottomtitle=1mm, opacitybacktitle=0.6, toptitle=1mm, titlerule=0mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colback=white]
+\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, colbacktitle=quarto-callout-note-color!10!white, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm, breakable, colback=white, opacityback=0, leftrule=.75mm, toprule=.15mm, rightrule=.15mm, toptitle=1mm, colframe=quarto-callout-note-color-frame, titlerule=0mm, coltitle=black, bottomrule=.15mm, left=2mm, opacitybacktitle=0.6]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -874,6 +874,19 @@ varied JSO hyper-parameters. This results in a total of 52 scenarios,
 comprising of 24 computed on the pipe data and 28 on the sine-wave data.
 Again, JSO is run 50 times for each scenario to calculate the success
 rate for each PP problem.
+
+\begin{figure}
+
+\centering{
+
+\includegraphics{jso_files/figure-pdf/fig-plot-data-1.pdf}
+
+}
+
+\caption{\label{fig-plot-data}The sine and pipe structures in the
+example data, along with index values for these projections.}
+
+\end{figure}%
 
 Smoothness and squintability are computed following the procedures
 outlined in Section~\ref{sec-smoothness} and
