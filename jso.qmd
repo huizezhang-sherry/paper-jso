@@ -1009,6 +1009,21 @@ dt |>
   kable_styling(font_size = 10) 
 ```
 
+@tbl-mod-output presents the results from fitting a logistic regression
+model using the proportion of success as the response and smoothness,
+squintability, dimension, running time, number of jellyfish and maximum
+number of tries, as predictors. Long runtime is a binary variable, where
+greater than 20 seconds is labelled 1. The fit suggests that JSO success
+rate is only affected by squintability, dimension and number of jellies.
+Interestingly, the smoothness of the index is not a problem for the
+JSO - this is promising! Running the optimisation longer and allowing
+more tries also does not affect success rate. An increase in
+squintability of one unit increases the success rate by
+`r round(exp(broom::tidy(mod1)$estimate[3]) * 100, 0)`%. As dimension
+increases by one the success rate halves. Increasing the number of
+jellies by 10, increases the succes rate by
+`r round(100 * (exp(broom::tidy(mod1)$estimate[6])-1), 0)`%.
+
 ```{r}
 #| label: tbl-mod-output
 #| tbl-cap: "Jellyfish success rate relative to index properties and jellyfish hyper-parameters. This is the summary from a logistic regression fit to smoothness, squintability, dimension, running time, number of jellyfish and maximum number of tries. Interestingly, squintability and dimension strongly affect jellyfish optimisation success. The number of jellies marginally affects success, but index smoothness, running longer and increasing the number of tries do not."
@@ -1026,20 +1041,7 @@ mod1 |> tbl_regression(exponentiate=TRUE,
   bold_p(t = 0.1)
 ```
 
-@tbl-mod-output presents the results from fitting a logistic regression
-model using the proportion of success as the response and smoothness,
-squintability, dimension, running time, number of jellyfish and maximum
-number of tries, as predictors. Long runtime is a binary variable, where
-greater than 20 seconds is labelled 1. The fit suggests that JSO success
-rate is only affected by squintability, dimension and number of jellies.
-Interestingly, the smoothness of the index is not a problem for the
-JSO - this is promising! Running the optimisation longer and allowing
-more tries also does not affect success rate. An increase in
-squintability of one unit increases the success rate by
-`r round(exp(broom::tidy(mod1)$estimate[3]) * 100, 0)`%. As dimension
-increases by one the success rate halves. Increasing the number of
-jellies by 10, increases the succes rate by
-`r round(100 * (exp(broom::tidy(mod1)$estimate[6])-1), 0)`%.
+
 
 # Practicalities {#sec-discussion}
 

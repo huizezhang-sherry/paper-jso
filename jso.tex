@@ -740,7 +740,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, opacityback=0, toprule=.15mm, colframe=quarto-callout-note-color-frame, breakable, toptitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, coltitle=black, leftrule=.75mm, colbacktitle=quarto-callout-note-color!10!white, colback=white, opacitybacktitle=0.6, bottomrule=.15mm, titlerule=0mm, rightrule=.15mm, arc=.35mm, bottomtitle=1mm, left=2mm]
+\begin{tcolorbox}[enhanced jigsaw, rightrule=.15mm, opacitybacktitle=0.6, toprule=.15mm, colback=white, opacityback=0, left=2mm, bottomtitle=1mm, breakable, arc=.35mm, bottomrule=.15mm, titlerule=0mm, leftrule=.75mm, toptitle=1mm, colframe=quarto-callout-note-color-frame, colbacktitle=quarto-callout-note-color!10!white, title={Algorithm: Jellyfish Optimizer Pseudo Code}, coltitle=black]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -1087,6 +1087,19 @@ represent the smoothness and squintability measures respectively.}
 
 \end{table}%
 
+Table~\ref{tbl-mod-output} presents the results from fitting a logistic
+regression model using the proportion of success as the response and
+smoothness, squintability, dimension, running time, number of jellyfish
+and maximum number of tries, as predictors. Long runtime is a binary
+variable, where greater than 20 seconds is labelled 1. The fit suggests
+that JSO success rate is only affected by squintability, dimension and
+number of jellies. Interestingly, the smoothness of the index is not a
+problem for the JSO - this is promising! Running the optimisation longer
+and allowing more tries also does not affect success rate. An increase
+in squintability of one unit increases the success rate by 1235\%. As
+dimension increases by one the success rate halves. Increasing the
+number of jellies by 10, increases the succes rate by 27\%.
+
 \begingroup
 \fontsize{12.0pt}{14.4pt}\selectfont
 \setlength{\LTpost}{0mm}
@@ -1120,19 +1133,6 @@ Maximum number of tries & 1.10 (0.82 to 1.52) & 0.524 \\
 \textsuperscript{\textit{1}}OR = Odds Ratio, CI = Confidence Interval\\
 \end{minipage}
 \endgroup
-
-Table~\ref{tbl-mod-output} presents the results from fitting a logistic
-regression model using the proportion of success as the response and
-smoothness, squintability, dimension, running time, number of jellyfish
-and maximum number of tries, as predictors. Long runtime is a binary
-variable, where greater than 20 seconds is labelled 1. The fit suggests
-that JSO success rate is only affected by squintability, dimension and
-number of jellies. Interestingly, the smoothness of the index is not a
-problem for the JSO - this is promising! Running the optimisation longer
-and allowing more tries also does not affect success rate. An increase
-in squintability of one unit increases the success rate by 1235\%. As
-dimension increases by one the success rate halves. Increasing the
-number of jellies by 10, increases the succes rate by 27\%.
 
 \section{Practicalities}\label{sec-discussion}
 
