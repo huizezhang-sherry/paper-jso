@@ -43,28 +43,14 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{5}
 % Make \paragraph and \subparagraph free-standing
-\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}{
-    \@ifstar
-      \xxxParagraphStar
-      \xxxParagraphNoStar
-  }
-  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
-  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}{
-    \@ifstar
-      \xxxSubParagraphStar
-      \xxxSubParagraphNoStar
-  }
-  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
-  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
-\makeatother
 
 
 \providecommand{\tightlist}{%
@@ -140,7 +126,6 @@
 \usepackage{makecell}
 \usepackage{xcolor}
 \usepackage{caption}
-\usepackage{anyfontsize}
 \usepackage{orcidlink}
 \usepackage{algorithm}
 \usepackage{float}
@@ -209,7 +194,6 @@
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-
 \ifLuaTeX
   \usepackage{selnolig}  % disable illegal ligatures
 \fi
@@ -229,7 +213,6 @@ analysis},
   citecolor={Blue},
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
-
 
 \title{New Metrics for Assessing Projection Pursuit Indexes, and Guiding
 Optimisation Choices}
@@ -281,7 +264,6 @@ projection pursuit\sep jellyfish search optimiser
 (JSO)\sep optimisation\sep grand tour\sep high-dimensional data\sep 
 exploratory data analysis
 \end{keywords}
-
 
 \setstretch{2}
 \section{Introduction}\label{introduction}
@@ -740,7 +722,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, rightrule=.15mm, opacitybacktitle=0.6, toprule=.15mm, colback=white, opacityback=0, left=2mm, bottomtitle=1mm, breakable, arc=.35mm, bottomrule=.15mm, titlerule=0mm, leftrule=.75mm, toptitle=1mm, colframe=quarto-callout-note-color-frame, colbacktitle=quarto-callout-note-color!10!white, title={Algorithm: Jellyfish Optimizer Pseudo Code}, coltitle=black]
+\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, colbacktitle=quarto-callout-note-color!10!white, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm, breakable, colback=white, opacityback=0, leftrule=.75mm, toprule=.15mm, rightrule=.15mm, toptitle=1mm, colframe=quarto-callout-note-color-frame, titlerule=0mm, coltitle=black, bottomrule=.15mm, left=2mm, opacitybacktitle=0.6]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -892,6 +874,19 @@ varied JSO hyper-parameters. This results in a total of 52 scenarios,
 comprising of 24 computed on the pipe data and 28 on the sine-wave data.
 Again, JSO is run 50 times for each scenario to calculate the success
 rate for each PP problem.
+
+\begin{figure}
+
+\centering{
+
+\includegraphics{jso_files/figure-pdf/fig-plot-data-1.pdf}
+
+}
+
+\caption{\label{fig-plot-data}The sine and pipe structures in the
+example data, along with index values for these projections.}
+
+\end{figure}%
 
 Smoothness and squintability are computed following the procedures
 outlined in Section~\ref{sec-smoothness} and
@@ -1063,22 +1058,22 @@ represent the smoothness and squintability measures respectively.}
 
 \centering\begingroup\fontsize{10}{12}\selectfont
 
-\begin{tabular}{|>{}lcc>{}c|ccc>{}c|cccc>{}c|}
+\begin{tabular}{|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr}
 \toprule
-  & shape & index & d & $\eta$ & $\ell$ & $\nu$ & $\sigma$ & $\theta_1$ & $\theta_2$ & $\theta_3$ & $\theta_4$ & $\varsigma$\\
+shape & index & d & $\eta$ & $\ell$ & $\nu$ & $\sigma$ & $\theta_1$ & $\theta_2$ & $\theta_3$ & $\theta_4$ & $\varsigma$\\
 \midrule
-1 & pipe & holes & 6 & 0.03 & 0.39 & 3.08 & 0.0 & 1.02 & 0.86 & 3.37 & 0.02 & 3.05\\
-2 & pipe & holes & 8 & 0.02 & 0.32 & 2.86 & 0.0 & 1.01 & 0.87 & 3.26 & 0.03 & 2.96\\
-3 & pipe & holes & 10 & 0.02 & 0.36 & 2.80 & 0.0 & 1.02 & 0.88 & 3.15 & 0.02 & 2.95\\
-4 & pipe & holes & 12 & 0.02 & 0.36 & 2.82 & 0.0 & 1.01 & 0.88 & 3.34 & 0.00 & 3.12\\
-5 & sine & MIC & 6 & 0.06 & 0.29 & 3.15 & 0.0 & 0.89 & 0.57 & 1.62 & -0.02 & 1.26\\
-6 & sine & MIC & 8 & 0.06 & 0.33 & 3.09 & 0.0 & 0.93 & 0.33 & 1.31 & -0.03 & 0.77\\
-7 & sine & TIC & 6 & 0.17 & 0.34 & 3.06 & 0.0 & 0.95 & 0.54 & 1.72 & -0.03 & 1.32\\
-8 & sine & TIC & 8 & 0.16 & 0.31 & 3.17 & 0.0 & 0.95 & 0.56 & 1.72 & -0.03 & 1.37\\
-9 & sine & dcor & 6 & 0.09 & 0.31 & 3.06 & 0.0 & 0.95 & 1.04 & 2.74 & -0.02 & 2.95\\
-10 & sine & loess & 6 & 0.24 & 0.45 & 3.53 & 0.0 & 1.02 & 1.04 & 2.65 & 0.08 & 2.76\\
-11 & sine & splines & 6 & 0.10 & 0.32 & 3.11 & 0.0 & 1.01 & 1.05 & 2.73 & -0.01 & 3.12\\
-12 & sine & stringy & 6 & 0.00 & 1128.28 & 1.03 & 134.8 & 1.05 & 0.01 & 254.73 & 0.05 & 2.96\\
+pipe & holes & 6 & 0.03 & 0.39 & 3.08 & 0.0 & 1.02 & 0.86 & 3.37 & 0.02 & 3.05\\
+pipe & holes & 8 & 0.02 & 0.32 & 2.86 & 0.0 & 1.01 & 0.87 & 3.26 & 0.03 & 2.96\\
+pipe & holes & 10 & 0.02 & 0.36 & 2.80 & 0.0 & 1.02 & 0.88 & 3.15 & 0.02 & 2.95\\
+pipe & holes & 12 & 0.02 & 0.36 & 2.82 & 0.0 & 1.01 & 0.88 & 3.34 & 0.00 & 3.12\\
+sine & MIC & 6 & 0.06 & 0.29 & 3.15 & 0.0 & 0.89 & 0.57 & 1.62 & -0.02 & 1.26\\
+sine & MIC & 8 & 0.06 & 0.33 & 3.09 & 0.0 & 0.93 & 0.33 & 1.31 & -0.03 & 0.77\\
+sine & TIC & 6 & 0.17 & 0.34 & 3.06 & 0.0 & 0.95 & 0.54 & 1.72 & -0.03 & 1.32\\
+sine & TIC & 8 & 0.16 & 0.31 & 3.17 & 0.0 & 0.95 & 0.56 & 1.72 & -0.03 & 1.37\\
+sine & dcor & 6 & 0.09 & 0.31 & 3.06 & 0.0 & 0.95 & 1.04 & 2.74 & -0.02 & 2.95\\
+sine & loess & 6 & 0.24 & 0.45 & 3.53 & 0.0 & 1.02 & 1.04 & 2.65 & 0.08 & 2.76\\
+sine & splines & 6 & 0.10 & 0.32 & 3.11 & 0.0 & 1.01 & 1.05 & 2.73 & -0.01 & 3.12\\
+sine & stringy & 6 & 0.00 & 1128.28 & 1.03 & 134.8 & 1.05 & 0.01 & 254.73 & 0.05 & 2.96\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -1100,8 +1095,6 @@ in squintability of one unit increases the success rate by 1235\%. As
 dimension increases by one the success rate halves. Increasing the
 number of jellies by 10, increases the succes rate by 27\%.
 
-\begingroup
-\fontsize{12.0pt}{14.4pt}\selectfont
 \setlength{\LTpost}{0mm}
 
 \begin{longtable}{lcc}
@@ -1120,10 +1113,10 @@ smoothness, running longer and increasing the number of tries do not.}
 \textbf{Characteristic} & \textbf{OR} \textbf{(95\% CI)}\textsuperscript{\textit{1}} & \textbf{p-value} \\ 
 \midrule\addlinespace[2.5pt]
 Smoothness & 89.1 (1.23 to 4,865,159) & 0.289 \\ 
-Squintability & 12.4 (3.08 to 125) & {\bfseries 0.006} \\ 
-Dimension & 0.57 (0.30 to 0.96) & {\bfseries 0.048} \\ 
+Squintability & 12.4 (3.08 to 125) & \textbf{0.006} \\ 
+Dimension & 0.57 (0.30 to 0.96) & \textbf{0.048} \\ 
 Long runtime & 0.17 (0.00 to 4.96) & 0.357 \\ 
-Number of jellyfish & 1.27 (0.99 to 1.68) & {\bfseries 0.069} \\ 
+Number of jellyfish & 1.27 (0.99 to 1.68) & \textbf{0.069} \\ 
 Maximum number of tries & 1.10 (0.82 to 1.52) & 0.524 \\ 
 \bottomrule
 
@@ -1132,7 +1125,6 @@ Maximum number of tries & 1.10 (0.82 to 1.52) & 0.524 \\
 \begin{minipage}{\linewidth}
 \textsuperscript{\textit{1}}OR = Odds Ratio, CI = Confidence Interval\\
 \end{minipage}
-\endgroup
 
 \section{Practicalities}\label{sec-discussion}
 
@@ -1457,7 +1449,6 @@ Optimisation with Application to Guided Tours.''} \emph{The R Journal}
 13: 624--41. \url{https://doi.org/10.32614/RJ-2021-105}.
 
 \end{CSLReferences}
-
 
 
 
