@@ -31,10 +31,11 @@ sim <- function(d = d, n_jellies = n_jellies, max.tries = max.tries,
 }
 
 # separate into sim 1-30 and 31-50 to run, each takes < 2 hrs
+# 50/ 50
 set.seed(123)
 seed <- sample(1000: 10000, size = 50)
 sim_setup <- crossing(n_jellies = 50,
-                      max_tries = 50,
+                      max_tries = 100,
                       d = 6) |>
   crossing(sim = 1:50) |>
   mutate(seed = seed[sim], id = row_number())
@@ -48,6 +49,10 @@ sim_res <- sim_setup |>
   unnest(res)
 t2 <- Sys.time()
 t2 - t1
+
+sim_res |> get_best(sim) |> plot_projection(sine1000)
+sim_sine_6d_splines2d_100 <- sim_res
+save(sim_sine_6d_splines2d_100, file = here::here("data/sim_sine_6d_splines2d_100.rda"))
 
 sim_sine_6d_spline130 <- sim_res |> select(-alpha)
 sim_sine_6d_spline3150 <- sim_res |> select(-alpha)
