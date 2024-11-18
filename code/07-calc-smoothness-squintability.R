@@ -1,10 +1,12 @@
 library(ferrn)
 library(tourr)
 library(tidyverse)
+library(cassowaryr)
+library(igraph)
 
 sine_8d_tbl <- function(index){
   tibble::tibble(
-    n = 8, index = index, data = list(sine1000_8d),
+    n = 8, index = index, data = list(as.matrix(sine1000_8d)),
     best = list(matrix(c(rep(0, 12), 1, 0, 0, 1), nrow = 8, byrow = TRUE)))
 }
 
@@ -25,14 +27,15 @@ holes_tidy <- smoothness_holes |>
   dplyr::mutate(smooth = calc_smoothness(basis_df)) |>
   unnest(smooth)
 
-idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "stringy", "splines2d")
+idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "stringy2", "splines2d", "skinny")
 smoothness_sine <- tibble::tibble(
   n = 6, index = idx_names, data = list(sine1000),
   best = list(matrix(c(rep(0, 8), 1, 0, 0, 1), nrow = 6, byrow = TRUE))) |>
   dplyr::bind_rows(sine_8d_tbl("MIC")) |>
   dplyr::bind_rows(sine_8d_tbl("TIC")) |>
   rowwise() |>
-  dplyr::mutate(basis_df = list(sample_bases(index, n_basis = 500)))
+  dplyr::mutate(basis_df = list(sample_bases(index, n_basis = 500, best = best,
+                                             data = as.matrix(data))))
 
 sine_tidy <- smoothness_sine |>
   rowwise() |>
@@ -41,7 +44,7 @@ sine_tidy <- smoothness_sine |>
 
 smoothness <- bind_rows(sine_tidy, holes_tidy) |>
   mutate(index = factor(index, levels = c("holes", "MIC", "TIC", "dcor2d_2",
-                                          "loess2d", "splines2d", "stringy"))) |>
+                                          "loess2d", "splines2d", "stringy2", "skinny"))) |>
   arrange(index) |>
   select(index, n, variance:nugget)
 save(smoothness, file = here::here("data", "smoothness.rda"))
@@ -64,7 +67,7 @@ sq_holes_basis_df <- tibble::tibble(
                    step_size = 0.005, best = best)}))
 save(sq_holes_basis_df, file = here::here("data/sq_holes_basis_df.rda"))
 
-idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "splines2d", "stringy")
+idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "splines2d", "stringy2", "skinny")
 # about 40 mins
 sq_sine_basis_df <- tibble::tibble(
   n = 6, index = idx_names, data = list(sine1000),
@@ -73,10 +76,15 @@ sq_sine_basis_df <- tibble::tibble(
   dplyr::bind_rows(sine_8d_tbl("TIC")) |>
   dplyr::rowwise() |>
   dplyr::mutate(basis_df = list(sample_bases(
-    idx = index, data = data, n_basis = 50, min_proj_dist = 1.5,
+    idx = index, data = as.matrix(data), n_basis = 50, min_proj_dist = 1.5,
     step_size = 0.005, best = best, parallel = TRUE)
   ))
+# for stringy2, run separately
+# stringy$basis_df[[2]] <- stringy$basis_df[[2]] |> filter(!is.na(index))
 save(sq_sine_basis_df, file = here::here("data/sq_sine_basis_df.rda"))
+
+
+sq_sine_basis_df2 <- sq_sine_basis_df |> filter(index != "stringy") |> bind_rows(stringy)
 
 # calculate squintability
 res_holes <- sq_holes_basis_df |>
@@ -87,15 +95,14 @@ res_holes <- sq_holes_basis_df |>
   unnest(res) |>
   select(index, n, theta1: squint)
 
-
 param_tbl <- tibble(other_params =  c(
-  rep(list(start = list(theta1 = 1, theta2 = 1, theta3 = 2, theta4 = 0)), 5),
-  list(start = list(theta1 = 1, theta2 = 0, theta3 = 100, theta4 = 0)),
-  rep(list(start = list(theta1 = 1, theta2 = 1, theta3 = 2, theta4 = 0)), 2)))
+  rep(list(start = list(theta1 = 1, theta2 = 1, theta3 = 2, theta4 = 0)), 7),
+  list(start = list(theta1 = 1, theta2 = 0, theta3 = 10, theta4 = 0.15)),
+  list(start = list(theta1 = 1, theta2 = 0, theta3 = 10, theta4 = 0.1))))
 
-res_sine <- sq_sine_basis_df|>
+res_sine <- sq_sine_basis_df |>
   bind_cols(other_params = param_tbl) |>
-  bind_cols(scale = c(FALSE, FALSE, FALSE, TRUE, FALSE, TRUE, FALSE, TRUE)) |>
+  bind_cols(scale = c(FALSE, FALSE, FALSE, TRUE, FALSE, FALSE, TRUE, TRUE, TRUE)) |>
   mutate(res = calc_squintability(
     basis_df, method = "nls", bin_width = 0.005, scale = scale,
     other_params = list(start = other_params))) |>
@@ -114,7 +121,7 @@ sq_basis_dist_idx <- bind_rows(sq_holes_basis_df, sq_sine_basis_df) |>
   unnest(basis_df) |>
   mutate(dist = ceiling(dist / 0.005) * 0.005,
          index_name = factor(index_name, levels = c("holes", "MIC", "TIC", "dcor2d_2",
-                                          "loess2d", "splines2d", "stringy"))) |>
+                                                    "loess2d", "splines2d", "stringy"))) |>
   group_by(n, index_name, dist) |>
   summarise(index = mean(index, na.rm = TRUE), .groups = "drop")
 
@@ -127,3 +134,5 @@ sq_basis_dist_idx <- sq_basis_dist_idx |>
   bind_rows(sq_basis_dist_idx |>
               filter(!index_name %in% c("holes", "TIC", "stringy")))
 save(sq_basis_dist_idx, file = here::here("data", "sq_basis_dist_idx.rda"))
+
+

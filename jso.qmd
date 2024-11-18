@@ -982,11 +982,11 @@ res_quantile |>
 sim_df2 <- sim_df |>   
   mutate(n_jellies = n_jellies/10,
          max_tries = max_tries/10,
-         long_time = ifelse(time > 20, 1, 0),
-         P_J = ifelse(index == "stringy", 0, P_J)) |> 
+         long_time = ifelse(time > 20, 1, 0)
+         ) |> 
   rename(proportion = P_J)
 
-mod1 <- glm(proportion ~ smoothness + squintability + d + long_time + n_jellies + max_tries, data = sim_df2, family = binomial)
+mod1 <- glm(proportion ~ smoothness + squintability + d +  n_jellies + max_tries, data = sim_df2, family = binomial)
 ```
 
 ```{r}
@@ -1006,7 +1006,7 @@ sq_basis_dist_idx |>
 ```{r}
 #| label: tbl-smoothness-squintability
 #| tbl-cap: Parameters estimated from the Gaussian process (outputscale $\eta$, lengthscale $\ell$, smoothness $\nu$, and nugget $\sigma$) and scaled logistic function ($\theta_1$ to $\theta_4$ and $\varsigma$) for the pipe-finding and sine-wave finding problems.  The columns $\nu$ and $\varsigma$ represent the smoothness and squintability measures respectively. 
-dt <- tibble(shape = c(rep("pipe", 4), rep("sine", 8)), smoothness) |>
+dt <- tibble(shape = c(rep("pipe", 4), rep("sine", 9)), smoothness) |>
   left_join(squintability) |> 
   rename(d = n, smooth = smoothness) |> 
   mutate(index = ifelse(index == "dcor2d_2", "dcor", index),
@@ -1047,7 +1047,7 @@ jellies by 10, increases the succes rate by
 #| fig-pos: t
 library(gtsummary)
 set_gtsummary_theme(theme_gtsummary_journal("jama"))
-mod1 |> tbl_regression(exponentiate=TRUE, 
+mod1 |> tbl_regression(exponentiate = TRUE, 
                        pvalue_fun = label_style_pvalue(digits = 3),
                        label = list(smoothness = "Smoothness", 
                                     squintability = "Squintability",

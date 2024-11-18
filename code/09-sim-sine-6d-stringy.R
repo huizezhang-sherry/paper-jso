@@ -11,9 +11,9 @@ colnames(sine1000) <- paste0("V", 1:6)
 # d = 6
 stringy2 <- function(){
   function(mat){
-    x <- scree(mat[,1], mat[,2])
+    x <- cassowaryr::scree(mat[,1], mat[,2])
     b <- cassowaryr:::gen_mst(x$del, x$weights)
-    diameter <- length(get_diameter(b))
+    diameter <- length(igraph::get_diameter(b))
     length <-  length(b) - 1
     diameter / length
   }
