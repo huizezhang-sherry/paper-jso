@@ -52,7 +52,6 @@ sine_setup_summ <- sine_run_df |>
 #############################################################################
 #############################################################################
 # process stringy and skinny
-
 row1 <- sim_sine_6d_stringy |> mutate(index = "stringy2") |>
   mutate(id2 = paste0(index, n_jellies, max_tries, sim, d)) |>
   get_best(group = id2) |>
@@ -86,8 +85,43 @@ row3 <- sim_sine_6d_splines2d_100 |> mutate(index = "splines2d") |>
 
 #############################################################################
 #############################################################################
+# process 4d data
+load(here::here("data-raw/sim_pipe_4d.rda"))
+load(here::here("data-raw/sim_sine_4d_dcor2d.rda"))
+load(here::here("data-raw/sim_sine_4d_loess2d.rda"))
+load(here::here("data-raw/sim_sine_4d_MICTIC.rda"))
+load(here::here("data-raw/sim_sine_4d_splines2d.rda"))
+sim_pipe_4d <- sim_pipe |>
+  mutate(id2 = paste0(index, n_jellies, max_tries, sim, d)) |>
+  get_best(group = id2) |>
+  group_by(index, d, n_jellies, max_tries) |>
+  reframe(
+    I_max = max(index_val),
+    P_J = sum(index_val > 0.46)/n(),
+    time = mean(time)
+  )
+
+sim_data_sine_4d <- bind_rows(
+  sim_sine_4d_dcor2d |> mutate(index = "dcor2d_2") , sim_sine_4d_loess2d, sim_sine_4d_MICTIC,
+  sim_sine_4d_splines2d)
+
+sine_run_df_4d <- sim_data_sine_4d |>
+  mutate(id2 = paste0(index, n_jellies, max_tries, sim, d)) |>
+  get_best(group = id2)
+
+sine_setup_summ_4d <- sine_run_df_4d |>
+  group_by(index, d, n_jellies, max_tries) |>
+  reframe(
+    I_max = max(index_val),
+    P_J = sum(abs(I_max - index_val) <= 0.05)/n(),
+    time = mean(time)
+  )
+
+#############################################################################
+#############################################################################
 # combine sine and pipe success rate
-sim_summary <- sim_summary |> filter(index != "stringy") |> bind_rows(row1, row2, row3)
+sim_summary <- sim_summary |> filter(index != "stringy") |>
+  bind_rows(row1, row2, row3, sim_pipe_4d, sine_setup_summ_4d) |> select(-time)
 save(sim_summary, file = here::here("data", "sim_summary.rda"))
 
 ############################################################################
