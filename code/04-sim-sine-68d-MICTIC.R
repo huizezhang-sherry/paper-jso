@@ -59,9 +59,8 @@ set.seed(123)
 seed <- sample(1000: 10000, size = 50)
 sim_setup <- crossing(idx_f = c("MIC", "TIC"),
                       d = c(6, 8),
-                      n_jellies = c(20, 50, 100),
+                      n_jellies = c(20, 50),
                       max_tries = c(50, 100)) |>
-  filter(!(n_jellies == 100 & max_tries == 100)) |>
   crossing(sim = 1) |>
   mutate(seed = seed[sim], id = row_number())
 

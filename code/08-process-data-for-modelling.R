@@ -29,10 +29,13 @@ load(here::here("data-raw/sim_sine_68d_TICMIC.rda"))
 load(here::here("data-raw/sim_sine_6d_splines2d.rda"))
 load(here::here("data-raw/sim_sine_6d_stringy.rda"))
 load(here::here("data-raw/sim_sine_6d_skinny.rda"))
+load(here::here("data-raw/sim_sine_8d_splines2d.rda"))
+load(here::here("data-raw/sim_sine_8d_loess2d.rda"))
 
 sim_data_sine <- bind_rows(
   sim_sine_6d_dcor2d, sim_sine_6d_loess2d, sim_sine_68d_TICMIC,
-  sim_sine_6d_splines2d, sim_sine_6d_stringy)
+  sim_sine_6d_splines2d, sim_sine_6d_stringy,
+  sim_sine_8d_splines2d, sim_sine_8d_loess2d)
 
 sine_run_df <- sim_data_sine |>
   mutate(id2 = paste0(index, n_jellies, max_tries, sim, d)) |>
@@ -45,8 +48,7 @@ sine_setup_summ <- sine_run_df |>
   group_by(index, d, n_jellies, max_tries) |>
   reframe(
     I_max = max(index_val),
-    P_J = sum(abs(I_max - index_val) <= 0.05)/n(),
-    time = mean(time)
+    P_J = sum(abs(I_max - index_val) <= 0.05)/n()
   )
 
 #############################################################################
@@ -132,3 +134,6 @@ sim_df <- sim_summary |>
   left_join(smoothness |> select(n, index, smoothness) |> rename(d = n)) |>
   left_join(squintability |> select(index, n, squint) |> rename(d = n, squintability = squint))
 save(sim_df, file = here::here("data", "sim_df.rda"))
+
+
+sim_summary <- sim_summary |> bind_rows(sine_setup_summ)

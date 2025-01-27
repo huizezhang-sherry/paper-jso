@@ -174,3 +174,51 @@ t2 - t1
 sim_sine_4d_dcor2d <- sim_res
 save(sim_sine_4d_dcor2d, file = "data-raw/sim_sine_4d_dcor2d.rda")
 
+################################################################################
+################################################################################
+# about an hour
+# 20/ 50 can't find
+# 30/ 50 can't find
+# 30/ 100 can't find
+set.seed(123)
+seed <- sample(1000: 10000, size = 50)
+sim_setup <- tidyr::crossing(n_jellies = 50, max_tries = 100, d = 8) |>
+  tidyr::crossing(sim = 1:50) |>
+  mutate(seed = seed[sim], id = row_number())
+
+t1 <- Sys.time()
+set.seed(123)
+sim_res <- sim_setup |>
+  mutate(index = "splines2d") |>
+  rowwise() |>
+  mutate(res = list(sim(index = index, d, n_jellies, max_tries, optim_seed = seed, sim = sim))) |>
+  ungroup() |>
+  unnest(res)
+t2 <- Sys.time()
+t2 - t1
+sim_sine_8d_splines2d <- sim_res
+save(sim_sine_8d_splines2d, file = "data-raw/sim_sine_8d_splines2d.rda")
+
+################################################################################
+################################################################################
+# about an hour
+set.seed(123)
+seed <- sample(1000: 10000, size = 50)
+sim_setup <- tidyr::crossing(n_jellies = c(30, 50), max_tries = c(50, 100), d = 8) |>
+  filter(!(n_jellies == 50 & max_tries == 100)) |>
+  tidyr::crossing(sim = 1:50) |>
+  mutate(seed = seed[sim], id = row_number())
+
+t1 <- Sys.time()
+set.seed(123)
+sim_res <- sim_setup |>
+  mutate(index = "loess2d") |>
+  rowwise() |>
+  mutate(res = list(sim(index = index, d, n_jellies, max_tries, optim_seed = seed, sim = sim))) |>
+  ungroup() |>
+  unnest(res)
+t2 <- Sys.time()
+t2 - t1
+sim_sine_8d_loess2d <- sim_res
+save(sim_sine_8d_loess2d, file = "data-raw/sim_sine_8d_loess2d.rda")
+
