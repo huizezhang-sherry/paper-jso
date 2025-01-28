@@ -34,11 +34,13 @@ smoothness_sine <- tibble::tibble(
   best = list(matrix(c(rep(0, 8), 1, 0, 0, 1), nrow = 6, byrow = TRUE))) |>
   dplyr::bind_rows(sine_8d_tbl("MIC")) |>
   dplyr::bind_rows(sine_8d_tbl("TIC")) |>
+  dplyr::bind_rows(sine_8d_tbl("loess2d")) |>
+  dplyr::bind_rows(sine_8d_tbl("splines2d")) |>
   rowwise() |>
   dplyr::mutate(basis_df = list(sample_bases(index, n_basis = 500, best = best,
                                              data = as.matrix(data))))
 
-idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "splines2d")
+idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "splines2d", "stringy2")
 smoothness_4d <- tibble::tibble(
   n = 4, index = idx_names, data = list(sine1000_4d),
   best = list(matrix(c(rep(0, 4), 1, 0, 0, 1), nrow = 4, byrow = TRUE))) |>
@@ -83,6 +85,8 @@ sq_sine_basis_df <- tibble::tibble(
   best = list(matrix(c(rep(0, 8), 1, 0, 0, 1), nrow = 6, byrow = TRUE))) |>
   dplyr::bind_rows(sine_8d_tbl("MIC")) |>
   dplyr::bind_rows(sine_8d_tbl("TIC")) |>
+  dplyr::bind_rows(sine_8d_tbl("loess2d")) |>
+  dplyr::bind_rows(sine_8d_tbl("splines2d")) |>
   dplyr::rowwise() |>
   dplyr::mutate(basis_df = list(sample_bases(
     idx = index, data = as.matrix(data), n_basis = 50, min_proj_dist = 1.5,
@@ -93,7 +97,7 @@ sq_sine_basis_df <- tibble::tibble(
 sq_sine_basis_df2 <- sq_sine_basis_df |> filter(index != "stringy") |> bind_rows(stringy)
 
 # about 5 mins
-idx_names <- idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "splines2d")
+idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "splines2d", "stringy2")
 sq_4d_basis_df <- tibble::tibble(
   n = 4, index = idx_names, data = list(sine1000_4d),
   best = list(matrix(c(rep(0, 4), 1, 0, 0, 1), nrow = 4, byrow = TRUE))) |>
@@ -116,16 +120,16 @@ res_holes <- sq_holes_basis_df |>
   select(index, n, theta1: squint)
 
 param_tbl <- tibble(other_params =  c(
-  rep(list(start = list(theta1 = 1, theta2 = 1, theta3 = 2, theta4 = 0)), 10),
+  rep(list(start = list(theta1 = 1, theta2 = 1, theta3 = 2, theta4 = 0)), 11),
   list(start = list(theta1 = 1, theta2 = 0, theta3 = 10, theta4 = 0.1)),
-  rep(list(start = list(theta1 = 1, theta2 = 1, theta3 = 2, theta4 = 0)), 2),
-  list(start = list(theta1 = 1, theta2 = 0, theta3 = 10, theta4 = 0.15))
+  rep(list(start = list(theta1 = 1, theta2 = 1, theta3 = 2, theta4 = 0)), 3),
+  rep(list(start = list(theta1 = 1, theta2 = 0, theta3 = 10, theta4 = 0.15)), 2)
   ))
 
 # TIC, stringy2 and skinny need scale
 res_sine <- sq_sine_basis_df |>
   bind_cols(other_params = param_tbl) |>
-  bind_cols(scale = c(rep(FALSE, 3), rep(TRUE, 3), rep(FALSE, 4), TRUE, rep(FALSE, 2), TRUE)) |>
+  bind_cols(scale = c(rep(FALSE, 3), rep(TRUE, 3), rep(FALSE, 5), TRUE, rep(FALSE, 3), rep(TRUE, 2))) |>
   mutate(res = calc_squintability(
     basis_df, method = "nls", bin_width = 0.005, scale = scale,
     other_params = list(start = other_params))) |>
@@ -140,12 +144,10 @@ save(squintability, file = here::here("data", "squintability.rda"))
 smoothness |>
   left_join(squintability, by = c("index", "n")) |>
   dplyr::select(index,n, smoothness, squint) |>
-  ggplot(aes(x = smoothness, y = squint, color = as.factor(index), group = index)) +
-  #geom_line() +
-  geom_point() +
+  ggplot(aes(x = smoothness, y = squint, group = index)) +
+  geom_point(aes(color = as.factor(n))) +
   ggrepel::geom_label_repel(aes(label = index), nudge_x = 0.01, nudge_y = 0.01) +
   theme(aspect.ratio = 1)
-
 
 ############################################################################
 ############################################################################
