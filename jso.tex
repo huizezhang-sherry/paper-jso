@@ -80,15 +80,17 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 % definitions for citeproc citations
@@ -210,9 +212,6 @@
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
 
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
 \usepackage{bookmark}
 
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
@@ -344,7 +343,7 @@ close to the optimal projection.
 
 \centering{
 
-\includegraphics[width=0.8\textwidth,height=\textheight]{jso_files/figure-pdf/fig-example-functions-1.pdf}
+\includegraphics[width=0.8\linewidth,height=\textheight,keepaspectratio]{jso_files/figure-pdf/fig-example-functions-1.pdf}
 
 }
 
@@ -547,7 +546,7 @@ An interesting result is that the asymptotic case
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/matern_simulation_1d.png}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{figures/matern_simulation_1d.png}
 
 }
 
@@ -563,7 +562,7 @@ smoother curves.}
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/matern_simulation_2d.png}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{figures/matern_simulation_2d.png}
 
 }
 
@@ -740,7 +739,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, colframe=quarto-callout-note-color-frame, opacityback=0, breakable, toptitle=1mm, opacitybacktitle=0.6, bottomtitle=1mm, colbacktitle=quarto-callout-note-color!10!white, toprule=.15mm, colback=white, title={Algorithm: Jellyfish Optimizer Pseudo Code}, coltitle=black, bottomrule=.15mm, leftrule=.75mm, titlerule=0mm, arc=.35mm, rightrule=.15mm, left=2mm]
+\begin{tcolorbox}[enhanced jigsaw, arc=.35mm, toptitle=1mm, colframe=quarto-callout-note-color-frame, colback=white, bottomrule=.15mm, opacitybacktitle=0.6, coltitle=black, toprule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomtitle=1mm, colbacktitle=quarto-callout-note-color!10!white, titlerule=0mm, breakable, rightrule=.15mm, left=2mm, opacityback=0, leftrule=.75mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -861,7 +860,7 @@ value, projection basis, random seed, and computation time.
 
 \centering{
 
-\includegraphics[width=4.52in,height=\textheight]{figures/success-rate.png}
+\includegraphics[width=4.52in,height=\textheight,keepaspectratio]{figures/success-rate.png}
 
 }
 
@@ -888,8 +887,8 @@ To assess JSO's performance across various PP problems, two different
 data shapes, pipe and a sine wave, are investigated in 6D and 8D spaces
 using six different PP indexes: \texttt{dcor2d\_2}, \texttt{loess2d},
 \texttt{MIC}, \texttt{TIC}, \texttt{spline}, and \texttt{stringy}, under
-varied JSO hyper-parameters. This results in a total of 54 scenarios,
-comprising of 24 computed on the pipe data and 30 on the sine-wave data.
+varied JSO hyper-parameters. This results in a total of 76 scenarios,
+comprising of 30 computed on the pipe data and 46 on the sine-wave data.
 Again, JSO is run 50 times for each scenario to calculate the success
 rate for each PP problem.
 
@@ -897,7 +896,7 @@ rate for each PP problem.
 
 \centering{
 
-\includegraphics{jso_files/figure-pdf/fig-plot-data-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{jso_files/figure-pdf/fig-plot-data-1.pdf}}
 
 }
 
@@ -937,7 +936,7 @@ sine-wave shape.
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/smoothness.png}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{figures/smoothness.png}
 
 }
 
@@ -954,7 +953,7 @@ obtain the smoothness measure.}
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/squintability.png}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{figures/squintability.png}
 
 }
 
@@ -1025,7 +1024,7 @@ The column \(\nu\) is used as the smoothness metric and the column
 
 \centering{
 
-\includegraphics{jso_files/figure-pdf/fig-proj-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{jso_files/figure-pdf/fig-proj-1.pdf}}
 
 }
 
@@ -1046,7 +1045,7 @@ than the CRS}
 
 \centering{
 
-\includegraphics{jso_files/figure-pdf/fig-proportion-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{jso_files/figure-pdf/fig-proportion-1.pdf}}
 
 }
 
@@ -1080,19 +1079,28 @@ represent the smoothness and squintability measures respectively.}
 \toprule
 shape & index & d & $\eta$ & $\ell$ & $\nu$ & $\sigma$ & $\theta_1$ & $\theta_2$ & $\theta_3$ & $\theta_4$ & $\varsigma$\\
 \midrule
-pipe & holes & 6 & 0.03 & 0.39 & 3.08 & 0.00 & 1.02 & 0.86 & 3.37 & 0.02 & 3.14\\
-pipe & holes & 8 & 0.02 & 0.32 & 2.86 & 0.00 & 1.01 & 0.87 & 3.26 & 0.03 & 3.04\\
-pipe & holes & 10 & 0.02 & 0.36 & 2.80 & 0.00 & 1.02 & 0.88 & 3.15 & 0.02 & 3.05\\
-pipe & holes & 12 & 0.02 & 0.36 & 2.82 & 0.00 & 1.01 & 0.88 & 3.34 & 0.00 & 3.20\\
-sine & MIC & 6 & 0.06 & 0.31 & 3.08 & 0.00 & 0.89 & 0.57 & 1.62 & -0.03 & 1.38\\
-sine & MIC & 8 & 0.03 & 0.32 & 2.75 & 0.00 & 0.93 & 0.33 & 1.31 & -0.04 & 0.83\\
-sine & TIC & 6 & 0.16 & 0.31 & 3.08 & 0.00 & 0.95 & 0.54 & 1.72 & -0.03 & 1.43\\
-sine & TIC & 8 & 0.07 & 0.30 & 2.72 & 0.00 & 0.95 & 0.56 & 1.72 & -0.03 & 1.48\\
-sine & dcor & 6 & 0.08 & 0.29 & 3.13 & 0.00 & 0.95 & 1.04 & 2.74 & -0.03 & 3.20\\
-sine & loess & 6 & 0.24 & 0.46 & 3.56 & 0.00 & 1.02 & 1.04 & 2.65 & 0.07 & 3.02\\
-sine & splines & 6 & 0.10 & 0.32 & 3.11 & 0.00 & 1.01 & 1.05 & 2.73 & -0.02 & 3.40\\
-sine & stringy2 & 6 & 0.01 & 0.09 & 0.71 & 0.97 & 0.65 & 0.05 & 7.78 & 0.06 & 0.39\\
-sine & skinny & 6 & 0.05 & 0.19 & 2.24 & 0.01 & 0.83 & 0.00 & 2.98 & 0.05 & 0.00\\
+pipe & holes & 4 & 0.03 & 0.36 & 2.99 & 0.00 & 1.00 & 0.78 & 4.50 & 0.03 & 0.31\\
+pipe & holes & 6 & 0.03 & 0.38 & 3.09 & 0.00 & 1.02 & 0.86 & 3.37 & 0.02 & 0.41\\
+pipe & holes & 8 & 0.02 & 0.33 & 2.90 & 0.00 & 1.01 & 0.87 & 3.26 & 0.03 & 0.41\\
+pipe & holes & 10 & 0.02 & 0.34 & 2.88 & 0.00 & 1.02 & 0.88 & 3.15 & 0.02 & 0.43\\
+sine & holes & 12 & 0.02 & 0.43 & 2.72 & 0.00 & 1.01 & 0.88 & 3.34 & 0.00 & 0.41\\
+sine & MIC & 4 & 0.14 & 0.27 & 3.56 & 0.00 & 0.94 & 0.15 & 1.14 & -0.04 & 0.39\\
+sine & MIC & 6 & 0.06 & 0.31 & 3.08 & 0.00 & 0.89 & 0.57 & 1.62 & -0.03 & 0.39\\
+sine & MIC & 8 & 0.03 & 0.32 & 2.75 & 0.00 & 0.93 & 0.33 & 1.31 & -0.04 & 0.38\\
+sine & TIC & 4 & 0.40 & 0.27 & 3.49 & 0.00 & 0.97 & 0.46 & 1.55 & -0.04 & 0.38\\
+sine & TIC & 6 & 0.16 & 0.31 & 3.08 & 0.00 & 0.95 & 0.54 & 1.72 & -0.03 & 0.37\\
+sine & TIC & 8 & 0.07 & 0.30 & 2.72 & 0.00 & 0.95 & 0.56 & 1.72 & -0.03 & 0.38\\
+sine & dcor & 4 & 0.22 & 0.30 & 3.63 & 0.00 & 0.96 & 1.07 & 2.67 & -0.03 & 0.56\\
+sine & dcor & 6 & 0.08 & 0.29 & 3.13 & 0.00 & 0.95 & 1.04 & 2.74 & -0.03 & 0.53\\
+sine & loess & 4 & 0.34 & 0.50 & 2.90 & 0.00 & 1.02 & 1.10 & 2.50 & 0.05 & 0.57\\
+sine & loess & 6 & 0.24 & 0.46 & 3.56 & 0.00 & 1.02 & 1.04 & 2.65 & 0.07 & 0.53\\
+sine & loess & 8 & 0.19 & 0.46 & 3.36 & 0.00 & 1.02 & 1.04 & 2.62 & 0.08 & 0.53\\
+sine & skinny & 6 & 0.05 & 0.19 & 2.24 & 0.01 & 0.83 & 0.00 & 2.98 & 0.05 & 0.10\\
+sine & splines & 4 & 0.24 & 0.32 & 3.55 & 0.00 & 1.01 & 1.09 & 2.65 & -0.03 & 0.57\\
+sine & splines & 6 & 0.10 & 0.32 & 3.11 & 0.00 & 1.01 & 1.05 & 2.73 & -0.02 & 0.54\\
+sine & splines & 8 & 0.05 & 0.29 & 2.74 & 0.00 & 1.02 & 1.06 & 2.68 & -0.02 & 0.54\\
+sine & stringy2 & 4 & 0.02 & 0.30 & 2.76 & 1.01 & 0.64 & 0.05 & 7.89 & 0.05 & 0.00\\
+sine & stringy2 & 6 & 0.02 & 0.07 & 1.51 & 0.05 & 0.65 & 0.05 & 7.78 & 0.06 & 0.00\\
 \bottomrule
 \end{tabular}
 \endgroup{}
@@ -1110,9 +1118,9 @@ that JSO success rate is only affected by squintability, dimension and
 number of jellies. Interestingly, the smoothness of the index is not a
 problem for the JSO - this is promising! Running the optimisation longer
 and allowing more tries also does not affect success rate. An increase
-in squintability of one unit increases the success rate by 483\%. As
+in squintability of one unit increases the success rate by 124\%. As
 dimension increases by one the success rate halves. Increasing the
-number of jellies by 10, increases the succes rate by 8\%.
+number of jellies by 10, increases the succes rate by 6\%.
 
 \begingroup
 \fontsize{12.0pt}{14.4pt}\selectfont
@@ -1133,11 +1141,11 @@ smoothness, running longer and increasing the number of tries do not.}
 \toprule
 \textbf{Characteristic} & \textbf{OR} \textbf{(95\% CI)}\textsuperscript{\textit{1}} & \textbf{p-value} \\ 
 \midrule\addlinespace[2.5pt]
-Smoothness & 0.64 (0.09 to 14.1) & 0.673 \\ 
-Squintability & 4.83 (1.99 to 14.2) & {\bfseries 0.001} \\ 
-Dimension & 0.57 (0.36 to 0.85) & {\bfseries 0.008} \\ 
-Number of jellyfish & 1.23 (0.98 to 1.59) & {\bfseries 0.086} \\ 
-Maximum number of tries & 1.08 (0.82 to 1.44) & 0.593 \\ 
+Smoothness & 1.00 (0.81 to 1.20) & 0.961 \\ 
+Squintability & 1.24 (1.05 to 1.58) & {\bfseries 0.033} \\ 
+Dimension & 0.57 (0.33 to 0.87) & {\bfseries 0.022} \\ 
+Number of jellyfish & 1.32 (1.06 to 1.71) & {\bfseries 0.022} \\ 
+Maximum number of tries & 1.06 (0.85 to 1.35) & 0.603 \\ 
 \bottomrule
 
 \end{longtable}

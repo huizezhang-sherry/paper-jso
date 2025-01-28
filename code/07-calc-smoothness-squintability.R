@@ -28,6 +28,7 @@ holes_tidy <- smoothness_holes |>
   dplyr::mutate(smooth = calc_smoothness(basis_df)) |>
   unnest(smooth)
 
+##################################################
 idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "stringy2", "splines2d", "skinny")
 smoothness_sine <- tibble::tibble(
   n = 6, index = idx_names, data = list(sine1000),
@@ -141,11 +142,10 @@ save(squintability, file = here::here("data", "squintability.rda"))
 ############################################################################
 ############################################################################
 # check smoothness against squintability
-smoothness |>
-  left_join(squintability, by = c("index", "n")) |>
-  dplyr::select(index,n, smoothness, squint) |>
-  ggplot(aes(x = smoothness, y = squint, group = index)) +
-  geom_point(aes(color = as.factor(n))) +
+smoothness |> select(n, index, smoothness) |>
+  left_join(squintability |> select(n, index, squint) |> rename(squintability = squint)) |>
+  ggplot(aes(x = smoothness, y = squintability, group = index, color = as.factor(index))) +
+  geom_point() +
   ggrepel::geom_label_repel(aes(label = index), nudge_x = 0.01, nudge_y = 0.01) +
   theme(aspect.ratio = 1)
 

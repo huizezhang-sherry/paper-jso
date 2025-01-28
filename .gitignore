@@ -9,3 +9,5 @@
 .quarto
 data-raw
 optim_cache
+.RDataTmp
+.RDataTmp1

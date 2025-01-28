@@ -59,8 +59,8 @@ sim_res <- sim_setup |>
 t2 <- Sys.time()
 t2 - t1
 
-sim_pipe <- sim_res |> mutate(index = "holes") |> select(index, d, n_jellies, max_tries, sim:time)
-save(sim_pipe, file = "data-raw/sim_pipe_4d.rda")
+sim_pipe_4d <- sim_res |> mutate(index = "holes") |> select(index, d, n_jellies, max_tries, sim:time)
+save(sim_pipe_4d, file = "data-raw/sim_pipe_4d.rda")
 
 ################################################################################
 ################################################################################
@@ -222,3 +222,25 @@ t2 - t1
 sim_sine_8d_loess2d <- sim_res
 save(sim_sine_8d_loess2d, file = "data-raw/sim_sine_8d_loess2d.rda")
 
+################################################################################
+################################################################################
+# n_jellies = 30/50, max_tries = 50, sim = 1:2, 4.5/ 7.8 mins
+# n_jellies = 20, max_tries = 50, sim = 1:2, 2.8 mins, about 2.5 hrs for 50 simulations
+set.seed(123)
+seed <- sample(1000: 10000, size = 50)
+sim_setup <- tidyr::crossing(n_jellies = 20, max_tries = 50, d = 4) |>
+  tidyr::crossing(sim = 1:50) |>
+  mutate(seed = seed[sim], id = row_number())
+
+t1 <- Sys.time()
+set.seed(123)
+sim_res <- sim_setup |>
+  mutate(index = "stringy2") |>
+  rowwise() |>
+  mutate(res = list(sim(index = index, d, n_jellies, max_tries, optim_seed = seed, sim = sim))) |>
+  ungroup() |>
+  unnest(res)
+t2 <- Sys.time()
+t2 - t1
+sim_sine_4d_stringy <- sim_res
+save(sim_sine_4d_stringy, file = "data-raw/sim_sine_4d_stringy.rda")
