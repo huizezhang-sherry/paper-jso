@@ -1,28 +1,40 @@
 ---
-title: 'Appendix to " New Metrics for Assessing Projection Pursuit Indexes, and Guiding Optimisation Choices"'
+title: 'Appendix to "New Metrics for Assessing Projection Pursuit Indexes, and Guiding Optimisation Choices"'
 author: H. Sherry Zhang, Dianne Cook, Nicolas Langrené, Jessica Wai Yin Leung
 date: last-modified
 format: pdf
 bibliography: ../bibliography.bib
 ---
 
-Given high-dimensional data $X \in \mathbf{R}^{n\times p}$ and the index function $f(\cdot)$, projection pursuit finds the orthonormal projection basis $A \in \mathbf{R}^{p \times d}$ by solving the following optimisation problem:
+```{r setup, echo = FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+library(tidyverse)
+library(ferrn)
+library(tourr)
+library(tidygraph)
+library(ggraph)
+library(cassowaryr)
+library(patchwork)
+```
+
+Let $Y = XA$ denote the projection of a p-dimensional dataset, $X \in \mathbb{R}^{n\times p}$, onto d-dimensional space, $Y \in \mathbb{R}^{n \times d}$, where the projection is defined by an orthonormal matrix $A \in \mathbb{R}^{p \times d}$. Projection pursuit aims to find the matrix $A$ that maximizes an index function $f(\cdot)$, which measures interesting features of the projection, such as multi-modality, linear or non-linear relationship: 
 
 $$
 \underset{A}{\max } \quad f(XA) \quad \text{subject to} \quad A'A = I
 $$ {#eq-optimization}
 
-This appendix presents definition of all indexes $f(\cdot)$ used in the paper. These indexes are defined in 2D cases ($d = 2$), where $Y \in \mathbf{R}^{n \times 2} = (y_1, y_2)$ represents the projected data.
+This appendix defines all indexes $f(\cdot)$ used in the paper, namely holes, MIC, TIC, dcor, loess, skinny, splines, and stringy). Since all the indexes are defined for 2D projections ($d = 2$), the projected data can also be written as $Y = (y_1, y_2)$. 
 
-## The `holes` index
 
-The `holes` index [@cook1993projection] is a smooth index for detecting the presence of multi-modality in the projection. The index is defined as:
+## The holes index
 
-$$I_{\text{holes}}(A) = \frac{1-\frac{1}{n} \sum^n_{i = 1} \exp(-\frac{1}{2y_iy_i^\prime})}{1-\exp(-\frac{d}{2})}$$
+The holes index [@cook1993projection] defines as follows detects the presence of multi-modality in the projection:
 
-## The `dcor2d` index
+$$I_{\text{holes}} = \frac{1-\frac{1}{n} \sum^n_{i = 1} \exp(-\frac{1}{2y_iy_i^\prime})}{1-\exp(-\frac{d}{2})}$$
 
-The `dcor2d` index [@Grimm2016] is a smooth index that measures the distance correlation between the two projection axes. The index uses pair-wise distance to define column sum, row sum, and overall sum and then calculates distance correlation from distance variance and covariance.
+## The dcor index
+
+The dcor index [@Grimm2016], sometimes called dcor2D, measures the **d**istance **cor**relation between the two projection axes $(y_1, y_2)$. The index uses pair-wise distance to define column sum, row sum, and overall sum and then calculates distance correlation from distance variance and covariance.
 
   -  pair-wised distance: $a_{ij} = \|y_1^i - y_1^j\|$ and $b_{ij} = \|y_2^i - y_2^j\|$ for $i, j = 1, 2, \ldots, n$
 
@@ -32,7 +44,7 @@ The `dcor2d` index [@Grimm2016] is a smooth index that measures the distance cor
 
   -   distance covariance (and variance defined similarly): $$\text{dCov}(a_{ij}, b_{ij}) = \frac{1}{n(n-3)} \sum_{i \neq j} a_{ij} b_{ij}  -\frac{2 \sum_{i = 1}^n a_{i \cdot} b_{i \cdot}}{n (n-2)(n-3)} + \frac{a_{\cdot \cdot} b_{\cdot \cdot}}{n(n - 1)(n-2)(n-3)}$$
 
-   -   distance correlation: $$I_{\text{dcor}}(A)  = \text{dCor} (a_{ij}, b_{ij}) = \frac{\text{dCov}(a_{ij}, b_{ij})}{\sqrt{\text{dVar}(a_{ij}) \text{dVar}(b_{ij})}}$$
+   -   distance correlation: $$I_{\text{dcor}} = \text{dCor} (a_{ij}, b_{ij}) = \frac{\text{dCov}(a_{ij}, b_{ij})}{\sqrt{\text{dVar}(a_{ij}) \text{dVar}(b_{ij})}}$$
 
 # The `MIC` and `TIC` index
 
@@ -40,13 +52,13 @@ Both `MIC` and `TIC` are information-based indexes derived from mutual informati
 
 MIC finds the **maximum** mutual information over G where $k$ and $l$ are bounded by the grid size: $k \times l < B(n) = n^{\alpha}$. $alpha = 0.3$ is used in our simulation. 
 
-$$I_{MIC}(A) = \max_{g \in G} \frac{I(y_1, y_2 | g)}{\log(\min(k^*, l^*))}  = \max_{g \in G} \frac{\sum_{y1} \sum_{y2} P(y_1, y_2) \log \frac{P(y_1)}{P(y_1) P(y_2)}}{\log(\min(k^*, l^*))}$$
+$$I_{MIC} = \max_{g \in G} \frac{I(y_1, y_2 | g)}{\log(\min(k^*, l^*))}  = \max_{g \in G} \frac{\sum_{y1} \sum_{y2} P(y_1, y_2) \log \frac{P(y_1)}{P(y_1) P(y_2)}}{\log(\min(k^*, l^*))}$$
 
 where $k^*$ and $l^*$ are the number of rectangles in the optimal partition $g$.
 
 TIC calculates the **sum** of mutual information over G
 
-$$I_{TIC}(A) = \sum_{g \in G} \frac{I(y_1, y_2 | g)}{\log(\min(k^*, l^*))}  = \sum_{g \in G} \frac{\sum_{y1} \sum_{y2} P(y_1, y_2) \log \frac{P(y_1)}{P(y_1) P(y_2)}}{\log(\min(k^*, l^*))}$$
+$$I_{TIC} = \sum_{g \in G} \frac{I(y_1, y_2 | g)}{\log(\min(k^*, l^*))}  = \sum_{g \in G} \frac{\sum_{y1} \sum_{y2} P(y_1, y_2) \log \frac{P(y_1)}{P(y_1) P(y_2)}}{\log(\min(k^*, l^*))}$$
 
 # The `loess` and `splines` index
 
@@ -56,11 +68,165 @@ The `loess` and `splines` indexes detect non-linear structure in the projection,
 
 $$I_{\text{spline}}(A) = \max \left(1 - \frac{var(e^{\text{spline}}_{y_1 \sim y_2})}{var(y_1)}, 1 - \frac{var(e^{\text{spline}}_{y_2 \sim y_1})}{var(y_2)}\right)$$
 
+# The skinny and stringy index
 
-# The `stringy` index
+Both skinny and stringy indexes are non-smooth indexes based on scagnostics [@WW08; @scag]. Scagnostics are defined based on graph concepts, specifically, the alpha hull for the skinny index and the minimum spanning tree for the stringy index. The skinny index is defined based on the alpha hull ($\text{AH}$) as:
 
-The `stringy` [@scag; @WW08] index is a non-smooth index based on scagnostics. It measures the proportion of vertices with two edges in the minimum spanning tree (MST) of the projection to detect whether the projection forms a straight line. The index is calculated as
+$$I_{\text{skinny}} = 1 - \frac{\sqrt{4 \pi \text{area(AH)}}}{\text{perimeter(AH)}}$$ 
 
-$$I_{stringy}(A) = \frac{\text{number of vertices with 2 edges}}{\text{number of total vertices with more than one edge}} $$ 
+The stringy index is defined based on the minimal spanning tree ($T$). We adopt the definition in @scag based on the diameter and length of the tree. The diameter refers to the longest shortest path through $T$, and the length refers to the total number of edges in $T$.
+
+$$I_{\text{stringy}} = \frac{\text{diameter}(T)}{\text{length}(T)}$$
+
+An alternative definition of the stringy index is based on number of vertices, given by $\frac{|V^{(2)}|}{ |V| - |V^{(1)}|}$, where $|V^{(2)}|$ represents the number of degree-2 vertices and $|V| - |V^{(1)}|$ is the overall number of vertices minus the number of degree-1 vertices. However, we prefer the original definition based on the diameter and length of the minimal spanning tree, as it is more robust to noise, especially as the number of observations increases. In @fig-stringy, the stringy index defined based on the number of vertices (row 1) fails differentiate the non-linear sine wave from the non-pattern (left to right), while the diameter/length-based definition (row 2) does.
+
+```{r}
+count_vertices <- function(proj){
+  x <- scree(proj$V1, proj$V2)
+  a <- cassowaryr:::gen_mst(x$del, x$weights) 
+  vertices <- igraph::degree(a)
+  vertices |> table() |> as_tibble()
+}
+
+find_stringy <- function(proj_df,  longest_shortest = FALSE){
+  x <- scree(proj_df$V1, proj_df$V2)
+  b <- cassowaryr:::gen_mst(x$del, x$weights)
+  
+  
+  if (longest_shortest){
+    diameter <- length(igraph::get_diameter(b))
+    length <- length(b) 
+    tibble(diameter = diameter, length = length, stringy = round(diameter / length, 4))  
+  } else{
+    vertex_counts <- igraph::degree(b)
+    tibble(degree_one = sum(vertex_counts == 1), 
+           degree_two = sum(vertex_counts == 2), 
+           stringy = round(sum(vertex_counts == 2) / sum(vertex_counts > 1), 3))
+  }
+}
+
+
+
+plot_mst <- function(proj, size = 1, longest_shortest = FALSE){
+  x <- scree(proj$V1, proj$V2)
+  a <- cassowaryr:::gen_mst(x$del, x$weights) 
+  
+  edge_df <- as_tbl_graph(a) |> activate(edges) |> as_tibble()
+  graph_df <- tbl_graph(nodes = proj, edges = edge_df, directed = FALSE)
+  
+  if (longest_shortest){
+    longest_path <- igraph::get_diameter(a)
+    df <- tibble(from = as.vector(longest_path),
+                 to = c(as.vector(longest_path)[-1], 0)) |> 
+      filter(to != 0) |> 
+      mutate(fromto = paste0(from, to), tofrom = paste0(to, from))
+    graph_df <- graph_df |> 
+      activate(edges) |> 
+      mutate(fromto = paste0(from, to)) |> 
+      mutate(main_path = ifelse(fromto %in% c(df$fromto, df$tofrom), TRUE, FALSE)) 
+      
+  } else{
+    vertex_counts <- igraph::degree(a)
+    graph_df <- graph_df |> 
+      activate(nodes) |> 
+      mutate(size = as.factor(vertex_counts),
+             edge_col = ifelse(vertex_counts > 1, 3, 1),
+             edge_col = as.factor(ifelse(size == 2, 2, edge_col)))
+  }
+  
+  
+  res <- ggraph(graph_df, x = V1, y = V2) +
+    geom_node_point(size = size) + 
+    theme_bw() + 
+    theme(aspect.ratio = 1,
+          axis.ticks = ggplot2::element_blank(),
+          axis.text = ggplot2::element_blank(),
+          panel.grid = ggplot2::element_blank())
+
+  if (longest_shortest){
+    res <- res +
+      geom_edge_link(aes(color = main_path)) + 
+      scale_edge_color_brewer(palette = "Dark2", name= "Diameter")
+  } else{
+    res <- res + 
+      geom_edge_link(color = "black") + 
+      geom_node_point(aes(color = edge_col), size=size) + 
+      scale_color_brewer(palette = "Dark2", name = "Vertices")
+  }
+  return(res)
+
+}
+```
+
+
+```{r}
+#| label: fig-stringy
+#| fig.width: 9
+#| fig.height: 5 
+#| fig.cap: "Projections and the stringy index values calculated based on the number of vertices definition (row 1) and the diameter/length definition (row 2) for a sine wave pattern with 1000 observations. The color represents the number of vertices in row 1 and highlighs the longest minimal path (the points forming the diameter) in row 2. The noise around the sine wave creates local structures in the minimal spanning tree, resulting in a high number of degree-2 and higher vertices when calculated based on the number of vertices. This causes stringy index based on the number of vertices fails to differentiate the non-linear sine wave from the non-pattern, while the diameter/length definition, which captures the dominant main structure, is able to differentiate the sine wave form the non-pattern."
+
+mat0 <- matrix(c(           
+  0.42501543,  0.14630027,
+  0.39159945,  0.46379132,
+ -0.49791838,  0.45474161,
+ -0.09191581, -0.43749847,
+  0.63834704, -0.04640681,
+ -0.04640681,  0.60261547), nrow = 6, byrow = TRUE)
+mat1 <- matrix(c(
+  0.119619098, -0.12987621,
+  0.005504289, -0.03605812,
+  0.016274619,  0.03172812,
+ -0.020440544, -0.06033105,
+  0.992435619,  0.00705958,
+  0.007059580,  0.98850171), nrow = 6, byrow = TRUE)
+
+mat2 <- matrix(c(
+  0.026769505,  0.017326941,
+  0.031236712,  0.026519087,
+ -0.001670954, -0.014253910,
+  0.014841987,  0.056109302,
+  0.999041254, -0.001076086,
+ -0.001076086,  0.997819588), nrow = 6, byrow = TRUE)
+
+mat3 <- matrix(c(rep(0, 4), 0, 0.01, 0.01, 0, 0.99, 0, 0, 0.99), 
+               nrow = 6, byrow = TRUE) |> orthonormalise()
+
+df0 <- as_tibble(as.matrix(sine1000) %*% mat0) 
+df1 <- as_tibble(as.matrix(sine1000) %*% mat1) 
+df2 <- as_tibble(as.matrix(sine1000) %*% mat2) 
+df3 <- as_tibble(as.matrix(sine1000) %*% mat3) 
+p1 <- plot_mst(df0, size = 0.2) + 
+  labs(title = "Index = 0.77") +
+  theme(plot.title = ggtext::element_markdown())
+p2 <- plot_mst(df1, size = 0.2) + labs(title = "Index = 0.76")
+p3 <- plot_mst(df2, size = 0.2) + 
+  labs(title = "Index = 0.719") +
+  theme(plot.title = ggtext::element_markdown())
+p4 <- plot_mst(df3, size = 0.2) + 
+  labs(title = "Index = 0.771") +
+  theme(plot.title = ggtext::element_markdown())
+
+vert_df <- map_dfr(list(df0, df1, df2, df3), count_vertices, .id = "id") |> 
+  group_by(id) |> 
+  summarise(`degree 2 \n vertices` = n[2], `degree 2+ \n vertices` = sum(n[-1]),
+            stringy = round(n[2] / (sum(n) - n[1]), 3))
+
+p5 <- plot_mst(df0, size = 0.2, longest_shortest = TRUE) + labs(title = "Index = 0.176")
+p6 <- plot_mst(df1, size = 0.2, longest_shortest = TRUE) + labs(title = "Index = 0.284")
+p7 <- plot_mst(df2, size = 0.2, longest_shortest = TRUE) + labs(title = "Index = 0.474")
+p8 <- plot_mst(df3, size = 0.2, longest_shortest = TRUE) + labs(title = "Index = 0.705")
+
+stringy_df <- tibble(id = c(1,2,3, 4)) |> 
+  bind_cols(bind_rows(find_stringy(df0, longest_shortest = TRUE), 
+                      find_stringy(df1, longest_shortest = TRUE),
+                      find_stringy(df2, longest_shortest = TRUE),
+                      find_stringy(df3, longest_shortest = TRUE)))
+
+(p1 | p2 | p3 | p4 | gt::gt(vert_df)) /( p5 | p6 | p7 | p8 | gt::gt(stringy_df)) + 
+  plot_layout(guides = "collect")  & 
+  theme(legend.position='bottom', axis.text = element_blank(), axis.title = element_blank()) 
+
+```
+
 
 # Reference
