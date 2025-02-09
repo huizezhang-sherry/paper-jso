@@ -204,7 +204,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={New Metrics for Assessing Projection Pursuit Indexes, and Guiding Optimisation Choices},
+  pdftitle={Squintability and Other Metrics for Assessing Projection Pursuit Indexes, and Guiding Optimisation Choices},
   pdfauthor={H. Sherry Zhang; Dianne Cook; Nicolas Langrené; Jessica Wai Yin Leung},
   pdfkeywords={projection pursuit, jellyfish search optimiser
 (JSO), optimisation, grand tour, high-dimensional data, exploratory data
@@ -216,8 +216,8 @@ analysis},
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
-\title{New Metrics for Assessing Projection Pursuit Indexes, and Guiding
-Optimisation Choices}
+\title{Squintability and Other Metrics for Assessing Projection Pursuit
+Indexes, and Guiding Optimisation Choices}
 \author{H. Sherry Zhang$\textsuperscript{1}$, Dianne
 Cook$\textsuperscript{2}$, Nicolas
 Langrené$\textsuperscript{3}$, Jessica Wai Yin
@@ -266,7 +266,7 @@ projection pursuit\sep jellyfish search optimiser
 (JSO)\sep optimisation\sep grand tour\sep high-dimensional data\sep 
 exploratory data analysis
 \end{keywords}
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[breakable, interior hidden, frame hidden, sharp corners, enhanced, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[frame hidden, enhanced, boxrule=0pt, sharp corners, breakable, interior hidden, borderline west={3pt}{0pt}{shadecolor}]}{\end{tcolorbox}}\fi
 
 \setstretch{2}
 \hypertarget{introduction}{%
@@ -712,7 +712,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, toptitle=1mm, opacityback=0, colbacktitle=quarto-callout-note-color!10!white, opacitybacktitle=0.6, colback=white, breakable, left=2mm, colframe=quarto-callout-note-color-frame, titlerule=0mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, coltitle=black, bottomtitle=1mm, toprule=.15mm, arc=.35mm, rightrule=.15mm, bottomrule=.15mm, leftrule=.75mm]
+\begin{tcolorbox}[enhanced jigsaw, toptitle=1mm, titlerule=0mm, arc=.35mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, bottomrule=.15mm, colbacktitle=quarto-callout-note-color!10!white, breakable, coltitle=black, bottomtitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, opacityback=0, rightrule=.15mm, colback=white, leftrule=.75mm, toprule=.15mm, left=2mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}

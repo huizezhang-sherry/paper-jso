@@ -1,5 +1,5 @@
 ---
-title: New Metrics for Assessing Projection Pursuit Indexes, and Guiding Optimisation Choices
+title: Squintability and Other Metrics for Assessing Projection Pursuit Indexes, and Guiding Optimisation Choices
 author:
   - name: H. Sherry Zhang
     email: huize.zhang@austin.utexas.edu
