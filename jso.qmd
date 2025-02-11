@@ -632,15 +632,13 @@ the maximum number of tries.
 
 # Assessing optimisers: two simulation studies {#sec-sim-deets}
 
-This section describes the details of two simulation studies: one
+This section describes the details of two simulation studies. The first simulation
 compares the JSO performance with an existing optimiser, Creeping Random
 Search (CRS) [@RJ-2021-105; @laa_using_2020] to explore JSO's behaviour
-under different data dimensions. The second simulation first examines
-the JSO performance under different hyper-parameters combinations
-(number of jellyfish and the maximum number of tries), and then studies
-the effect of index properties (smoothness and squintability), along
-with JSO hyper-parameters, and data dimension, on the JSO performance
-through a logistic regression.
+under different data dimensions. The second simulation examines various factors affecting the performance of JSO.
+The JSO performance is evaluated under different hyper-parameters combinations
+(number of jellyfish and the maximum number of tries). The effect of index properties (smoothness and squintability) along
+with JSO hyper-parameters and data dimension variations is captured and studied using logistic regression.
 
 The performance of JSO is measured by the success rate, defined as the
 proportion of simulations that achieves a final index value within 0.05
@@ -651,10 +649,7 @@ projection pursuit to find the pipe shape investigated by
 
 ## Performance of JSO relative to CRS {#sec-app-1}
 
-The JSO performance is investigated both in comparison to the existing
-optimizer, CRS, in a pipe-finding problem using the holes index in the
-6, 8, 10, and 12-dimensional space. Fifty simulations are conducted in
-four data dimensions ($d = 6, 8, 10, 12$) with each optimiser. JSO uses
+The JSO performance is compared to the existing optimizer, CRS, in a pipe-finding problem using the holes index in different dimensional spaces. Fifty simulations are conducted in four data dimensions ($d = 6, 8, 10, 12$) with each optimiser. JSO uses
 100 jellyfish with a maximum of 100 tries, while the CRS allows a
 maximum of 1000 samples at each iteration before the algorithm
 terminates. The different numbers account for the multiple paths of JSO
@@ -692,14 +687,14 @@ knitr::include_graphics(here::here("figures", "success-rate.png"))
 
 ## Factors affecting JSO success rate: JSO hyper-parameters and index properties {#sec-app-2}
 
-To examine JSO's performance across various hyper-parameter
+To examine the performance of JSO across various hyper-parameter
 combinations, the pipe-finding problem using the holes index is repeated
 for fifty times in each hyper-parameter combination: 20, 50, and 100
 jellyfish and a maximum of 50 and 100 attempts. The success rate is
 calculated for each combination.
 
-To assess JSO's performance across various PP problems, two different
-data shapes, pipe and a sine wave, are investigated in 6D and 8D spaces
+In addition, to assess the performance of JSO across various PP problems, two different
+data shapes, pipe and a sine wave, are studied in 4D, 6D and 8D spaces
 using six different PP indexes: `dcor2d_2`, `loess2d`, `MIC`, `TIC`,
 `spline`, and `stringy`, under varied JSO hyper-parameters. This results
 in a total of `r nrow(sim_df)` scenarios, comprising of
