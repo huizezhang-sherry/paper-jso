@@ -48,7 +48,8 @@ save(sim_pipe, file = "data-raw/sim_pipe.rda")
 ################################################################################
 ################################################################################
 # additional smaller data
-sim_pipe_run_best <- sim_pipe |>
+load(here::here("data-raw/sim_pipe_4d.rda"))
+sim_pipe_run_best <- bind_rows(sim_pipe_4d, sim_pipe) |>
   group_by(id, n_jellies, max_tries, d) |>
   summarise(I_max = max(index_val))
 save(sim_pipe_run_best, file = "data/sim_pipe_run_best.rda")
