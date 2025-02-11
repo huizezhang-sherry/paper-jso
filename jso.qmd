@@ -694,14 +694,12 @@ jellyfish and a maximum of 50 and 100 attempts. The success rate is
 calculated for each combination.
 
 In addition, to assess the performance of JSO across various PP problems, two different
-data shapes, pipe and a sine wave, are studied in 4D, 6D and 8D spaces
+data shapes, pipe and a sine wave, are considered in various dimensional spaces
 using six different PP indexes: `dcor2d_2`, `loess2d`, `MIC`, `TIC`,
 `spline`, and `stringy`, under varied JSO hyper-parameters. This results
 in a total of `r nrow(sim_df)` scenarios, comprising of
 `r nrow(filter(sim_df, index == "holes"))` computed on the pipe data and
-`r nrow(filter(sim_df, index != "holes"))` on the sine-wave data. Again,
-JSO is run 50 times for each scenario to calculate the success rate for
-each PP problem.
+`r nrow(filter(sim_df, index != "holes"))` on the sine-wave data. A list of combinations of the data shape, dimensions and PP indexes considered are provided in @tbl-smoothness-squintability. Again, JSO is run 50 times for each scenario to calculate the success rate for each hyper-parameter combination.
 
 ```{r}
 #| label: fig-plot-data
