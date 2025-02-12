@@ -806,13 +806,7 @@ The effect of JSO hyper--parameters (number of jellyfish and the maximum
 number of tries) on the success rate is presented in @fig-proportion.
 The uncertainty is quantified through 500 bootstrap replicates for each
 case. As the number of jellyfish and maximum tries increase, the success
-rate also increases. For simpler problems (6 dimensions), small
-parameter values (20 jellyfish and a maximum of 50 tries) can already
-achieve a high success rate. However, larger parameter values (i.e. 100
-jellyfish and a maximum of 100 tries) are necessary for
-higher-dimensional problems (8, 10, and 12 dimensions). Increasing both
-parameters enhances the performance of JSO, but it also extends the
-computational time required for the optimisation, which can be
+rate also increases. For problems with relatively lower dimensional search spaces (4 and 6 dimensions), small parameter values (20 jellyfish and a maximum of 50 tries) are sufficient for space exploration and thus can already achieve a high success rate. Higher parameter values (i.e. 100 jellyfish and a maximum of 100 tries) enhances exploration of the search space, which is particularly beneficial in higher-dimensional problems (8, 10, and 12 dimensions) where a more complex search is necessary. However, in lower-dimensional problems, the benefit may be less pronounced, as the space is alredy relatively easy to navigate. While increasing both parameters enhances the performance of JSO, it also extends the computational time required for the optimisation, which can be
 computationally intensive when evaluating the index function (such as
 scagnostic indexes) multiple times across numerous iterations.
 
@@ -1003,22 +997,21 @@ dt |>
   kable_styling(font_size = 10) 
 ```
 
+
 @tbl-mod-output presents the results from fitting a logistic regression
 model using the proportion of success as the response and smoothness,
-squintability, dimension, running time, number of jellyfish and maximum
-number of tries, as predictors. Long runtime is a binary variable, where
-greater than 20 seconds is labelled 1. The fit suggests that the JSO success
+squintability, dimension, number of jellyfish and maximum
+number of tries, as predictors. The fit suggests that the JSO success
 rate is only affected by squintability, dimension and number of jellies. As expected, the JSO success rate is higher with higher squintability and/or more jellyfish, and lower when dimension is higher (higher-dimensional optimization is more difficult). Interestingly, the JSO is unaffected by the smoothness of the index function. This is consistent with the way random search algorithms jump from value to value without taking local regularity into account, as opposed to gradient-based optimizers for example. Allowing
-for more tries also does not affect success rate significantly. An increase in
-squintability of 10\% increases the success rate by
-`r round(exp(broom::tidy(mod1)$estimate[3]) * 10, 0)`%. As dimension
-increases by one the success rate halves. Increasing the number of
+for more tries also does not affect success rate significantly. A unit increase in squintability increases the success rate by
+`r round(100 * (exp(broom::tidy(mod1)$estimate[3])-1), 0)`%. As dimension
+increases by one the success rate almost halves. Increasing the number of
 jellies by 10, increases the success rate by
-`r round(100 * (exp(broom::tidy(mod1)$estimate[6])-1), 0)`%.
+`r round(100 * (exp(broom::tidy(mod1)$estimate[5])-1), 0)`%.
 
 ```{r}
 #| label: tbl-mod-output
-#| tbl-cap: "Jellyfish success rate relative to index properties and jellyfish hyper-parameters. This is the summary from a logistic regression fit to smoothness, squintability, dimension, running time, number of jellyfish and maximum number of tries. Interestingly, squintability and dimension strongly affect jellyfish optimisation success. The number of jellies marginally affects success, but index smoothness, running longer and increasing the number of tries do not."
+#| tbl-cap: "Jellyfish success rate relative to index properties and jellyfish hyper-parameters. This is the summary from a logistic regression fit to smoothness, squintability, dimension, number of jellyfish and maximum number of tries. Interestingly, squintability and dimension strongly affect jellyfish optimisation success. The number of jellies marginally affects success, but index smoothness, and increasing the number of tries do not."
 #| fig-pos: t
 library(gtsummary)
 set_gtsummary_theme(theme_gtsummary_journal("jama"))
@@ -1027,7 +1020,7 @@ mod1 |> tbl_regression(exponentiate = TRUE,
                        label = list(smoothness = "Smoothness", 
                                     squintability = "Squintability",
                                     d = "Dimension", 
-                                    long_time = "Long runtime", 
+                                    #long_time = "Long runtime", 
                                     n_jellies = "Number of jellyfish", 
                                     max_tries = "Maximum number of tries")) |>
   bold_p(t = 0.1)
