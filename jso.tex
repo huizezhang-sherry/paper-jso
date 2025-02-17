@@ -727,7 +727,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, bottomrule=.15mm, rightrule=.15mm, left=2mm, colbacktitle=quarto-callout-note-color!10!white, colframe=quarto-callout-note-color-frame, leftrule=.75mm, toptitle=1mm, colback=white, titlerule=0mm, breakable, opacityback=0, opacitybacktitle=0.6, bottomtitle=1mm, toprule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm, coltitle=black]
+\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, bottomtitle=1mm, colbacktitle=quarto-callout-note-color!10!white, left=2mm, toprule=.15mm, colback=white, leftrule=.75mm, arc=.35mm, opacityback=0, title={Algorithm: Jellyfish Optimizer Pseudo Code}, coltitle=black, rightrule=.15mm, toptitle=1mm, bottomrule=.15mm, breakable, titlerule=0mm, colframe=quarto-callout-note-color-frame]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -879,23 +879,11 @@ considered in various dimensional spaces using six different PP indexes:
 \texttt{spline}, and \texttt{stringy}, under varied JSO
 hyper-parameters. This results in a total of 76 scenarios, comprising of
 30 computed on the pipe data and 46 on the sine-wave data. A list of
-combinations of the data shape, dimensions and PP indexes considered are
-provided in Table~\ref{tbl-smoothness-squintability}. Again, JSO is run
-50 times for each scenario to calculate the success rate for each
-hyper-parameter combination.
-
-\begin{figure}
-
-\centering{
-
-\includegraphics{jso_files/figure-pdf/fig-plot-data-1.pdf}
-
-}
-
-\caption{\label{fig-plot-data}The sine and pipe structures in the
-example data, along with index values for these projections.}
-
-\end{figure}%
+combinations of the data shape, dimensions and PP indexes that are
+considered in this study is provided in
+Table~\ref{tbl-smoothness-squintability}. Again, JSO is run 50 times for
+each scenario to calculate the success rate for each hyper-parameter
+combination.
 
 Smoothness and squintability are computed following the procedures
 outlined in Section~\ref{sec-smoothness} and
@@ -986,7 +974,7 @@ high-dimensional spaces.
 index
 properties}\label{factors-affecting-jso-success-rate-jso-hyper-parameters-and-index-properties}
 
-The effect of JSO hyper--parameters (number of jellyfish and the maximum
+The effect of JSO hyper-parameters (number of jellyfish and the maximum
 number of tries) on the success rate is presented in
 Figure~\ref{fig-proportion}. The uncertainty is quantified through 500
 bootstrap replicates for each case. As the number of jellyfish and
@@ -999,7 +987,7 @@ of 100 tries) enhances exploration of the search space, which is
 particularly beneficial in higher-dimensional problems (8, 10, and 12
 dimensions) where a more complex search is necessary. However, in
 lower-dimensional problems, the benefit may be less pronounced, as the
-space is alredy relatively easy to navigate. While increasing both
+space is already relatively easy to navigate. While increasing both
 parameters enhances the performance of JSO, it also extends the
 computational time required for the optimisation, which can be
 computationally intensive when evaluating the index function (such as
@@ -1120,7 +1108,7 @@ value without taking local regularity into account, as opposed to
 gradient-based optimizers for example. Allowing for more tries also does
 not affect success rate significantly. A unit increase in squintability
 increases the success rate by 24\%. As dimension increases by one the
-success rate almost halves. Increasing the number of jellies by 10,
+success rate almost halves. Increasing the number of jellies by 10
 increases the success rate by 32\%.
 
 \begin{table}
@@ -1154,6 +1142,44 @@ Maximum number of tries & 1.06 (0.85 to 1.35) & 0.603 \\
 }
 
 \end{table}%
+
+\begingroup\fontsize{10}{12}\selectfont
+
+\begin{longtable}[t]{>{\raggedright\arraybackslash}p{5em}rrrrrr}
+
+\caption{\label{tbl-joint-output}Model summaries for squintability and
+smoothness separately}
+
+\tabularnewline
+
+\\
+\toprule
+Model & Null Deviance & DF Null & Log-Likelihood & DF Residual & AIC & BIC\\
+\midrule
+\textbf{Squintability} & 49.29 & 75 & -26.44 & 71 & 62.87 & 74.53\\
+\textbf{Smoothness} & 49.29 & 75 & -33.23 & 71 & 76.47 & 88.12\\
+\bottomrule
+
+\end{longtable}
+
+\endgroup{}
+
+Squintability and smoothness are likely dependent, making it unnecessary
+to include both as independent factors in the model. Intuitively, a
+highly smooth search space exhibits gradual changes, making it easier to
+perceive the overall structure from a distance, thereby increasing the
+squint angle. Table~\ref{tbl-joint-output} compare the model fits when
+squintability and smoothness are included separately. Given that the
+null deviance remains the same across models, the model with
+squintability yields a smaller residual deviance and lower AIC and BIC
+values, indicating a better fit. This suggests that squintability
+captures the relevant variation more effectively than smoothness.
+
+This study intends to serve as an illustration that the proposed measure
+effectively captures the key factors influencing the success rate of PP.
+The interactions between the two variables were not examined in this
+study due to the limited number of data points, nor was the linearity
+assumption of the relationship with success rate explicitly tested.
 
 \section{Practicalities}\label{sec-discussion}
 

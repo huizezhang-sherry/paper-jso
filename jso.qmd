@@ -89,6 +89,7 @@ library(tourr)
 library(PPtreeViz)
 library(ferrn)
 library(colorspace)
+library(broom)
 load(here::here("data/sim_pipe_run_best.rda"))
 load(here::here("data/sim_sine_6d_spline_head.rda"))
 load(here::here("data/sim_sine_6d_spline_best.rda"))
@@ -699,21 +700,7 @@ using six different PP indexes: `dcor2d_2`, `loess2d`, `MIC`, `TIC`,
 `spline`, and `stringy`, under varied JSO hyper-parameters. This results
 in a total of `r nrow(sim_df)` scenarios, comprising of
 `r nrow(filter(sim_df, index == "holes"))` computed on the pipe data and
-`r nrow(filter(sim_df, index != "holes"))` on the sine-wave data. A list of combinations of the data shape, dimensions and PP indexes considered are provided in @tbl-smoothness-squintability. Again, JSO is run 50 times for each scenario to calculate the success rate for each hyper-parameter combination.
-
-```{r}
-#| label: fig-plot-data
-#| fig-width: 10
-#| fig-height: 5
-#| fig-cap: "The sine and pipe structures in the example data, along with index values for these projections."
-data("sine1000")
-sine1000 <- as_tibble(sine1000)
-dp1 <- ggplot(sine1000, aes(x=V5, y=V6)) + geom_point()
-data("pipe1000")
-pipe1000 <- as_tibble(pipe1000)
-dp2 <- ggplot(pipe1000, aes(x=V5, y=V6)) + geom_point()
-dp1 + dp2 + plot_layout(ncol=2)
-```
+`r nrow(filter(sim_df, index != "holes"))` on the sine-wave data. A list of combinations of the data shape, dimensions and PP indexes that are considered in this study is provided in @tbl-smoothness-squintability. Again, JSO is run 50 times for each scenario to calculate the success rate for each hyper-parameter combination.
 
 Smoothness and squintability are computed following the procedures
 outlined in @sec-smoothness and @sec-squintability and as illustrated in
@@ -802,11 +789,11 @@ spaces.
 
 ## Factors affecting JSO success rate: JSO hyper-parameters and index properties
 
-The effect of JSO hyper--parameters (number of jellyfish and the maximum
+The effect of JSO hyper-parameters (number of jellyfish and the maximum
 number of tries) on the success rate is presented in @fig-proportion.
 The uncertainty is quantified through 500 bootstrap replicates for each
 case. As the number of jellyfish and maximum tries increase, the success
-rate also increases. For problems with relatively lower dimensional search spaces (4 and 6 dimensions), small parameter values (20 jellyfish and a maximum of 50 tries) are sufficient for space exploration and thus can already achieve a high success rate. Higher parameter values (i.e. 100 jellyfish and a maximum of 100 tries) enhances exploration of the search space, which is particularly beneficial in higher-dimensional problems (8, 10, and 12 dimensions) where a more complex search is necessary. However, in lower-dimensional problems, the benefit may be less pronounced, as the space is alredy relatively easy to navigate. While increasing both parameters enhances the performance of JSO, it also extends the computational time required for the optimisation, which can be
+rate also increases. For problems with relatively lower dimensional search spaces (4 and 6 dimensions), small parameter values (20 jellyfish and a maximum of 50 tries) are sufficient for space exploration and thus can already achieve a high success rate. Higher parameter values (i.e. 100 jellyfish and a maximum of 100 tries) enhances exploration of the search space, which is particularly beneficial in higher-dimensional problems (8, 10, and 12 dimensions) where a more complex search is necessary. However, in lower-dimensional problems, the benefit may be less pronounced, as the space is already relatively easy to navigate. While increasing both parameters enhances the performance of JSO, it also extends the computational time required for the optimisation, which can be
 computationally intensive when evaluating the index function (such as
 scagnostic indexes) multiple times across numerous iterations.
 
@@ -1006,7 +993,7 @@ rate is only affected by squintability, dimension and number of jellies. As expe
 for more tries also does not affect success rate significantly. A unit increase in squintability increases the success rate by
 `r round(100 * (exp(broom::tidy(mod1)$estimate[3])-1), 0)`%. As dimension
 increases by one the success rate almost halves. Increasing the number of
-jellies by 10, increases the success rate by
+jellies by 10 increases the success rate by
 `r round(100 * (exp(broom::tidy(mod1)$estimate[5])-1), 0)`%.
 
 ```{r}
@@ -1025,6 +1012,36 @@ mod1 |> tbl_regression(exponentiate = TRUE,
                                     max_tries = "Maximum number of tries")) |>
   bold_p(t = 0.1)
 ```
+
+
+
+```{r}
+#| tbl-pos: H
+#| label: tbl-joint-output
+library(kableExtra)
+mod2 <- glm(proportion ~ squintability + d + n_jellies + max_tries, data = sim_df2, family = binomial)
+mod3 <- glm(proportion ~ smoothness + d + n_jellies + max_tries, data = sim_df2, family = binomial)
+summary_table <- bind_rows(
+  glance(mod2) %>% mutate(Model = "Squintability"),
+  glance(mod3) %>% mutate(Model = "Smoothness")
+) %>%
+  select(Model, null.deviance, df.null, logLik, df.residual, AIC, BIC) %>%
+  rename(
+    `Null Deviance` = null.deviance,
+    `DF Null` = df.null,
+    `Log-Likelihood` = logLik,
+    `DF Residual` = df.residual
+  ) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 2)))
+summary_table %>%
+  kable(caption = "Model summaries for squintability and smoothness separately") %>%
+  kable_styling(font_size = 10) %>%
+  column_spec(1, bold = TRUE, width = "5em")
+```
+
+Squintability and smoothness are likely dependent, making it unnecessary to include both as independent factors in the model. Intuitively, a highly smooth search space exhibits gradual changes, making it easier to perceive the overall structure from a distance, thereby increasing the squint angle. @tbl-joint-output compare the model fits when squintability and smoothness are included separately. Given that the null deviance remains the same across models, the model with squintability yields a smaller residual deviance and lower AIC and BIC values, indicating a better fit. This suggests that squintability captures the relevant variation more effectively than smoothness.
+
+This study intends to serve as an illustration that the proposed measure effectively captures the key factors influencing the success rate of PP. The interactions between the two variables were not examined in this study due to the limited number of data points, nor was the linearity assumption of the relationship with success rate explicitly tested.
 
 # Practicalities {#sec-discussion}
 

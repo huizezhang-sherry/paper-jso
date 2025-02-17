@@ -228,5 +228,20 @@ stringy_df <- tibble(id = c(1,2,3, 4)) |>
 
 ```
 
+# The sine and pipe structures in the example data
+
+```{r}
+#| label: fig-plot-data
+#| fig-width: 10
+#| fig-height: 5
+#| fig-cap: "The sine and pipe structures in the example data, along with index values for these projections."
+data("sine1000")
+sine1000 <- as_tibble(sine1000)
+dp1 <- ggplot(sine1000, aes(x=V5, y=V6)) + geom_point()
+data("pipe1000")
+pipe1000 <- as_tibble(pipe1000)
+dp2 <- ggplot(pipe1000, aes(x=V5, y=V6)) + geom_point()
+dp1 + dp2 + plot_layout(ncol=2)
+```
 
 # Reference

@@ -1,0 +1,2 @@
+load("/Users/jessicaleung/Documents/GitHub/paper-jso/data/sim_sine_6d_spline_head.rda")
+load("/Users/jessicaleung/Documents/GitHub/paper-jso/data/sim_df.rda")
