@@ -727,7 +727,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, titlerule=0mm, opacityback=0, coltitle=black, colback=white, colframe=quarto-callout-note-color-frame, opacitybacktitle=0.6, arc=.35mm, breakable, toptitle=1mm, left=2mm, leftrule=.75mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colbacktitle=quarto-callout-note-color!10!white, rightrule=.15mm, bottomrule=.15mm, toprule=.15mm]
+\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, colbacktitle=quarto-callout-note-color!10!white, opacityback=0, toprule=.15mm, coltitle=black, rightrule=.15mm, colback=white, toptitle=1mm, colframe=quarto-callout-note-color-frame, bottomrule=.15mm, left=2mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm, leftrule=.75mm, breakable, opacitybacktitle=0.6, titlerule=0mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -877,17 +877,19 @@ problems, two different data shapes, pipe and a sine wave, are
 considered in various dimensional spaces using six different PP indexes:
 \texttt{dcor2d\_2}, \texttt{loess2d}, \texttt{MIC}, \texttt{TIC},
 \texttt{spline}, and \texttt{stringy}, under varied JSO
-hyper-parameters. This results in a total of 76 scenarios, comprising of
-30 computed on the pipe data and 46 on the sine-wave data. This study
-does not consider dimensions lower than four, as exploring the search
-space in such cases is relatively straightforward. Similarly, extremely
-high-dimensional cases with complex data structures, where no method can
-reliably and consistenly uncover the underlying structure due to the
-curse of dimensionality, are also excluded, as they fall outside the
-scope of this study. A list of combinations of the data shape,
-dimensions and PP indexes that are considered in this study is provided
-in Table~\ref{tbl-smoothness-squintability}. Again, JSO is run 50 times
-for each scenario to calculate the success rate for each hyper-parameter
+hyper-parameters. An example of holes and pipes data with the syntax to
+generate them are provided in the supplementary material. This results
+in a total of 76 scenarios, comprising of 30 computed on the pipe data
+and 46 on the sine-wave data. This study does not consider dimensions
+lower than four, as exploring the search space in such cases is
+relatively straightforward. Similarly, extremely high-dimensional cases
+with complex data structures, where no method can reliably and
+consistenly uncover the underlying structure due to the curse of
+dimensionality, are also excluded, as they fall outside the scope of
+this study. A list of combinations of the data shape, dimensions and PP
+indexes that are considered in this study is provided in
+Table~\ref{tbl-smoothness-squintability}. Again, JSO is run 50 times for
+each scenario to calculate the success rate for each hyper-parameter
 combination.
 
 Smoothness and squintability are computed following the procedures
