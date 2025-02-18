@@ -727,7 +727,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, colbacktitle=quarto-callout-note-color!10!white, opacityback=0, toprule=.15mm, coltitle=black, rightrule=.15mm, colback=white, toptitle=1mm, colframe=quarto-callout-note-color-frame, bottomrule=.15mm, left=2mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm, leftrule=.75mm, breakable, opacitybacktitle=0.6, titlerule=0mm]
+\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, left=2mm, toprule=.15mm, opacityback=0, leftrule=.75mm, colbacktitle=quarto-callout-note-color!10!white, colframe=quarto-callout-note-color-frame, opacitybacktitle=0.6, bottomrule=.15mm, toptitle=1mm, breakable, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colback=white, titlerule=0mm, coltitle=black, arc=.35mm, rightrule=.15mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -914,11 +914,9 @@ To construct a relationship among success rate, smoothness,
 squintability, and JSO hyper-parameters, a generalised linear model is
 fitted using a binomial family and a logit link function. The data is
 pre-processed by 1) scaling the JSO hyper-parameters by a factor of 10
-for interpretation, 2) creating a new binary variable
-\texttt{long\_time} to indicate cases with an average run time over 20
-seconds, and 3) re-coding the success rate for the \texttt{stringy}
-index as 0, because none of the 50 simulations correctly identified the
-sine-wave shape.
+for interpretation, 2) re-coding the success rate for the
+\texttt{stringy} index as 0, because none of the 50 simulations
+correctly identified the sine-wave shape.
 
 \begin{figure}
 
@@ -1180,7 +1178,11 @@ and smoothness are included separately. Given that the null deviance
 remains the same across models, the model with squintability yields a
 smaller residual deviance and lower AIC and BIC values, indicating a
 better fit. This suggests that squintability captures the relevant
-variation more effectively than smoothness.
+variation more effectively than smoothness. While it may seem
+counterintuitive at first that smoothness is not a significant factor,
+this outcome is reasonable in this context, as the swarm-based method
+used in this study, JSO, is designed to perform well even in non-smooth
+search spaces by leveraging population-based exploration.
 
 This study intends to serve as an illustration that the proposed measure
 effectively captures the key factors influencing the success rate of PP.

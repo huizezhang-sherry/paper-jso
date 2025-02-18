@@ -720,8 +720,8 @@ To construct a relationship among success rate, smoothness,
 squintability, and JSO hyper-parameters, a generalised linear model is
 fitted using a binomial family and a logit link function. The data is
 pre-processed by 1) scaling the JSO hyper-parameters by a factor of 10
-for interpretation, 2) creating a new binary variable `long_time` to
-indicate cases with an average run time over 20 seconds, and 3)
+for interpretation, 2) <!-- creating a new binary variable `long_time` to
+indicate cases with an average run time over 20 seconds, and 3)-->
 re-coding the success rate for the `stringy` index as 0, because none of
 the 50 simulations correctly identified the sine-wave shape.
 
@@ -1038,7 +1038,7 @@ summary_table %>%
   column_spec(1, bold = TRUE, width = "5em")
 ```
 
-The simulation result suggests that squintability and smoothness are likely dependent. Intuitively, a highly smooth search space exhibits gradual changes, making it easier to perceive the overall structure from a distance, thereby increasing the squint angle. @tbl-joint-output compare the model fits when squintability and smoothness are included separately. Given that the null deviance remains the same across models, the model with squintability yields a smaller residual deviance and lower AIC and BIC values, indicating a better fit. This suggests that squintability captures the relevant variation more effectively than smoothness.
+The simulation result suggests that squintability and smoothness are likely dependent. Intuitively, a highly smooth search space exhibits gradual changes, making it easier to perceive the overall structure from a distance, thereby increasing the squint angle. @tbl-joint-output compare the model fits when squintability and smoothness are included separately. Given that the null deviance remains the same across models, the model with squintability yields a smaller residual deviance and lower AIC and BIC values, indicating a better fit. This suggests that squintability captures the relevant variation more effectively than smoothness. While it may seem counterintuitive at first that smoothness is not a significant factor, this outcome is reasonable in this context, as the swarm-based method used in this study, JSO, is designed to perform well even in non-smooth search spaces by leveraging population-based exploration.
 
 This study intends to serve as an illustration that the proposed measure effectively captures the key factors influencing the success rate of PP. The interactions between the two variables were not examined in this study due to the limited number of data points, nor was the linearity assumption of the relationship with success rate explicitly tested.
 
