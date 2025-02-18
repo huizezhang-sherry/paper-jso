@@ -694,13 +694,11 @@ for fifty times in each hyper-parameter combination: 20, 50, and 100
 jellyfish and a maximum of 50 and 100 attempts. The success rate is
 calculated for each combination.
 
-In addition, to assess the performance of JSO across various PP problems, two different
-data shapes, pipe and a sine wave, are considered in various dimensional spaces
-using six different PP indexes: `dcor2d_2`, `loess2d`, `MIC`, `TIC`,
+In addition, to assess the performance of JSO across various PP problems, two different data shapes, pipe and a sine wave, are considered in various dimensional spaces using six different PP indexes: `dcor2d_2`, `loess2d`, `MIC`, `TIC`,
 `spline`, and `stringy`, under varied JSO hyper-parameters. This results
 in a total of `r nrow(sim_df)` scenarios, comprising of
 `r nrow(filter(sim_df, index == "holes"))` computed on the pipe data and
-`r nrow(filter(sim_df, index != "holes"))` on the sine-wave data. A list of combinations of the data shape, dimensions and PP indexes that are considered in this study is provided in @tbl-smoothness-squintability. Again, JSO is run 50 times for each scenario to calculate the success rate for each hyper-parameter combination.
+`r nrow(filter(sim_df, index != "holes"))` on the sine-wave data. This study does not consider dimensions lower than four, as exploring the search space in such cases is relatively straightforward. Similarly, extremely high-dimensional cases with complex data structures, where no method can reliably and consistenly uncover the underlying structure due to the curse of dimensionality, are also excluded, as they fall outside the scope of this study. A list of combinations of the data shape, dimensions and PP indexes that are considered in this study is provided in @tbl-smoothness-squintability. Again, JSO is run 50 times for each scenario to calculate the success rate for each hyper-parameter combination.
 
 Smoothness and squintability are computed following the procedures
 outlined in @sec-smoothness and @sec-squintability and as illustrated in
@@ -997,6 +995,7 @@ jellies by 10 increases the success rate by
 `r round(100 * (exp(broom::tidy(mod1)$estimate[5])-1), 0)`%.
 
 ```{r}
+#| tbl-pos: H
 #| label: tbl-mod-output
 #| tbl-cap: "Jellyfish success rate relative to index properties and jellyfish hyper-parameters. This is the summary from a logistic regression fit to smoothness, squintability, dimension, number of jellyfish and maximum number of tries. Interestingly, squintability and dimension strongly affect jellyfish optimisation success. The number of jellies marginally affects success, but index smoothness, and increasing the number of tries do not."
 #| fig-pos: t
@@ -1039,7 +1038,7 @@ summary_table %>%
   column_spec(1, bold = TRUE, width = "5em")
 ```
 
-Squintability and smoothness are likely dependent, making it unnecessary to include both as independent factors in the model. Intuitively, a highly smooth search space exhibits gradual changes, making it easier to perceive the overall structure from a distance, thereby increasing the squint angle. @tbl-joint-output compare the model fits when squintability and smoothness are included separately. Given that the null deviance remains the same across models, the model with squintability yields a smaller residual deviance and lower AIC and BIC values, indicating a better fit. This suggests that squintability captures the relevant variation more effectively than smoothness.
+The simulation result suggests that squintability and smoothness are likely dependent. Intuitively, a highly smooth search space exhibits gradual changes, making it easier to perceive the overall structure from a distance, thereby increasing the squint angle. @tbl-joint-output compare the model fits when squintability and smoothness are included separately. Given that the null deviance remains the same across models, the model with squintability yields a smaller residual deviance and lower AIC and BIC values, indicating a better fit. This suggests that squintability captures the relevant variation more effectively than smoothness.
 
 This study intends to serve as an illustration that the proposed measure effectively captures the key factors influencing the success rate of PP. The interactions between the two variables were not examined in this study due to the limited number of data points, nor was the linearity assumption of the relationship with success rate explicitly tested.
 
