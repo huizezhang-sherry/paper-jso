@@ -80,15 +80,17 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 % definitions for citeproc citations
@@ -140,7 +142,6 @@
 \usepackage{makecell}
 \usepackage{xcolor}
 \usepackage{caption}
-\usepackage{anyfontsize}
 \usepackage{orcidlink}
 \usepackage{algorithm}
 \usepackage{float}
@@ -210,9 +211,6 @@
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
 
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
 \usepackage{bookmark}
 
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
@@ -261,19 +259,15 @@ criterion function known as the PP index, to explore high-dimensional
 data by revealing interesting projections. Optimisation of some PP
 indexes can be non-trivial, if they are non-smooth functions, or the
 optimum has a small ``squint angle'', detectable only from close
-proximity. To address these challenges, this study investigates the
-performance of a recently introduced swarm-based algorithm, Jellyfish
-Search Optimiser (JSO), for optimising PP indexes. The performance of
-JSO for visualising data is evaluated across various hyper-parameter
-settings and compared with existing optimisers. Additionally, methods
-for calculating the smoothness and squintability properties of the PP
-index are proposed. They are used to assess the optimiser performance in
-the presence of PP index complexities. A simulation study illustrates
-the use of these performance metrics to compare the JSO with existing
-optimisation methods available for the guided tour. The JSO algorithm
-has been implemented in the R package, \texttt{tourr}, and functions to
-calculate smoothness and squintability are available in the
-\texttt{ferrn} package.
+proximity. Here, measures for calculating the smoothness and
+squintability properties of the PP index are defined. These are used to
+investigate the performance of a recently introduced swarm-based
+algorithm, Jellyfish Search Optimiser (JSO), for optimising PP indexes.
+The performance of JSO for visualising data is evaluated across various
+hyper-parameter settings and compared with existing optimisers for the
+guided tour. The JSO algorithm has been implemented in the R package,
+\texttt{tourr}, and functions to calculate smoothness and squintability
+measures are implemented in the \texttt{ferrn} package.
 \end{abstract}
 \begin{keywords}
 \def\sep{;\ }
@@ -343,7 +337,7 @@ close to the optimal projection.
 
 \centering{
 
-\includegraphics[width=0.8\textwidth,height=\textheight]{jso_files/figure-pdf/fig-example-functions-1.pdf}
+\includegraphics[width=0.8\linewidth,height=\textheight,keepaspectratio]{jso_files/figure-pdf/fig-example-functions-1.pdf}
 
 }
 
@@ -544,7 +538,7 @@ An interesting result is that the asymptotic case
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/matern_simulation_1d.png}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{figures/matern_simulation_1d.png}
 
 }
 
@@ -560,7 +554,7 @@ smoother curves.}
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/matern_simulation_2d.png}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{figures/matern_simulation_2d.png}
 
 }
 
@@ -727,7 +721,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, left=2mm, toprule=.15mm, opacityback=0, leftrule=.75mm, colbacktitle=quarto-callout-note-color!10!white, colframe=quarto-callout-note-color-frame, opacitybacktitle=0.6, bottomrule=.15mm, toptitle=1mm, breakable, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colback=white, titlerule=0mm, coltitle=black, arc=.35mm, rightrule=.15mm]
+\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-note-color!10!white, left=2mm, toptitle=1mm, colback=white, colframe=quarto-callout-note-color-frame, bottomrule=.15mm, leftrule=.75mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, breakable, opacityback=0, titlerule=0mm, bottomtitle=1mm, rightrule=.15mm, arc=.35mm, toprule=.15mm, opacitybacktitle=0.6, coltitle=black]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -849,7 +843,7 @@ random seed, and computation time.
 
 \centering{
 
-\includegraphics[width=4.52in,height=\textheight]{figures/success-rate.png}
+\includegraphics[width=4.52in,height=\textheight,keepaspectratio]{figures/success-rate.png}
 
 }
 
@@ -922,7 +916,7 @@ correctly identified the sine-wave shape.
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/smoothness.png}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{figures/smoothness.png}
 
 }
 
@@ -939,7 +933,7 @@ obtain the smoothness measure.}
 
 \centering{
 
-\includegraphics[width=1\textwidth,height=\textheight]{figures/squintability.png}
+\includegraphics[width=1\linewidth,height=\textheight,keepaspectratio]{figures/squintability.png}
 
 }
 
@@ -1014,7 +1008,7 @@ The column \(\nu\) is used as the smoothness metric and the column
 
 \centering{
 
-\includegraphics{jso_files/figure-pdf/fig-proj-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{jso_files/figure-pdf/fig-proj-1.pdf}}
 
 }
 
@@ -1035,7 +1029,7 @@ than the CRS}
 
 \centering{
 
-\includegraphics{jso_files/figure-pdf/fig-proportion-1.pdf}
+\pandocbounded{\includegraphics[keepaspectratio]{jso_files/figure-pdf/fig-proportion-1.pdf}}
 
 }
 
@@ -1116,7 +1110,9 @@ increases the success rate by 24\%. As dimension increases by one the
 success rate almost halves. Increasing the number of jellies by 10
 increases the success rate by 32\%.
 
-\begin{table}[H]
+\setlength{\LTpost}{0mm}
+
+\begin{longtable}{lcc}
 
 \caption{\label{tbl-mod-output}Jellyfish success rate relative to index
 properties and jellyfish hyper-parameters. This is the summary from a
@@ -1126,27 +1122,23 @@ and dimension strongly affect jellyfish optimisation success. The number
 of jellies marginally affects success, but index smoothness, and
 increasing the number of tries do not.}
 
-\centering{
+\tabularnewline
 
-\fontsize{12.0pt}{14.4pt}\selectfont
-\begin{tabular*}{\linewidth}{@{\extracolsep{\fill}}lcc}
 \toprule
 \textbf{Characteristic} & \textbf{OR} \textbf{(95\% CI)}\textsuperscript{\textit{1}} & \textbf{p-value} \\ 
 \midrule\addlinespace[2.5pt]
 Smoothness & 1.00 (0.81 to 1.20) & 0.961 \\ 
-Squintability & 1.24 (1.05 to 1.58) & {\bfseries 0.033} \\ 
-Dimension & 0.57 (0.33 to 0.87) & {\bfseries 0.022} \\ 
-Number of jellyfish & 1.32 (1.06 to 1.71) & {\bfseries 0.022} \\ 
+Squintability & 1.24 (1.05 to 1.58) & \textbf{0.033} \\ 
+Dimension & 0.57 (0.33 to 0.87) & \textbf{0.022} \\ 
+Number of jellyfish & 1.32 (1.06 to 1.71) & \textbf{0.022} \\ 
 Maximum number of tries & 1.06 (0.85 to 1.35) & 0.603 \\ 
 \bottomrule
-\end{tabular*}
+
+\end{longtable}
+
 \begin{minipage}{\linewidth}
 \textsuperscript{\textit{1}}OR = Odds Ratio, CI = Confidence Interval\\
 \end{minipage}
-
-}
-
-\end{table}%
 
 \begingroup\fontsize{10}{12}\selectfont
 
