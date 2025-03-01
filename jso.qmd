@@ -961,7 +961,7 @@ sq_basis_dist_idx |>
 
 ```{r}
 #| label: tbl-smoothness-squintability
-#| tbl-cap: Parameters estimated from the Gaussian process (outputscale $\eta$, lengthscale $\ell$, smoothness $\nu$, and nugget $\sigma$) and scaled logistic function ($\theta_1$ to $\theta_4$ and $\varsigma$) for the pipe-finding and sine-wave finding problems.  The columns $\nu$ and $\varsigma$ represent the smoothness and squintability measures respectively. 
+#| tbl-cap: Parameters estimated from the Gaussian process (outputscale $\eta$, lengthscale $\ell$, smoothness $\nu$, and nugget $\sigma$) and scaled logistic function ($\theta_1$ to $\theta_4$ and $\varsigma$) for the pipe-finding and sine-wave finding problems.  The columns $\nu$ and $\varsigma$ represent the smoothness and squintability measures respectively.
 dt <- tibble(shape = c(rep("pipe", 4), rep("sine", 18)), smoothness) |>
   left_join(squintability) |> 
   rename(d = n, smooth = smoothness) |> 
@@ -1018,24 +1018,30 @@ mod1 |> tbl_regression(exponentiate = TRUE,
 #| tbl-pos: H
 #| label: tbl-joint-output
 library(kableExtra)
-mod2 <- glm(proportion ~ squintability + d + n_jellies + max_tries, data = sim_df2, family = binomial)
-mod3 <- glm(proportion ~ smoothness + d + n_jellies + max_tries, data = sim_df2, family = binomial)
+mod2 <- glm(proportion ~ squintability + d + n_jellies + max_tries, data = sim_df2, family = quasibinomial)
+mod3 <- glm(proportion ~ smoothness + d + n_jellies + max_tries, data = sim_df2, family = quasibinomial)
+mod4 <- glm(proportion ~ squintability*d + n_jellies, data = sim_df2, family = quasibinomial)
+
 summary_table <- bind_rows(
-  glance(mod2) %>% mutate(Model = "Squintability"),
-  glance(mod3) %>% mutate(Model = "Smoothness")
+  glance(mod1) %>% mutate(Model = "Full"),
+  #glance(mod2) %>% mutate(Model = "Squintability"),
+  #glance(mod3) %>% mutate(Model = "Smoothness")
+  glance(mod4) %>% mutate(Model = "Interaction")
 ) %>%
-  select(Model, null.deviance, df.null, logLik, df.residual, AIC, BIC) %>%
+  select(Model, deviance, df.residual, null.deviance, df.null, #logLik, 
+         ) %>% #, AIC, BIC) %>%
   rename(
     `Null Deviance` = null.deviance,
     `DF Null` = df.null,
-    `Log-Likelihood` = logLik,
-    `DF Residual` = df.residual
+    `Deviance` = deviance,
+    `DF Residual` = df.residual#,
+    #`Log-Likelihood` = logLik,
   ) %>%
   mutate(across(where(is.numeric), ~ round(.x, 2)))
 summary_table %>%
-  kable(caption = "Model summaries for squintability and smoothness separately") %>%
+  kable(caption = "Fit statistics for models: full, individual squintability and smoothness. The full model (and the model containing squintability but not smoothness) explains more than 50% of the variability in optimisation success.") %>%
   kable_styling(font_size = 10) %>%
-  column_spec(1, bold = TRUE, width = "5em")
+  row_spec(0, bold = TRUE) #, width = "5em")
 ```
 
 The simulation result suggests that squintability and smoothness are likely dependent. Intuitively, a highly smooth search space exhibits gradual changes, making it easier to perceive the overall structure from a distance, thereby increasing the squint angle. @tbl-joint-output compare the model fits when squintability and smoothness are included separately. Given that the null deviance remains the same across models, the model with squintability yields a smaller residual deviance and lower AIC and BIC values, indicating a better fit. This suggests that squintability captures the relevant variation more effectively than smoothness. While it may seem counterintuitive at first that smoothness is not a significant factor, this outcome is reasonable in this context, as the swarm-based method used in this study, JSO, is designed to perform well even in non-smooth search spaces by leveraging population-based exploration.
