@@ -163,7 +163,7 @@ projection.
 #| fig-width: 9
 #| fig-height: 6
 #| out-width: 80%
-#| fig-cap: "Examples of PP indexes with large (top row) and small (bottom row) squint angles, shown with a Huber plot, and histogram of the projected data corresponding to the optimal projection. A Huber plot shows the PP index values for all 1D data projections in polar coordinates."
+#| fig-cap: "Examples of PP indexes with large (top row) and small (bottom row) squint angles, shown with a Huber plot, and histogram of the projected data corresponding to the optimal projection. A Huber plot shows the PP index values for all 1D data projections in polar coordinates. The skewness index on the trimodal data is also smoother than the binned normality index on RANDU."
 #proj <- animate_xy(flea[,1:6], guided_tour(lda_pp(flea$species)))
 best_proj <- matrix(c(-0.44157005,  0.80959831,
                       0.14622089, -0.08228193,
@@ -940,12 +940,14 @@ res_quantile |>
 #| label: fit-logistic
 sim_df2 <- sim_df |>   
   mutate(n_jellies = n_jellies/10, max_tries = max_tries/10) |> 
-  rename(proportion = P_J) 
+  rename(proportion = P_J) #|>
+  #filter(d < 10)
 
-mod1 <- glm(proportion ~ smoothness + squintability + d + n_jellies + max_tries, data = sim_df2, family = binomial) 
+mod1 <- glm(proportion ~ smoothness + squintability + d + n_jellies + max_tries, data = sim_df2, family = quasibinomial) 
 mod2 <- glm(proportion ~ squintability + d + n_jellies + max_tries, data = sim_df2, family = quasibinomial)
 mod3 <- glm(proportion ~ smoothness + d + n_jellies + max_tries, data = sim_df2, family = quasibinomial)
 mod4 <- glm(proportion ~ squintability*d + n_jellies, data = sim_df2, family = quasibinomial)
+mod5 <- glm(proportion ~ smoothness*d + squintability*d + n_jellies, data = sim_df2, family = quasibinomial)
 ```
 
 ```{r}
@@ -1021,13 +1023,14 @@ mod1 |> tbl_regression(exponentiate = TRUE,
 #| tbl-pos: H
 #| label: tbl-joint-output
 library(kableExtra)
-summary_table <- bind_rows(
-  glance(mod1) %>% mutate(Model = "Full"),
+summary_table <- #bind_rows(
+  glance(mod1) |> #%>% mutate(Model = "Full"),
   #glance(mod2) %>% mutate(Model = "Squintability"),
   #glance(mod3) %>% mutate(Model = "Smoothness")
-  glance(mod4) %>% mutate(Model = "Interaction")
-) |>
-  select(Model, deviance, df.residual, null.deviance, df.null, #logLik, 
+#  glance(mod4) %>% mutate(Model = "Interaction")
+#) |>
+  select(#Model, 
+    deviance, df.residual, null.deviance, df.null, #logLik, 
          ) |> #, AIC, BIC) %>%
   rename(
     `Null Deviance` = null.deviance,
@@ -1038,7 +1041,7 @@ summary_table <- bind_rows(
   ) |>
   mutate(across(where(is.numeric), ~ round(.x, 2)))
 summary_table |>
-  kable(caption = "Fit statistics for models: full, individual squintability and smoothness. The full model (and the model containing squintability but not smoothness) explains more than 50% of the variability in optimisation success.") |>
+  kable(caption = "Fit statistics for the model.") |>
   kable_styling(font_size = 10) |>
   row_spec(0, bold = TRUE) #, width = "5em")
 ```
