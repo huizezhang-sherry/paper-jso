@@ -943,6 +943,9 @@ sim_df2 <- sim_df |>
   rename(proportion = P_J) 
 
 mod1 <- glm(proportion ~ smoothness + squintability + d + n_jellies + max_tries, data = sim_df2, family = binomial) 
+mod2 <- glm(proportion ~ squintability + d + n_jellies + max_tries, data = sim_df2, family = quasibinomial)
+mod3 <- glm(proportion ~ smoothness + d + n_jellies + max_tries, data = sim_df2, family = quasibinomial)
+mod4 <- glm(proportion ~ squintability*d + n_jellies, data = sim_df2, family = quasibinomial)
 ```
 
 ```{r}
@@ -1018,29 +1021,25 @@ mod1 |> tbl_regression(exponentiate = TRUE,
 #| tbl-pos: H
 #| label: tbl-joint-output
 library(kableExtra)
-mod2 <- glm(proportion ~ squintability + d + n_jellies + max_tries, data = sim_df2, family = quasibinomial)
-mod3 <- glm(proportion ~ smoothness + d + n_jellies + max_tries, data = sim_df2, family = quasibinomial)
-mod4 <- glm(proportion ~ squintability*d + n_jellies, data = sim_df2, family = quasibinomial)
-
 summary_table <- bind_rows(
   glance(mod1) %>% mutate(Model = "Full"),
   #glance(mod2) %>% mutate(Model = "Squintability"),
   #glance(mod3) %>% mutate(Model = "Smoothness")
   glance(mod4) %>% mutate(Model = "Interaction")
-) %>%
+) |>
   select(Model, deviance, df.residual, null.deviance, df.null, #logLik, 
-         ) %>% #, AIC, BIC) %>%
+         ) |> #, AIC, BIC) %>%
   rename(
     `Null Deviance` = null.deviance,
     `DF Null` = df.null,
     `Deviance` = deviance,
     `DF Residual` = df.residual#,
     #`Log-Likelihood` = logLik,
-  ) %>%
+  ) |>
   mutate(across(where(is.numeric), ~ round(.x, 2)))
-summary_table %>%
-  kable(caption = "Fit statistics for models: full, individual squintability and smoothness. The full model (and the model containing squintability but not smoothness) explains more than 50% of the variability in optimisation success.") %>%
-  kable_styling(font_size = 10) %>%
+summary_table |>
+  kable(caption = "Fit statistics for models: full, individual squintability and smoothness. The full model (and the model containing squintability but not smoothness) explains more than 50% of the variability in optimisation success.") |>
+  kable_styling(font_size = 10) |>
   row_spec(0, bold = TRUE) #, width = "5em")
 ```
 
