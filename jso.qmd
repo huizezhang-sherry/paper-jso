@@ -86,6 +86,7 @@ library(broom)
 library(kableExtra)
 library(tourr)
 library(ferrn)
+library(gtsummary)
 load(here::here("data/sim_pipe_run_best.rda"))
 load(here::here("data/sim_sine_6d_spline_head.rda"))
 load(here::here("data/sim_sine_6d_spline_best.rda"))
@@ -94,7 +95,7 @@ load(here::here("data/pipe_better.rda"))
 load(here::here("data/pipe_jellyfish.rda"))
 load(here::here("data/smoothness.rda"))
 load(here::here("data/squintability.rda"))
-load(here::here("data/sq_basis_dist_idx.rda"))
+load(here::here("data/sq_basis_df_6d_TIC_spline_skinny.rda"))
 load(here::here("data/sim_df.rda"))
 ```
 
@@ -943,16 +944,16 @@ mod5 <- glm(proportion ~ smoothness*d + squintability*d + n_jellies, data = sim_
 
 ```{r}
 #| label: fig-idx-proj-dist
-#| fig.width: 9
-#| fig.height: 5
-#| eval: false
-#| fig.cap: "Index values versus projection distance for the 12 pipe/sine-wave finding problem, after the binning procedure for calculating the squintability measure. The index values, averaged at bin width of 0.005, are scaled from 0 to 1 for comparison (holes, TIC, and stringy). The `MIC` and `TIC` index curves are convex while others are concave. The stringy curve shows an instantaneous jump to the optimum when aproaching the best basis." 
-sq_basis_dist_idx |>
-  ggplot(aes(x = dist, y = index, group = index_name)) +
+#| fig.width: 8
+#| fig.height: 4
+#| fig.cap: "Five traces of index value against projection distance for each of the three indexes (TIC, spline, and skinny) in 6D sine data. The traces of the splines index are smooth, with a steep increaes before leveling off, suggesting the optimum can be detected from a far distance, hence a largest squintability value. In contrast, the skinny index (squintability of almost zeor) has a noisy trace that only stabilizes near the optimum, suggesting the optimizer needs get very close to detect it."
+sq_basis_df_6d_TIC_spline_skinny |>
+  ggplot(aes(x = dist, y = index, group = interaction(index_name, id), color = index_name)) +
   geom_line() + 
-  facet_nested_wrap(~index_name + n, nrow = 3, labeller = label_both) + 
-  xlab("projection distance") + ylab("index value") +
-  theme_bw()
+  scale_color_brewer(palette = "Dark2") +
+  xlab("Projection distance") + ylab("Index value") +
+  theme_bw() + 
+  theme(legend.position = "bottom")
 ```
 
 ```{r}
@@ -1000,7 +1001,6 @@ jellies by 10 increases the success rate by
 #| label: tbl-mod-output
 #| tbl-cap: "Jellyfish success rate relative to index properties and jellyfish hyper-parameters. This is the summary from a logistic regression fit to smoothness, squintability, dimension, number of jellyfish and maximum number of tries. Interestingly, squintability and dimension strongly affect jellyfish optimisation success. The number of jellies marginally affects success, but index smoothness, and increasing the number of tries do not."
 #| fig-pos: t
-library(gtsummary)
 set_gtsummary_theme(theme_gtsummary_journal("jama"))
 mod1 |> tbl_regression(exponentiate = TRUE, 
                        pvalue_fun = label_style_pvalue(digits = 3),
@@ -1018,7 +1018,6 @@ mod1 |> tbl_regression(exponentiate = TRUE,
 ```{r}
 #| tbl-pos: H
 #| label: tbl-joint-output
-library(kableExtra)
 summary_table <- #bind_rows(
   glance(mod1) |> #%>% mutate(Model = "Full"),
   #glance(mod2) %>% mutate(Model = "Squintability"),
@@ -1167,7 +1166,7 @@ Nicolas Langrené acknowledges the partial support of the Guangdong
 Provincial/Zhuhai Key Laboratory IRADS (2022B1212010006) and the UIC
 Start-up Research Fund UICR0700041-22.
 
-The R packages used in this work include: `tidyverse` [@tidyverse]; 
+The R packages used in this work include: `tidyverse` [@tidyverse];
 `patchwork` [@patchwork]; `ggh4x` [@ggh4x]; `broom` [@broom]; 
 `kableExtra` [@kabelextra]; `ferrn` [@RJ-2021-105]; and `cassowaryr` [@cassowaryr]. 
 
