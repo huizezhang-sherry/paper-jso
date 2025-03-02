@@ -629,35 +629,25 @@ the maximum number of tries.
 
 # Assessing the optimisers {#sec-sim-deets}
 
-This section describes the details of two simulation studies. The first simulation
-compares the JSO performance with an existing optimiser, Creeping Random
-Search (CRS) [@RJ-2021-105; @laa_using_2020] to explore JSO's behaviour
-under different data dimensions. The second simulation examines various factors affecting the performance of JSO.
+This section explains the details of two simulation studies: (1) comparison between the existing Creeping Random Search (CRS) [@RJ-2021-105; @laa_using_2020] and JSO, and (2) examining the factors affecting the performance of JSO. 
+
+The second simulation examines various factors affecting the performance of JSO.
 The JSO performance is evaluated under different hyper-parameters combinations
 (number of jellyfish and the maximum number of tries). The effect of index properties (smoothness and squintability) along
 with JSO hyper-parameters and data dimension variations is captured and studied using logistic regression.
 
-The performance of JSO is measured by the success rate, defined as the
-proportion of simulations that achieves a final index value within 0.05
-of the best index value found among all 50 simulations (see
-@fig-success-rate for an illustration). This comparison is based on
-projection pursuit to find the pipe shape investigated by
-@laa_using_2020 using the `holes` index.
-
 ## Performance of JSO relative to CRS {#sec-app-1}
 
-The JSO performance is compared to the existing optimizer, CRS, in a pipe-finding problem using the holes index in different dimensional spaces. Fifty simulations are conducted in four data dimensions ($d = 6, 8, 10, 12$) with each optimiser. JSO uses
-100 jellyfish with a maximum of 100 tries, while the CRS allows a
-maximum of 1000 samples at each iteration before the algorithm
-terminates. The different numbers account for the multiple paths of JSO
-to enable fairer comparison with CRS. The results of the simulation are
-collected using the data structure proposed in @RJ-2021-105 for
-assessing JSO, where the design parameters are stored along with index
-value, projection basis, random seed, and computation time.
+The CRS is the main optimisation routine currently used for the guided tour. Here the two optimisers are compared on the task of finding the pipe using the `holes` index in data with dimensions, $d = 6, 8, 10, 12$. Fifty simulated data sets are used for each dimension. JSO uses 100 jellyfish with a maximum of 100 tries, while the CRS allows a maximum of 1000 tries at each iteration before the algorithm terminates. These choices enable fair comparison between CRS and JSO, that conforms to how they are used in practice. 
+
+The performance of the optmisers is measured by the success rate, which is defined as the proportion of simulations that achieves a final index value within 0.05
+of the best index value found among all 50 simulations. @fig-success-rate illustrates why the choice of 0.05 is reasonable: the pipe is not recognisable in the projected data. This is motivated by @laa_using_2020's approach to investigating PP indexes.
+
+The results of the simulation are collected using the data structure used in @RJ-2021-105 for assessing PP optimisers. The design parameters are stored along with index value, projection basis, random seed, and computation time.
 
 ```{r}
 #| label: fig-success-rate
-#| fig.cap: "Illustration of success rate calculation: Final projections based on projection pursuit to find the pipe shape in 8D data using the holes index, optimised by CRS, in 50 simulations. The 50 final projections are sorted by their index values. The highest index value found across all simulations is 0.969. Out of the 50 simulations, 43 achieved an index value within 0.05 of the best, resulting in a success rate of 0.86 (43/50)."
+#| fig.cap: "How success rate is calculated, illustrated using the optimal projections from 50 optimisations of 8D pipe data sorted by index value. The pipe shape is recognisable in the projection index values between 0.933-0.969. Of the 50 simulations, 43 achieved an index value within 0.05 of the best, resulting in a success rate of 0.86."
 # pipe_jellyfish_12d <- pipe_better |> 
 #   filter(dim == 2) |> 
 #   mutate(dim = as.numeric(dim) * 8, sim = as.numeric(sim)) 
@@ -670,7 +660,7 @@ value, projection basis, random seed, and computation time.
 # proj_dt |>
 #   ggplot(aes(x = V1, y = V2)) +
 #   geom_point(size = 0.5) +
-#   geom_text(aes(label = round(index_val, 3)), x = 0, y = 3.7,
+#   geom_text(aes(label = sprintf("%.3f", index_val)), x = 0, y = 3.7,
 #             size = 8) +
 #   xlim(-4, 4) + ylim(-4, 4) +
 #   facet_wrap(~fct_reorder(as.factor(sim), -index_val), ncol = 10) +
@@ -687,12 +677,10 @@ knitr::include_graphics(here::here("figures", "success-rate.png"))
 To examine the performance of JSO across various hyper-parameter
 combinations, the pipe-finding problem using the holes index is repeated
 for fifty times in each hyper-parameter combination: 20, 50, and 100
-jellyfish and a maximum of 50 and 100 attempts. The success rate is
-calculated for each combination.
+jellyfish and a maximum of 50 and 100 attempts. 
 
 In addition, to assess the performance of JSO across various PP problems, two different data shapes, pipe and a sine wave, are considered in various dimensional spaces using six different PP indexes: `dcor2d_2`, `loess2d`, `MIC`, `TIC`,
-`spline`, and `stringy`, under varied JSO hyper-parameters. An example of holes and pipes data with the syntax to generate them are provided in the supplementary material. This results
-in a total of `r nrow(sim_df)` scenarios, comprising of
+`spline`, and `stringy`, under varied JSO hyper-parameters. An example of holes and pipes data with the syntax to generate them are provided in the supplementary material. This results in a total of `r nrow(sim_df)` scenarios, comprising of
 `r nrow(filter(sim_df, index == "holes"))` computed on the pipe data and
 `r nrow(filter(sim_df, index != "holes"))` on the sine-wave data. This study does not consider dimensions lower than four, as exploring the search space in such cases is relatively straightforward. Similarly, extremely high-dimensional cases with complex data structures, where no method can reliably and consistenly uncover the underlying structure due to the curse of dimensionality, are also excluded, as they fall outside the scope of this study. A list of combinations of the data shape, dimensions and PP indexes that are considered in this study is provided in @tbl-smoothness-squintability. Again, JSO is run 50 times for each scenario to calculate the success rate for each hyper-parameter combination.
 
@@ -712,14 +700,13 @@ function (@eq-parametric) is fitted to the index values against
 projection distances, estimated by non-linear least squares to obtain
 the squintability measure as Equation (@eq-squintability-parametric).
 
-To construct a relationship among success rate, smoothness,
-squintability, and JSO hyper-parameters, a generalised linear model is
-fitted using a binomial family and a logit link function. The data is
+A generalised linear model is fitted using a binomial family and a logit link function to assess the factors affecting success rate.  Predictors are smoothness,
+squintability, and JSO hyper-parameters. A success rate of 0 indicates the optimiser did not come sufficiently close to the optimal projection. <!-- The data is
 pre-processed by 1) scaling the JSO hyper-parameters by a factor of 10
-for interpretation, 2) <!-- creating a new binary variable `long_time` to
-indicate cases with an average run time over 20 seconds, and 3)-->
+for interpretation, 2) creating a new binary variable `long_time` to
+indicate cases with an average run time over 20 seconds, and 3)
 re-coding the success rate for the `stringy` index as 0, because none of
-the 50 simulations correctly identified the sine-wave shape.
+the 50 simulations correctly identified the sine-wave shape.-->
 
 ```{r}
 #| label: fig-smoothness
@@ -856,26 +843,12 @@ rate also increases. For problems with relatively lower dimensional search space
 computationally intensive when evaluating the index function (such as
 scagnostic indexes) multiple times across numerous iterations.
 
-## Effect of index properties on JSO success rate
-
-Smoothness and squintability are calculated across a collection of
-pipe-finding and sine-wave finding problems to construct the
-relationship between success rate, JSO hyper-parameters, and index
-properties. @tbl-smoothness-squintability presents the parameters
-estimated from the Gaussian process (outputscale $\eta$, lengthscale
-$\ell$, smoothness $\nu$, and nugget $\sigma$) and from the scaled
-logistic function ($\theta_1$ to $\theta_4$) for calculating smoothness
-and squintability in each PP problem considered. The column $\nu$ is
-used as the smoothness metric and the column $\varsigma$ is calculated
-as equation (@eq-squintability-parametric) as the squintability metric.
-
-
 ```{r}
 #| label: fig-proportion
 #| fig.width: 8
 #| fig.height: 3.5
 #| fig.align: "center"
-#| fig.cap: "The proportion of simulations that reach near-optimal index values in the pipe-finding problem using the holes index. The proportion is calculated based on the number of simulations, out of 50, that achieve an index value within 0.05 of the best-performing simulation. To quantify uncertainty, 500 bootstrap samples are generated. The thin segments represent the proportion for each of the 500 bootstrap replicates, while the thicker segments represent the mean of these bootstrap samples, connnected by lines. As the dimensionality increases, the proportion of simulations reaching the optimal index value decreases."
+#| fig.cap: "Summary of the relationship between JSO hyper-parameters on optimisation success, using the holes index for pipe data of dimensions 4-12. Bootstrap samples show the variability in success rate. Success rate mostly plateaus by 50 jellies. The JSO has some difficulty finding the pipe when dimension is higher than 8! Maximum number of tries has little effect."
 pipe_sim_best <- sim_pipe_run_best |> 
   group_by(n_jellies, max_tries, d) |>
   summarise(I_best = max(I_max))
@@ -938,6 +911,21 @@ res_quantile |>
   xlab("Number of jellyfish") + 
   ylab("Proportion of success")
 ```
+
+## Effect of index properties on JSO success rate
+
+Smoothness and squintability are calculated across a collection of
+pipe-finding and sine-wave finding problems to construct the
+relationship between success rate, JSO hyper-parameters, and index
+properties. @tbl-smoothness-squintability presents the parameters
+estimated from the Gaussian process (outputscale $\eta$, lengthscale
+$\ell$, smoothness $\nu$, and nugget $\sigma$) and from the scaled
+logistic function ($\theta_1$ to $\theta_4$) for calculating smoothness
+and squintability in each PP problem considered. The column $\nu$ is
+used as the smoothness metric and the column $\varsigma$ is calculated
+as equation (@eq-squintability-parametric) as the squintability metric.
+
+
 
 ```{r}
 #| label: fit-logistic

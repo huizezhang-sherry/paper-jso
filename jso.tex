@@ -142,7 +142,6 @@
 \usepackage{makecell}
 \usepackage{xcolor}
 \usepackage{caption}
-\usepackage{anyfontsize}
 \usepackage{orcidlink}
 \usepackage{algorithm}
 \usepackage{float}
@@ -723,7 +722,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, breakable, toprule=.15mm, titlerule=0mm, coltitle=black, left=2mm, arc=.35mm, colbacktitle=quarto-callout-note-color!10!white, colback=white, rightrule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, toptitle=1mm, opacityback=0, colframe=quarto-callout-note-color-frame, leftrule=.75mm, bottomtitle=1mm, bottomrule=.15mm, opacitybacktitle=0.6]
+\begin{tcolorbox}[enhanced jigsaw, colback=white, opacitybacktitle=0.6, arc=.35mm, colbacktitle=quarto-callout-note-color!10!white, toptitle=1mm, opacityback=0, breakable, bottomrule=.15mm, bottomtitle=1mm, titlerule=0mm, coltitle=black, colframe=quarto-callout-note-color-frame, title={Algorithm: Jellyfish Optimizer Pseudo Code}, rightrule=.15mm, toprule=.15mm, leftrule=.75mm, left=2mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -808,37 +807,41 @@ the maximum number of tries.
 
 \section{Assessing the optimisers}\label{sec-sim-deets}
 
-This section describes the details of two simulation studies. The first
-simulation compares the JSO performance with an existing optimiser,
-Creeping Random Search (CRS) (Zhang et al. 2021; Laa and Cook 2020) to
-explore JSO's behaviour under different data dimensions. The second
-simulation examines various factors affecting the performance of JSO.
-The JSO performance is evaluated under different hyper-parameters
-combinations (number of jellyfish and the maximum number of tries). The
-effect of index properties (smoothness and squintability) along with JSO
-hyper-parameters and data dimension variations is captured and studied
-using logistic regression.
+This section explains the details of two simulation studies: (1)
+comparison between the existing Creeping Random Search (CRS) (Zhang et
+al. 2021; Laa and Cook 2020) and JSO, and (2) examining the factors
+affecting the performance of JSO.
 
-The performance of JSO is measured by the success rate, defined as the
-proportion of simulations that achieves a final index value within 0.05
-of the best index value found among all 50 simulations (see
-Figure~\ref{fig-success-rate} for an illustration). This comparison is
-based on projection pursuit to find the pipe shape investigated by Laa
-and Cook (2020) using the \texttt{holes} index.
+The second simulation examines various factors affecting the performance
+of JSO. The JSO performance is evaluated under different
+hyper-parameters combinations (number of jellyfish and the maximum
+number of tries). The effect of index properties (smoothness and
+squintability) along with JSO hyper-parameters and data dimension
+variations is captured and studied using logistic regression.
 
 \subsection{Performance of JSO relative to CRS}\label{sec-app-1}
 
-The JSO performance is compared to the existing optimizer, CRS, in a
-pipe-finding problem using the holes index in different dimensional
-spaces. Fifty simulations are conducted in four data dimensions
-(\(d = 6, 8, 10, 12\)) with each optimiser. JSO uses 100 jellyfish with
-a maximum of 100 tries, while the CRS allows a maximum of 1000 samples
-at each iteration before the algorithm terminates. The different numbers
-account for the multiple paths of JSO to enable fairer comparison with
-CRS. The results of the simulation are collected using the data
-structure proposed in Zhang et al. (2021) for assessing JSO, where the
-design parameters are stored along with index value, projection basis,
-random seed, and computation time.
+The CRS is the main optimisation routine currently used for the guided
+tour. Here the two optimisers are compared on the task of finding the
+pipe using the \texttt{holes} index in data with dimensions,
+\(d = 6, 8, 10, 12\). Fifty simulated data sets are used for each
+dimension. JSO uses 100 jellyfish with a maximum of 100 tries, while the
+CRS allows a maximum of 1000 tries at each iteration before the
+algorithm terminates. These choices enable fair comparison between CRS
+and JSO, that conforms to how they are used in practice.
+
+The performance of the optmisers is measured by the success rate, which
+is defined as the proportion of simulations that achieves a final index
+value within 0.05 of the best index value found among all 50
+simulations. Figure~\ref{fig-success-rate} illustrates why the choice of
+0.05 is reasonable: the pipe is not recognisable in the projected data.
+This is motivated by Laa and Cook (2020)'s approach to investigating PP
+indexes.
+
+The results of the simulation are collected using the data structure
+used in Zhang et al. (2021) for assessing PP optimisers. The design
+parameters are stored along with index value, projection basis, random
+seed, and computation time.
 
 \begin{figure}
 
@@ -848,13 +851,12 @@ random seed, and computation time.
 
 }
 
-\caption{\label{fig-success-rate}Illustration of success rate
-calculation: Final projections based on projection pursuit to find the
-pipe shape in 8D data using the holes index, optimised by CRS, in 50
-simulations. The 50 final projections are sorted by their index values.
-The highest index value found across all simulations is 0.969. Out of
-the 50 simulations, 43 achieved an index value within 0.05 of the best,
-resulting in a success rate of 0.86 (43/50).}
+\caption{\label{fig-success-rate}How success rate is calculated,
+illustrated using the optimal projections from 50 optimisations of 8D
+pipe data sorted by index value. The pipe shape is recognisable in the
+projection index values between 0.933-0.969. Of the 50 simulations, 43
+achieved an index value within 0.05 of the best, resulting in a success
+rate of 0.86.}
 
 \end{figure}%
 
@@ -864,8 +866,7 @@ index properties}\label{sec-app-2}
 To examine the performance of JSO across various hyper-parameter
 combinations, the pipe-finding problem using the holes index is repeated
 for fifty times in each hyper-parameter combination: 20, 50, and 100
-jellyfish and a maximum of 50 and 100 attempts. The success rate is
-calculated for each combination.
+jellyfish and a maximum of 50 and 100 attempts.
 
 In addition, to assess the performance of JSO across various PP
 problems, two different data shapes, pipe and a sine wave, are
@@ -905,13 +906,11 @@ projection distances, estimated by non-linear least squares to obtain
 the squintability measure as Equation
 (\ref{eq-squintability-parametric}).
 
-To construct a relationship among success rate, smoothness,
-squintability, and JSO hyper-parameters, a generalised linear model is
-fitted using a binomial family and a logit link function. The data is
-pre-processed by 1) scaling the JSO hyper-parameters by a factor of 10
-for interpretation, 2) re-coding the success rate for the
-\texttt{stringy} index as 0, because none of the 50 simulations
-correctly identified the sine-wave shape.
+A generalised linear model is fitted using a binomial family and a logit
+link function to assess the factors affecting success rate. Predictors
+are smoothness, squintability, and JSO hyper-parameters. A success rate
+of 0 indicates the optimiser did not come sufficiently close to the
+optimal projection.
 
 \begin{figure}
 
@@ -1014,6 +1013,23 @@ computational time required for the optimisation, which can be
 computationally intensive when evaluating the index function (such as
 scagnostic indexes) multiple times across numerous iterations.
 
+\begin{figure}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{jso_files/figure-pdf/fig-proportion-1.pdf}}
+
+}
+
+\caption{\label{fig-proportion}Summary of the relationship between JSO
+hyper-parameters on optimisation success, using the holes index for pipe
+data of dimensions 4-12. Bootstrap samples show the variability in
+success rate. Success rate mostly plateaus by 50 jellies. The JSO has
+some difficulty finding the pipe when dimension is higher than 8!
+Maximum number of tries has little effect.}
+
+\end{figure}%
+
 \subsection{Effect of index properties on JSO success
 rate}\label{effect-of-index-properties-on-jso-success-rate}
 
@@ -1028,27 +1044,6 @@ calculating smoothness and squintability in each PP problem considered.
 The column \(\nu\) is used as the smoothness metric and the column
 \(\varsigma\) is calculated as equation
 (\ref{eq-squintability-parametric}) as the squintability metric.
-
-\begin{figure}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{jso_files/figure-pdf/fig-proportion-1.pdf}}
-
-}
-
-\caption{\label{fig-proportion}The proportion of simulations that reach
-near-optimal index values in the pipe-finding problem using the holes
-index. The proportion is calculated based on the number of simulations,
-out of 50, that achieve an index value within 0.05 of the
-best-performing simulation. To quantify uncertainty, 500 bootstrap
-samples are generated. The thin segments represent the proportion for
-each of the 500 bootstrap replicates, while the thicker segments
-represent the mean of these bootstrap samples, connnected by lines. As
-the dimensionality increases, the proportion of simulations reaching the
-optimal index value decreases.}
-
-\end{figure}%
 
 \begin{table}
 
@@ -1114,8 +1109,6 @@ increases the success rate by 24\%. As dimension increases by one the
 success rate almost halves. Increasing the number of jellies by 10
 increases the success rate by 32\%.
 
-\begingroup
-\fontsize{12.0pt}{14.4pt}\selectfont
 \setlength{\LTpost}{0mm}
 
 \begin{longtable}{lcc}
@@ -1134,9 +1127,9 @@ increasing the number of tries do not.}
 \textbf{Characteristic} & \textbf{OR} \textbf{(95\% CI)}\textsuperscript{\textit{1}} & \textbf{p-value} \\ 
 \midrule\addlinespace[2.5pt]
 Smoothness & 1.00 (0.90 to 1.11) & 0.928 \\ 
-Squintability & 1.24 (1.13 to 1.39) & {\bfseries <0.001} \\ 
-Dimension & 0.57 (0.44 to 0.73) & {\bfseries <0.001} \\ 
-Number of jellyfish & 1.32 (1.17 to 1.50) & {\bfseries <0.001} \\ 
+Squintability & 1.24 (1.13 to 1.39) & \textbf{<0.001} \\ 
+Dimension & 0.57 (0.44 to 0.73) & \textbf{<0.001} \\ 
+Number of jellyfish & 1.32 (1.17 to 1.50) & \textbf{<0.001} \\ 
 Maximum number of tries & 1.06 (0.94 to 1.21) & 0.333 \\ 
 \bottomrule
 
@@ -1145,7 +1138,6 @@ Maximum number of tries & 1.06 (0.94 to 1.21) & 0.333 \\
 \begin{minipage}{\linewidth}
 \textsuperscript{\textit{1}}OR = Odds Ratio, CI = Confidence Interval\\
 \end{minipage}
-\endgroup
 
 \begingroup\fontsize{10}{12}\selectfont
 
