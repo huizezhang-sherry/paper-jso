@@ -80,16 +80,12 @@ nocite: |
 ```{r setup, echo = FALSE, message=FALSE, warning=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 library(tidyverse)
-library(ggplot2)
 library(patchwork)
 library(ggh4x)
 library(broom)
 library(kableExtra)
 library(tourr)
-library(PPtreeViz)
 library(ferrn)
-library(colorspace)
-library(broom)
 load(here::here("data/sim_pipe_run_best.rda"))
 load(here::here("data/sim_sine_6d_spline_head.rda"))
 load(here::here("data/sim_sine_6d_spline_best.rda"))
@@ -974,7 +970,7 @@ sq_basis_dist_idx |>
 ```{r}
 #| label: tbl-smoothness-squintability
 #| tbl-cap: Parameters estimated from the Gaussian process (outputscale $\eta$, lengthscale $\ell$, smoothness $\nu$, and nugget $\sigma$) and scaled logistic function ($\theta_1$ to $\theta_4$ and $\varsigma$) for the pipe-finding and sine-wave finding problems.  The columns $\nu$ and $\varsigma$ represent the smoothness and squintability measures respectively.
-dt <- tibble(shape = c(rep("pipe", 4), rep("sine", 18)), smoothness) |>
+dt <- tibble(shape = c(rep("pipe", 5), rep("sine", 17)), smoothness) |>
   left_join(squintability) |> 
   rename(d = n, smooth = smoothness) |> 
   mutate(index = ifelse(index == "dcor2d_2", "dcor", index),
@@ -1177,6 +1173,11 @@ simulation data produced in Section 5 can be found at
 Nicolas Langrené acknowledges the partial support of the Guangdong
 Provincial/Zhuhai Key Laboratory IRADS (2022B1212010006) and the UIC
 Start-up Research Fund UICR0700041-22.
+
+The R packages used in this work include: `tidyverse` [@tidyverse]; 
+`patchwork` [@patchwork]; `ggh4x` [@ggh4x]; `broom` [@broom]; 
+`kableExtra` [@kabelextra]; `ferrn` [@RJ-2021-105]; and `cassowaryr` [@cassowaryr]. 
+
 
 # Supplementary materials {.unnumbered}
 

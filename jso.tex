@@ -142,6 +142,7 @@
 \usepackage{makecell}
 \usepackage{xcolor}
 \usepackage{caption}
+\usepackage{anyfontsize}
 \usepackage{orcidlink}
 \usepackage{algorithm}
 \usepackage{float}
@@ -356,7 +357,7 @@ Duch 2011). Cook et al. (1995) tied the optimisation more closely to the
 index, when they introduced the PPGT, which monitors the optimisation
 visually so that the user can see the projected data leading in and out
 of the optimum. An implementation is available in the \texttt{tourr}
-package (Wickham et al. 2011) in R (R Core Team 2023). Zhang et al.
+package (H. Wickham et al. 2011) in R (R Core Team 2023). Zhang et al.
 (2021) illustrated how to diagnose optimisation processes, particularly
 focusing on the guided tour, and revealed a need for improved
 optimisation. While improving the quality of the optimisation solutions
@@ -722,7 +723,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, left=2mm, colback=white, opacityback=0, coltitle=black, title={Algorithm: Jellyfish Optimizer Pseudo Code}, leftrule=.75mm, breakable, arc=.35mm, colbacktitle=quarto-callout-note-color!10!white, toptitle=1mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, bottomtitle=1mm, bottomrule=.15mm, toprule=.15mm, rightrule=.15mm, titlerule=0mm]
+\begin{tcolorbox}[enhanced jigsaw, breakable, toprule=.15mm, titlerule=0mm, coltitle=black, left=2mm, arc=.35mm, colbacktitle=quarto-callout-note-color!10!white, colback=white, rightrule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, toptitle=1mm, opacityback=0, colframe=quarto-callout-note-color-frame, leftrule=.75mm, bottomtitle=1mm, bottomrule=.15mm, opacitybacktitle=0.6]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -1070,7 +1071,7 @@ pipe & holes & 4 & 0.03 & 0.36 & 2.99 & 0.00 & 1.00 & 0.78 & 4.50 & 0.03 & 0.31\
 pipe & holes & 6 & 0.03 & 0.38 & 3.09 & 0.00 & 1.02 & 0.86 & 3.37 & 0.02 & 0.41\\
 pipe & holes & 8 & 0.02 & 0.33 & 2.90 & 0.00 & 1.01 & 0.87 & 3.26 & 0.03 & 0.41\\
 pipe & holes & 10 & 0.02 & 0.34 & 2.88 & 0.00 & 1.02 & 0.88 & 3.15 & 0.02 & 0.43\\
-sine & holes & 12 & 0.02 & 0.43 & 2.72 & 0.00 & 1.01 & 0.88 & 3.34 & 0.00 & 0.41\\
+pipe & holes & 12 & 0.02 & 0.43 & 2.72 & 0.00 & 1.01 & 0.88 & 3.34 & 0.00 & 0.41\\
 sine & MIC & 4 & 0.14 & 0.27 & 3.56 & 0.00 & 0.94 & 0.15 & 1.14 & -0.04 & 0.39\\
 sine & MIC & 6 & 0.06 & 0.31 & 3.08 & 0.00 & 0.89 & 0.57 & 1.62 & -0.03 & 0.39\\
 sine & MIC & 8 & 0.03 & 0.32 & 2.75 & 0.00 & 0.93 & 0.33 & 1.31 & -0.04 & 0.38\\
@@ -1113,6 +1114,8 @@ increases the success rate by 24\%. As dimension increases by one the
 success rate almost halves. Increasing the number of jellies by 10
 increases the success rate by 32\%.
 
+\begingroup
+\fontsize{12.0pt}{14.4pt}\selectfont
 \setlength{\LTpost}{0mm}
 
 \begin{longtable}{lcc}
@@ -1131,9 +1134,9 @@ increasing the number of tries do not.}
 \textbf{Characteristic} & \textbf{OR} \textbf{(95\% CI)}\textsuperscript{\textit{1}} & \textbf{p-value} \\ 
 \midrule\addlinespace[2.5pt]
 Smoothness & 1.00 (0.90 to 1.11) & 0.928 \\ 
-Squintability & 1.24 (1.13 to 1.39) & \textbf{<0.001} \\ 
-Dimension & 0.57 (0.44 to 0.73) & \textbf{<0.001} \\ 
-Number of jellyfish & 1.32 (1.17 to 1.50) & \textbf{<0.001} \\ 
+Squintability & 1.24 (1.13 to 1.39) & {\bfseries <0.001} \\ 
+Dimension & 0.57 (0.44 to 0.73) & {\bfseries <0.001} \\ 
+Number of jellyfish & 1.32 (1.17 to 1.50) & {\bfseries <0.001} \\ 
 Maximum number of tries & 1.06 (0.94 to 1.21) & 0.333 \\ 
 \bottomrule
 
@@ -1142,6 +1145,7 @@ Maximum number of tries & 1.06 (0.94 to 1.21) & 0.333 \\
 \begin{minipage}{\linewidth}
 \textsuperscript{\textit{1}}OR = Odds Ratio, CI = Confidence Interval\\
 \end{minipage}
+\endgroup
 
 \begingroup\fontsize{10}{12}\selectfont
 
@@ -1295,6 +1299,12 @@ Nicolas Langrené acknowledges the partial support of the Guangdong
 Provincial/Zhuhai Key Laboratory IRADS (2022B1212010006) and the UIC
 Start-up Research Fund UICR0700041-22.
 
+The R packages used in this work include: \texttt{tidyverse} (Hadley
+Wickham et al. 2019); \texttt{patchwork} (Pedersen 2024); \texttt{ggh4x}
+(van den Brand 2024); \texttt{broom} (Robinson, Hayes, and Couch 2024);
+\texttt{kableExtra} (Zhu 2024); \texttt{ferrn} (Zhang et al. 2021); and
+\texttt{cassowaryr} (Mason et al. 2022).
+
 \section*{Supplementary materials}\label{supplementary-materials}
 \addcontentsline{toc}{section}{Supplementary materials}
 
@@ -1441,6 +1451,15 @@ P Engelbrecht, Dario Floreano, Luca Maria Gambardella, et al., 60--71.
 Berlin, Heidelberg: Springer Berlin Heidelberg.
 \url{https://doi.org/10.1007/978-3-642-15461-4_6}.
 
+\bibitem[\citeproctext]{ref-cassowaryr}
+Mason, Harriet, Stuart Lee, Ursula Laa, and Dianne Cook. 2022.
+\emph{Cassowaryr: Compute Scagnostics on Pairs of Numeric Variables in a
+Data Set}. \url{https://CRAN.R-project.org/package=cassowayr}.
+
+\bibitem[\citeproctext]{ref-patchwork}
+Pedersen, Thomas Lin. 2024. \emph{Patchwork: The Composer of Plots}.
+\url{https://CRAN.R-project.org/package=patchwork}.
+
 \bibitem[\citeproctext]{ref-porcu2024matern}
 Porcu, Emilio, Moreno Bevilacqua, Robert Schaback, and Chris Oates.
 2024. {``The {M}atérn Model: A Journey Through Statistics, Numerical
@@ -1468,6 +1487,11 @@ Intelligence Review}, 1--71.
 Rasmussen, Carl Edward, and Christopher K. I. Williams. 2006.
 \emph{Gaussian Processes for Machine Learning}. The MIT Press.
 
+\bibitem[\citeproctext]{ref-broom}
+Robinson, David, Alex Hayes, and Simon Couch. 2024. \emph{Broom: Convert
+Statistical Objects into Tidy Tibbles}.
+\url{https://CRAN.R-project.org/package=broom}.
+
 \bibitem[\citeproctext]{ref-barnett1981interpreting}
 Tukey, P. A., and J. W. Tukey. 1981. \emph{Graphical Display of Data in
 Three and Higher Dimensions}. Wiley Series in Probability and
@@ -1480,6 +1504,16 @@ Ursula Laa, Andreas Buja, Dianne Cook, and German Valencia. 2022.
 in Multiple Dimensions.''} \emph{Journal of Computational and Graphical
 Statistics} 31 (3): 739--52.
 \url{https://doi.org/10.1080/10618600.2022.2035230}.
+
+\bibitem[\citeproctext]{ref-ggh4x}
+van den Brand, Teun. 2024. \emph{Ggh4x: Hacks for 'Ggplot2'}.
+\url{https://CRAN.R-project.org/package=ggh4x}.
+
+\bibitem[\citeproctext]{ref-tidyverse}
+Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy
+D'Agostino McGowan, Romain François, Garrett Grolemund, et al. 2019.
+{``Welcome to the {tidyverse}.''} \emph{Journal of Open Source Software}
+4 (43): 1686. \url{https://doi.org/10.21105/joss.01686}.
 
 \bibitem[\citeproctext]{ref-tourr}
 Wickham, H., D. Cook, H. Hofmann, and A. Buja. 2011. {``{tourr}: An {R}
@@ -1504,6 +1538,10 @@ Zhang, H. Sherry, Dianne Cook, Ursula Laa, Nicolas Langrené, and
 Patricia Menéndez. 2021. {``Visual Diagnostics for Constrained
 Optimisation with Application to Guided Tours.''} \emph{The R Journal}
 13: 624--41. \url{https://doi.org/10.32614/RJ-2021-105}.
+
+\bibitem[\citeproctext]{ref-kabelextra}
+Zhu, Hao. 2024. \emph{kableExtra: Construct Complex Table with 'Kable'
+and Pipe Syntax}. \url{https://CRAN.R-project.org/package=kableExtra}.
 
 \end{CSLReferences}
 
