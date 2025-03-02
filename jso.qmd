@@ -631,7 +631,7 @@ the algorithm or its application, the focus is on two main parameters
 that are most relevant to our application: the number of jellyfish and
 the maximum number of tries.
 
-# Assessing optimisers: two simulation studies {#sec-sim-deets}
+# Assessing the optimisers {#sec-sim-deets}
 
 This section describes the details of two simulation studies. The first simulation
 compares the JSO performance with an existing optimiser, Creeping Random
@@ -770,48 +770,14 @@ knitr::include_graphics(here::here("figures", "squintability.png"))
 
 # Results {#sec-sim-res}
 
-## Performance of JSO relative to CRS
-
-Performance of JSO is assessed based on the final projections across the
-two optimisers: JSO and CRS. The final projections found by the two
-optimisers are presented in @fig-proj, broken down by 10th quantile,
-faceted by the data dimensions. In the 6-dimensional data scenario, JSO
-consistently identifies a clear pipe shape. The CRS also finds the pipe
-shape but with a wide rim, suggesting a further polish search may be
-required. With increasing dimensions, JSO may not always identify the
-pipe shape due to random sampling, but it still finds the pipe shape in
-over 50% of cases. Compared to CRS, JSO achieves higher index values and
-clearer pipe shapes across all quantiles in data of 8, 10, 12
-dimensions, suggesting its advantage in exploring high-dimensional
-spaces.
-
-## Factors affecting JSO success rate: JSO hyper-parameters and index properties
-
-The effect of JSO hyper-parameters (number of jellyfish and the maximum
-number of tries) on the success rate is presented in @fig-proportion.
-The uncertainty is quantified through 500 bootstrap replicates for each
-case. As the number of jellyfish and maximum tries increase, the success
-rate also increases. For problems with relatively lower dimensional search spaces (4 and 6 dimensions), small parameter values (20 jellyfish and a maximum of 50 tries) are sufficient for space exploration and thus can already achieve a high success rate. Higher parameter values (i.e. 100 jellyfish and a maximum of 100 tries) enhances exploration of the search space, which is particularly beneficial in higher-dimensional problems (8, 10, and 12 dimensions) where a more complex search is necessary. However, in lower-dimensional problems, the benefit may be less pronounced, as the space is already relatively easy to navigate. While increasing both parameters enhances the performance of JSO, it also extends the computational time required for the optimisation, which can be
-computationally intensive when evaluating the index function (such as
-scagnostic indexes) multiple times across numerous iterations.
-
-Smoothness and squintability are calculated across a collection of
-pipe-finding and sine-wave finding problems to construct the
-relationship between success rate, JSO hyper-parameters, and index
-properties. @tbl-smoothness-squintability presents the parameters
-estimated from the Gaussian process (outputscale $\eta$, lengthscale
-$\ell$, smoothness $\nu$, and nugget $\sigma$) and from the scaled
-logistic function ($\theta_1$ to $\theta_4$) for calculating smoothness
-and squintability in each PP problem considered. The column $\nu$ is
-used as the smoothness metric and the column $\varsigma$ is calculated
-as equation (@eq-squintability-parametric) as the squintability metric.
+This section summarises the findings from the simulations that compare the JSO performance with the existing CRS optimiser, and the relationship between optimisation success and hyper-parameter choices and PP index properties.
 
 ```{r}
 #| fig.height: 7.5
 #| fig.width: 10
 #| label: fig-proj
 #| fig.align: "center"
-#| fig.cap: "Projections found by the JSO and CRS at each 10th quantile across 50 simulations. The projection pursuit problem is to find the pipe shape using the holes index in the 6, 8, 10, and 12-dimensional spaces. The JSO uses 100 jellyfish and a maximum number of tries of 100. The CRS uses a maximum of 1000 tries in each step of random sampling step before the algorithm terminates. In the 6-D data space, JSO always finds a clear pipe shape while the CRS also finds the pipe shape but with a wide rim. At higher data dimensions, JSO finds a higher index value and a clearer pipe shape across all the quantiles than the CRS"
+#| fig.cap: "Visual comparison of JSO and CRS results, using optimal data projections obtained over 50 simulations of the pipe data. Rows correspond to data dimension. Columns correspond to quantiles of the index values, with 0 being minimum, 100 being maximum, and 50 the median. JSO achieves the better views of the pipe generally than CRS. As dimension increases both have more difficulty finding the pipe."
 
 aaa <- map_dfr(
   list(pipe1000, pipe1000_8d, pipe1000_10d, pipe1000_12d), 
@@ -822,8 +788,8 @@ aaa <- map_dfr(
       arrange(index_val) |>
       filter(row_number() %in% c(1, seq(5, 50, 5))) |> 
       mutate(id = factor(
-        paste0(c(0, seq(5, 50, 5)) / 50 * 100, "th"),
-        levels = paste0(c(0, seq(5, 50, 5)) / 50 * 100, "th"))) |> 
+        paste0(c(0, seq(5, 50, 5)) / 50 * 100),
+        levels = c(0, seq(5, 50, 5) / 50 * 100))) |> 
       compute_projection(data = .x, col = c("d", "index_val", "id"))
   }
 )
@@ -832,7 +798,8 @@ p1 <- aaa |>
   ggplot() + 
   geom_point(aes(x = V1, y = V2), size = 0.05) + 
   geom_text(data = aaa |> select(-V1, -V2) |> unique(), 
-            aes(label = round(index_val,3)), x = 0, y = 3.7, 
+            aes(label = sprintf("%.3f", index_val)),
+            x = 0, y = 3.7, 
             size = 3) + 
   facet_grid(d ~ id) + 
   xlim(-4, 4) + ylim(-4, 4) +
@@ -846,8 +813,8 @@ bbb <- pipe_better |>
   arrange(index_val) |> 
   filter(row_number() %in% c(1, seq(5, 50, 5))) |>  
   mutate(id = factor(
-    paste0(c(0, seq(5, 50, 5)) / 50 * 100, "th"),
-    levels = paste0(c(0, seq(5, 50, 5)) / 50 * 100, "th")), 
+    paste0(c(0, seq(5, 50, 5)) / 50 * 100),
+        levels = c(0, seq(5, 50, 5) / 50 * 100)), 
     d = 4 + 2 * as.numeric(dim)) |> 
   unnest(proj)
 
@@ -855,7 +822,7 @@ p2 <- bbb |>
   ggplot() + 
   geom_point(aes(x = V1, y = V2), size = 0.05) + 
   geom_text(data = bbb |> select(-V1, -V2) |> unique(), 
-            aes(label = round(index_val,3)), x = 0, y = 3.7, 
+            aes(label = sprintf("%.3f", index_val)), x = 0, y = 3.7, 
             size = 3) + 
   facet_grid(d ~ id) + 
   xlim(-4, 4) + ylim(-4, 4) +
@@ -866,6 +833,46 @@ p2 <- bbb |>
 
 (p1 + ggtitle("a. JSO"))/(p2 + ggtitle("b. CRS"))
 ```
+
+## Performance of JSO relative to CRS
+
+The performance of JSO is assessed relative to the existing CRS optimiser based on the optimal projection obtained. The final projections for the pipe data sets found by the two optimisers are shown in @fig-proj, with rows corresponding to data dimension. The 50 simulations in each data dimension are sorted by index value, and the projections corresponding to each 10th quantile value are shown, with minimum at left and maximum at right. Index value is printed on the plot. The purpose is to summarise the views of the data resulting from different optimisations, and hence compare results between the two optimisers. Generally, the JSO does a more consistent job of finding the pipe structure clearly. As the data dimension increases, both optimisers struggle and less clearly capture the circle shape. 
+
+<!-- broken down by 10th quantile,
+faceted by the data dimensions. In the 6-dimensional data scenario, JSO
+consistently identifies a clear pipe shape. The CRS also finds the pipe
+shape but with a wide rim, suggesting a further polish search may be
+required. With increasing dimensions, JSO may not always identify the
+pipe shape due to random sampling, but it still finds the pipe shape in
+over 50% of cases. Compared to CRS, JSO achieves higher index values and
+clearer pipe shapes across all quantiles in data of 8, 10, 12
+dimensions, suggesting its advantage in exploring high-dimensional
+spaces.-->
+
+
+## Effect of hyper-parameters effect on JSO success rate
+
+The effect of JSO hyper-parameters (number of jellyfish and the maximum
+number of tries) on the success rate is presented in @fig-proportion.
+The uncertainty is quantified through 500 bootstrap replicates for each
+case. As the number of jellyfish and maximum tries increase, the success
+rate also increases. For problems with relatively lower dimensional search spaces (4 and 6 dimensions), small parameter values (20 jellyfish and a maximum of 50 tries) are sufficient for space exploration and thus can already achieve a high success rate. Higher parameter values (i.e. 100 jellyfish and a maximum of 100 tries) enhances exploration of the search space, which is particularly beneficial in higher-dimensional problems (8, 10, and 12 dimensions) where a more complex search is necessary. However, in lower-dimensional problems, the benefit may be less pronounced, as the space is already relatively easy to navigate. While increasing both parameters enhances the performance of JSO, it also extends the computational time required for the optimisation, which can be
+computationally intensive when evaluating the index function (such as
+scagnostic indexes) multiple times across numerous iterations.
+
+## Effect of index properties on JSO success rate
+
+Smoothness and squintability are calculated across a collection of
+pipe-finding and sine-wave finding problems to construct the
+relationship between success rate, JSO hyper-parameters, and index
+properties. @tbl-smoothness-squintability presents the parameters
+estimated from the Gaussian process (outputscale $\eta$, lengthscale
+$\ell$, smoothness $\nu$, and nugget $\sigma$) and from the scaled
+logistic function ($\theta_1$ to $\theta_4$) for calculating smoothness
+and squintability in each PP problem considered. The column $\nu$ is
+used as the smoothness metric and the column $\varsigma$ is calculated
+as equation (@eq-squintability-parametric) as the squintability metric.
+
 
 ```{r}
 #| label: fig-proportion
