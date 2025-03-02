@@ -79,7 +79,7 @@ save(sq_holes_basis_df, file = here::here("data/sq_holes_basis_df.rda"))
 
 idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "splines2d", "stringy2", "skinny")
 # about 40 mins
-sq_sine_basis_df <- tibble::tibble(
+sq_sine_68s_basis_df <- tibble::tibble(
   n = 6, index = idx_names, data = list(sine1000),
   best = list(matrix(c(rep(0, 8), 1, 0, 0, 1), nrow = 6, byrow = TRUE))) |>
   dplyr::bind_rows(sine_8d_tbl("MIC")) |>
@@ -106,7 +106,7 @@ sq_4d_basis_df <- tibble::tibble(
     step_size = 0.005, best = best, parallel = TRUE)
   ))
 
-sq_sine_basis_df <- bind_rows(sq_sine_basis_df, sq_4d_basis_df) |> arrange(index, n)
+sq_sine_basis_df <- bind_rows(sq_sine_68s_basis_df, sq_4d_basis_df) |> arrange(index, n)
 save(sq_sine_basis_df, file = here::here("data/sq_sine_basis_df.rda"))
 
 # calculate squintability
@@ -116,7 +116,7 @@ res_holes <- sq_holes_basis_df |>
     basis_df, method = "nls", bin_width = 0.005, scale = TRUE,
     other_params = list(start = c(theta1 = 1, theta2 = 1, theta3 = 3, theta4 = 0)))) |>
   unnest(res) |>
-  select(index, n, theta1: squint)
+  select(index, n, theta1:squint)
 
 param_tbl <- tibble(other_params =  c(
   rep(list(start = list(theta1 = 1, theta2 = 1, theta3 = 2, theta4 = 0)), 11),
@@ -150,24 +150,18 @@ smoothness |> select(n, index, smoothness) |>
 ############################################################################
 ############################################################################
 # TODO
-sq_basis_dist_idx <- bind_rows(sq_holes_basis_df, sq_sine_basis_df) |>
+sq_basis_df_6d_TIC_spline_skinny <- sq_sine_basis_df |>
+  filter(index %in% c("TIC", "splines2d", "skinny"),n  == 6) |>
   dplyr::select(basis_df, n, index) |>
   rename(index_name = index) |>
   unnest(basis_df) |>
-  mutate(dist = ceiling(dist / 0.005) * 0.005,
-         index_name = factor(index_name, levels = c("holes", "MIC", "TIC", "dcor2d_2",
-                                                    "loess2d", "splines2d", "stringy"))) |>
-  group_by(n, index_name, dist) |>
-  summarise(index = mean(index, na.rm = TRUE), .groups = "drop")
-
-
-sq_basis_dist_idx <- sq_basis_dist_idx |>
-  filter(index_name %in% c("holes", "TIC", "stringy")) |>
-  group_by(n, index_name) |>
+  filter(id <= 5) |>
+  mutate(index_name = ifelse(index_name == "splines2d", "splines", index_name),
+         index_name = factor(index_name, levels = c("TIC", "splines",  "skinny"))) |>
+  group_by(id, index_name) |>
   mutate(index = (index - min(index)) / (max(index) - min(index))) |>
-  ungroup() |>
-  bind_rows(sq_basis_dist_idx |>
-              filter(!index_name %in% c("holes", "TIC", "stringy")))
-save(sq_basis_dist_idx, file = here::here("data", "sq_basis_dist_idx.rda"))
+  ungroup()
+
+save(sq_basis_df_6d_TIC_spline_skinny, file = here::here("data", "sq_basis_df_6d_TIC_spline_skinny.rda"))
 
 
