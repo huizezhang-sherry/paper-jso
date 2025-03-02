@@ -1,13 +1,8 @@
 library(cassowaryr)
 library(igraph)
 library(tidyverse)
-library(spinebil)
 library(tourr)
 
-set.seed(123456)
-sine1000 <- sinData(6, 1000) %>% scale() %>% as_tibble()
-colnames(sine1000) <- paste0("V", 1:6)
-################################################################################
 # d = 6
 stringy2 <- function(){
   function(mat){
@@ -20,10 +15,8 @@ stringy2 <- function(){
 }
 
 sim <- function(d = d, n_jellies = n_jellies, max.tries = max.tries,
-                data_seed = 123456, optim_seed = seed, sim = sim){
-  set.seed(data_seed)
-  sine1000 <- sinData(d, 1000) %>% scale() %>% as_tibble()
-  colnames(sine1000) <- paste0("V", 1:d)
+                optim_seed = seed, sim = sim){
+  sine1000 <- ferrn::sine1000_6d
 
   cat("sim: ", sim, "\n")
   cat("n_jellies: ", n_jellies, "\n")

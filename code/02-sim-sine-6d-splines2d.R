@@ -1,14 +1,14 @@
 library(tidyverse)
-library(spinebil)
+library(ferrn)
 library(tourr)
+
 
 ################################################################################
 # d = 6
+# d = 4 and 8 data is simulated in 10-sim-4d.R
 sim <- function(d = d, n_jellies = n_jellies, max.tries = max.tries,
-                data_seed = 123456, optim_seed = seed, sim = sim){
-  set.seed(data_seed)
-  sine1000 <- sinData(d, 1000) %>% scale() %>% as_tibble()
-  colnames(sine1000) <- paste0("V", 1:d)
+                optim_seed = seed, sim = sim){
+  sine1000 <- ferrn::sine1000_6d
 
   cat("sim: ", sim, "\n")
   cat("n_jellies: ", n_jellies, "\n")
@@ -90,8 +90,7 @@ save(sim_sine_6d_spline_projdist, file = here::here("data/sim_sine_6d_spline_pro
 ################################################################################
 ################################################################################
 set.seed(123456)
-sine1000 <- spinebil::sinData(6, 1000) %>% scale() %>% as_tibble()
-colnames(sine1000) <- paste0("V", 1:6)
+sine1000 <- ferrn::sine1000_6d
 sum <- sim_sine_6d_spline |>
   group_by(id) |> filter(index_val == max(index_val)) |> filter(row_number() == 1)
 b <- sum |> pull(basis)

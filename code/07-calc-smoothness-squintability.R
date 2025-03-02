@@ -1,8 +1,6 @@
 library(ferrn)
 library(tourr)
 library(tidyverse)
-library(cassowaryr)
-library(igraph)
 
 sine_8d_tbl <- function(index){
   tibble::tibble(

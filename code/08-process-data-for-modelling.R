@@ -1,4 +1,5 @@
 library(tidyverse)
+library(ferrn)
 
 # calculate success rate for pipe-finding problem
 load(file = "data-raw/sim_pipe.rda")

@@ -1,15 +1,18 @@
 library(tidyverse)
-library(spinebil)
+library(ferrn)
 library(tourr)
 library(minerva)
 
 ################################################################################
-# d = 6
+# d = 6 and 8
+# d = 4 data is simulated in 10-sim-4d.R
 sim <- function(d = d, idx_f = idx_f, n_jellies = n_jellies, max.tries = max.tries,
                 data_seed = 123456, optim_seed = seed, sim = sim){
-  set.seed(data_seed)
-  sine1000 <- sinData(d, 1000) %>% scale() %>% as_tibble()
-  colnames(sine1000) <- paste0("V", 1:d)
+
+  if (d == 6){
+    sine1000 <- ferrn::sine1000_6d
+  } else if (d == 8)
+    sine1000 <- ferrn::sine1000_8d
 
   cat("sim: ", sim, "\n")
   cat("n_jellies: ", n_jellies, "\n")

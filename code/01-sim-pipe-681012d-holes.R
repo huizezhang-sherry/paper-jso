@@ -1,12 +1,19 @@
 library(tidyverse)
-library(spinebil)
+library(ferrn)
 library(tourr)
 
 sim <- function(d = d, n_jellies = n_jellies, max.tries = max.tries,
-                data_seed = 123456, optim_seed = seed){
-  set.seed(data_seed)
-  pipe1000 <- pipeData(d, 1000) %>% scale() %>% as_tibble()
-  colnames(pipe1000) <- paste0("V", 1:d)
+                optim_seed = seed){
+  if (d == 6){
+    pipe1000 <- ferrn::pipe1000_6d
+  } else if (d == 8){
+    pipe1000 <- ferrn::pipe1000_8d
+  } else if (d == 10){
+    pipe1000 <- ferrn::pipe1000_10d
+  } else if (d == 12){
+    pipe1000 <- ferrn::pipe1000_12d
+  }
+
 
   cat("n_jellies: ", n_jellies, "\n")
   cat("max.tries: ", max.tries, "\n")
@@ -47,7 +54,7 @@ save(sim_pipe, file = "data-raw/sim_pipe.rda")
 
 ################################################################################
 ################################################################################
-# additional smaller data
+# 4D data is simulated in 10-sim-4d.R
 load(here::here("data-raw/sim_pipe_4d.rda"))
 sim_pipe_run_best <- bind_rows(sim_pipe_4d, sim_pipe) |>
   group_by(id, n_jellies, max_tries, d) |>

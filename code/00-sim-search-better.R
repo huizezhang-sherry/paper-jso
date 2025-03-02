@@ -19,10 +19,17 @@ historyarray2dt <- function(array, index_f){
 }
 
 sim <- function(d, optimiser = c("search_better_random", "search_better", "search_jellyfish"),
-                data_seed = 123456, optim_seed = seed){
-  set.seed(data_seed)
-  pipe1000 <- pipeData(d, 1000) %>% scale() %>% as_tibble()
-  colnames(pipe1000) <- paste0("V", 1:d)
+                optim_seed = seed){
+ if (d == 6){
+    pipe1000 <- ferrn::pipe1000_6d
+  } else if (d == 8){
+    pipe1000 <- ferrn::pipe1000_8d
+  } else if (d == 10){
+    pipe1000 <- ferrn::pipe1000_10d
+  } else if (d == 12){
+    pipe1000 <- ferrn::pipe1000_12d
+  }
+
 
   if (optimiser == "search_better_random"){
     res <- map_dfr(optim_seed, function(seed){
@@ -50,11 +57,9 @@ sim <- function(d, optimiser = c("search_better_random", "search_better", "searc
   return(res)
 }
 
-data <- map_dfr(c(6, 8, 10, 12), ~{
-  set.seed(123456)
-  tibble(x = list(pipeData(.x, 1000) %>% scale()))
-}) |>
-  mutate(dim = c(6, 8, 10, 12))
+data <- tibble(x = list(ferrn::pipe1000_4d, ferrn::pipe1000_6d,
+                        ferrn::pipe1000_10d, ferrn::pipe1000_12d),
+               dim = c(6, 8, 10, 12))
 # a <- map_dfr(c(6, 8, 10, 12),
 #              ~safe_sim(d = .x, optimiser = "search_better",
 #                        optim_seed = seed),

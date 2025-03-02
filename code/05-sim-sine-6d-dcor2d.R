@@ -1,15 +1,12 @@
 library(tidyverse)
-library(spinebil)
+library(ferrn)
 library(tourr)
 
 ################################################################################
 # d = 6
-set.seed(123456)
-sine1000 <- sinData(6, 1000) %>% scale() %>% as_tibble()
-colnames(sine1000) <- paste0("V", 1:6)
-
+# d = 4 data is simulated in 10-sim-4d.R
 sim <- function(d = d, idx_f = idx_f, n_jellies = n_jellies, max.tries = max.tries,
-                data = sine1000 , optim_seed = seed, sim = sim){
+                data = ferrn::sine1000_6d, optim_seed = seed, sim = sim){
 
   cat("sim:", sim, "| n_jellies:", n_jellies, "| max.tries:", max.tries,
   "| idx_f:", idx_f, "| d:", d, "\n")
@@ -50,8 +47,7 @@ dcor2d_2 <- function() {
 # take less than 2 hrs
 set.seed(123)
 seed <- sample(1000: 10000, size = 50)
-sim_setup <- crossing(idx_f = c("dcor2d_2"),
-                      d = 6,
+sim_setup <- crossing(idx_f = c("dcor2d_2"), d = 6,
                       n_jellies = c(20, 50),
                       max_tries = c(50, 100)) |>
   filter(!(n_jellies == 50 & max_tries == 100)) |>

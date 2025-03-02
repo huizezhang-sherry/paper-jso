@@ -1,5 +1,5 @@
 library(tidyverse)
-library(spinebil)
+library(ferrn)
 library(tourr)
 
 skinny <- function(){
@@ -20,10 +20,8 @@ stringy2 <- function(){
 
 
 sim_pipe <- function(d = d, n_jellies = n_jellies, max.tries = max.tries,
-                data_seed = 123456, optim_seed = seed){
-  set.seed(data_seed)
-  pipe1000 <- pipeData(d, 1000) %>% scale() %>% as_tibble()
-  colnames(pipe1000) <- paste0("V", 1:d)
+                     optim_seed = seed){
+  pipe1000 <- ferrn::pipe1000_4d
 
   cat("n_jellies: ", n_jellies, "\n")
   cat("max.tries: ", max.tries, "\n")
@@ -65,10 +63,14 @@ save(sim_pipe_4d, file = "data-raw/sim_pipe_4d.rda")
 ################################################################################
 ################################################################################
 sim <- function(index, d = d, n_jellies = n_jellies, max.tries = max.tries,
-                data_seed = 123456, optim_seed = seed, sim = sim){
-  set.seed(data_seed)
-  sine1000 <- sinData(d, 1000) %>% scale() %>% as_tibble()
-  colnames(sine1000) <- paste0("V", 1:d)
+                optim_seed = seed, sim = sim){
+
+  if (d == 4){
+    sine1000 <- ferrn::sine1000_4d
+  } else if (d == 8){
+    sine1000 <- ferrn::sine1000_8d
+  }
+
 
   cat("sim: ", sim, "\n")
   cat("n_jellies: ", n_jellies, "\n")
