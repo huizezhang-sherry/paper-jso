@@ -966,16 +966,21 @@ dt <- tibble(shape = c(rep("pipe", 5), rep("sine", 17)), smoothness) |>
          index = ifelse(index == "splines2d", "splines", index),
          variance = sqrt(variance)) 
 dt |> 
+  filter(shape == "sine", index %in% c("TIC", "splines", "skinny")) |>
+  select(shape, index, d, smooth, squint) |>
+  arrange(desc(squint)) |>
   knitr::kable(
-    digits = 2, format = "latex", 
+    digits = 4, format = "latex", 
     col.names = c(
       "shape", "index", "d",
-      "$\\eta$", "$\\ell$", "$\\nu$", "$\\sigma$",
-      "$\\theta_1$", "$\\theta_2$", "$\\theta_3$", "$\\theta_4$", "$\\varsigma$"), linesep = "",
-    booktabs = TRUE, escape = FALSE, row.names = FALSE, align = "|llr|rrrr|rrrrr") |> 
+      #"$\\eta$", "$\\ell$", 
+      "$\\nu$", #"$\\sigma$",
+      #"$\\theta_1$", "$\\theta_2$", "$\\theta_3$", "$\\theta_4$", 
+      "$\\varsigma$"), linesep = "",
+    booktabs = TRUE, escape = FALSE, row.names = FALSE, align = "|llr|rr") #align = "|llr|rrrr|rrrrr") |> 
   #column_spec(1, border_left = TRUE) |> 
   #column_spec(c(4, 8, 13), border_right = TRUE) |> 
-  kable_styling(font_size = 10) 
+  #kable_styling(font_size = 10) 
 ```
 
 

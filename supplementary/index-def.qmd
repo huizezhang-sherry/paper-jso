@@ -255,4 +255,30 @@ dp2 <- ggplot(pipe1000, aes(x=V5, y=V6)) + geom_point()
 dp1 + dp2 + plot_layout(ncol=2)
 ```
 
+# Gaussian process estimates for all PP indexes and data sets
+
+```{r}
+#| label: tbl-smoothness-squintability
+#| tbl-cap: Parameters estimated from the Gaussian process (outputscale $\eta$, lengthscale $\ell$, smoothness $\nu$, and nugget $\sigma$) and scaled logistic function ($\theta_1$ to $\theta_4$ and $\varsigma$) for the pipe-finding and sine-wave finding problems.  The columns $\nu$ and $\varsigma$ represent the smoothness and squintability measures respectively.
+dt <- tibble(shape = c(rep("pipe", 5), rep("sine", 17)), smoothness) |>
+  left_join(squintability) |> 
+  rename(d = n, smooth = smoothness) |> 
+  mutate(index = ifelse(index == "dcor2d_2", "dcor", index),
+         index = ifelse(index == "loess2d", "loess", index),
+         index = ifelse(index == "splines2d", "splines", index),
+         variance = sqrt(variance)) 
+dt |> 
+  knitr::kable(
+    digits = 2, format = "latex", 
+    col.names = c(
+      "shape", "index", "d",
+      "$\\eta$", "$\\ell$", "$\\nu$", "$\\sigma$",
+      "$\\theta_1$", "$\\theta_2$", "$\\theta_3$", "$\\theta_4$", "$\\varsigma$"), linesep = "",
+    booktabs = TRUE, escape = FALSE, row.names = FALSE, align = "|llr|rrrr|rrrrr") |> 
+  #column_spec(1, border_left = TRUE) |> 
+  #column_spec(c(4, 8, 13), border_right = TRUE) |> 
+  kable_styling(font_size = 10) 
+```
+
+
 # Reference

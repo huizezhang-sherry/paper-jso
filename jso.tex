@@ -722,7 +722,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, colback=white, colbacktitle=quarto-callout-note-color!10!white, opacitybacktitle=0.6, opacityback=0, bottomtitle=1mm, leftrule=.75mm, breakable, arc=.35mm, colframe=quarto-callout-note-color-frame, title={Algorithm: Jellyfish Optimizer Pseudo Code}, coltitle=black, titlerule=0mm, toptitle=1mm, rightrule=.15mm, left=2mm, toprule=.15mm, bottomrule=.15mm]
+\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, bottomrule=.15mm, toprule=.15mm, colback=white, colframe=quarto-callout-note-color-frame, leftrule=.75mm, coltitle=black, breakable, left=2mm, opacityback=0, bottomtitle=1mm, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, arc=.35mm, toptitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, rightrule=.15mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -1056,37 +1056,19 @@ represent the smoothness and squintability measures respectively.}
 
 \centering{
 
-\centering\begingroup\fontsize{10}{12}\selectfont
-
-\begin{tabular}{|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr|llr|rrrr|rrrrr}
+\begin{tabular}{|llr|rr|llr|rr|llr|rr|llr|rr|llr|rr}
 \toprule
-shape & index & d & $\eta$ & $\ell$ & $\nu$ & $\sigma$ & $\theta_1$ & $\theta_2$ & $\theta_3$ & $\theta_4$ & $\varsigma$\\
+shape & index & d & $\nu$ & $\varsigma$\\
 \midrule
-pipe & holes & 4 & 0.03 & 0.36 & 2.99 & 0.00 & 1.00 & 0.78 & 4.50 & 0.03 & 0.31\\
-pipe & holes & 6 & 0.03 & 0.38 & 3.09 & 0.00 & 1.02 & 0.86 & 3.37 & 0.02 & 0.41\\
-pipe & holes & 8 & 0.02 & 0.33 & 2.90 & 0.00 & 1.01 & 0.87 & 3.26 & 0.03 & 0.41\\
-pipe & holes & 10 & 0.02 & 0.34 & 2.88 & 0.00 & 1.02 & 0.88 & 3.15 & 0.02 & 0.43\\
-pipe & holes & 12 & 0.02 & 0.43 & 2.72 & 0.00 & 1.01 & 0.88 & 3.34 & 0.00 & 0.41\\
-sine & MIC & 4 & 0.14 & 0.27 & 3.56 & 0.00 & 0.94 & 0.15 & 1.14 & -0.04 & 0.39\\
-sine & MIC & 6 & 0.06 & 0.31 & 3.08 & 0.00 & 0.89 & 0.57 & 1.62 & -0.03 & 0.39\\
-sine & MIC & 8 & 0.03 & 0.32 & 2.75 & 0.00 & 0.93 & 0.33 & 1.31 & -0.04 & 0.38\\
-sine & TIC & 4 & 0.40 & 0.27 & 3.49 & 0.00 & 0.97 & 0.46 & 1.55 & -0.04 & 0.38\\
-sine & TIC & 6 & 0.16 & 0.31 & 3.08 & 0.00 & 0.95 & 0.54 & 1.72 & -0.03 & 0.37\\
-sine & TIC & 8 & 0.07 & 0.30 & 2.72 & 0.00 & 0.95 & 0.56 & 1.72 & -0.03 & 0.38\\
-sine & dcor & 4 & 0.22 & 0.30 & 3.63 & 0.00 & 0.96 & 1.07 & 2.67 & -0.03 & 0.56\\
-sine & dcor & 6 & 0.08 & 0.29 & 3.13 & 0.00 & 0.95 & 1.04 & 2.74 & -0.03 & 0.53\\
-sine & loess & 4 & 0.34 & 0.50 & 2.90 & 0.00 & 1.02 & 1.10 & 2.50 & 0.05 & 0.57\\
-sine & loess & 6 & 0.24 & 0.46 & 3.56 & 0.00 & 1.02 & 1.04 & 2.65 & 0.07 & 0.53\\
-sine & loess & 8 & 0.19 & 0.46 & 3.36 & 0.00 & 1.02 & 1.04 & 2.62 & 0.08 & 0.53\\
-sine & skinny & 6 & 0.05 & 0.19 & 2.24 & 0.01 & 0.83 & 0.00 & 2.98 & 0.05 & 0.10\\
-sine & splines & 4 & 0.24 & 0.32 & 3.55 & 0.00 & 1.01 & 1.09 & 2.65 & -0.03 & 0.57\\
-sine & splines & 6 & 0.10 & 0.32 & 3.11 & 0.00 & 1.01 & 1.05 & 2.73 & -0.02 & 0.54\\
-sine & splines & 8 & 0.05 & 0.29 & 2.74 & 0.00 & 1.02 & 1.06 & 2.68 & -0.02 & 0.54\\
-sine & stringy2 & 4 & 0.02 & 0.30 & 2.76 & 1.01 & 0.64 & 0.05 & 7.89 & 0.05 & 0.00\\
-sine & stringy2 & 6 & 0.02 & 0.07 & 1.51 & 0.05 & 0.65 & 0.05 & 7.78 & 0.06 & 0.00\\
+sine & splines & 4 & 3.5489 & 0.5723\\
+sine & splines & 6 & 3.1149 & 0.5415\\
+sine & splines & 8 & 2.7400 & 0.5394\\
+sine & TIC & 4 & 3.4854 & 0.3839\\
+sine & TIC & 8 & 2.7223 & 0.3785\\
+sine & TIC & 6 & 3.0807 & 0.3747\\
+sine & skinny & 6 & 2.2352 & 0.0973\\
 \bottomrule
 \end{tabular}
-\endgroup{}
 
 }
 
