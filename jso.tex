@@ -142,7 +142,6 @@
 \usepackage{makecell}
 \usepackage{xcolor}
 \usepackage{caption}
-\usepackage{anyfontsize}
 \usepackage{orcidlink}
 \usepackage{algorithm}
 \usepackage{float}
@@ -723,7 +722,7 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-note-color!10!white, coltitle=black, colback=white, breakable, left=2mm, bottomtitle=1mm, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, titlerule=0mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, toprule=.15mm, rightrule=.15mm, toptitle=1mm, opacityback=0, bottomrule=.15mm, arc=.35mm, leftrule=.75mm]
+\begin{tcolorbox}[enhanced jigsaw, colback=white, opacitybacktitle=0.6, breakable, bottomrule=.15mm, titlerule=0mm, colbacktitle=quarto-callout-note-color!10!white, title={Algorithm: Jellyfish Optimizer Pseudo Code}, leftrule=.75mm, opacityback=0, bottomtitle=1mm, coltitle=black, colframe=quarto-callout-note-color-frame, toptitle=1mm, arc=.35mm, toprule=.15mm, rightrule=.15mm, left=2mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -813,13 +812,6 @@ comparison between the existing Creeping Random Search (CRS) (Zhang et
 al. 2021; Laa and Cook 2020) and JSO, and (2) examining the factors
 affecting the performance of JSO.
 
-The second simulation examines various factors affecting the performance
-of JSO. The JSO performance is evaluated under different
-hyper-parameters combinations (number of jellyfish and the maximum
-number of tries). The effect of index properties (smoothness and
-squintability) along with JSO hyper-parameters and data dimension
-variations is captured and studied using logistic regression.
-
 \subsection{Performance of JSO relative to CRS}\label{sec-app-1}
 
 The CRS is the main optimisation routine currently used for the guided
@@ -864,54 +856,31 @@ rate of 0.86.}
 \subsection{Factors affecting JSO success rate: JSO hyper-parameters and
 index properties}\label{sec-app-2}
 
-To examine the performance of JSO across various hyper-parameter
-combinations, the pipe-finding problem using the holes index is repeated
-for fifty times in each hyper-parameter combination: 20, 50, and 100
-jellyfish and a maximum of 50 and 100 attempts.
+To examine the performance of JSO relative to hyper-parameter choices,
+the \texttt{holes} index is used to find the 2D pipe in data of
+dimensions 4-12. Additional variables are Gaussian noise. The levels of
+hyper-parameters are 20, 50, and 100 jellyfish and a maximum of 50 and
+100 attempts. Fifty samples of each data set are generated, and the
+success rate is calculated in the same manner as described in
+Section~\ref{sec-app-1}.
 
-In addition, to assess the performance of JSO across various PP
-problems, two different data shapes, pipe and a sine wave, are
-considered in various dimensional spaces using six different PP indexes:
-\texttt{dcor2d\_2}, \texttt{loess2d}, \texttt{MIC}, \texttt{TIC},
-\texttt{spline}, and \texttt{stringy}, under varied JSO
-hyper-parameters. An example of holes and pipes data with the syntax to
-generate them are provided in the supplementary material. This results
-in a total of 76 scenarios, comprising of 30 computed on the pipe data
-and 46 on the sine-wave data. This study does not consider dimensions
-lower than four, as exploring the search space in such cases is
-relatively straightforward. Similarly, extremely high-dimensional cases
-with complex data structures, where no method can reliably and
-consistenly uncover the underlying structure due to the curse of
-dimensionality, are also excluded, as they fall outside the scope of
-this study. A list of combinations of the data shape, dimensions and PP
-indexes that are considered in this study is provided in
-Table~\ref{tbl-smoothness-squintability}. Again, JSO is run 50 times for
-each scenario to calculate the success rate for each hyper-parameter
-combination.
-
-Smoothness and squintability are computed following the procedures
-outlined in Section~\ref{sec-smoothness} and
-Section~\ref{sec-squintability} and as illustrated in
-Figure~\ref{fig-smoothness} and Figure~\ref{fig-squintability}. To
-compute smoothness, 500 random bases are simulated. Index values are
-calculated for each random basis, followed by fitting a Gaussian process
-model to obtain the smoothness measure for the index.
-
-To compute squintability, 50 random bases are sampled and interpolated
-to the optimal basis with a step size of 0.005. Index values and
-projection distances are calculated for these interpolated bases. A
-binning procedure is applied to average the index values within each
-0.005 projection distance bin. The four-parameter scaled logistic
-function (\ref{eq-parametric}) is fitted to the index values against
-projection distances, estimated by non-linear least squares to obtain
-the squintability measure as Equation
-(\ref{eq-squintability-parametric}).
-
-A generalised linear model is fitted using a binomial family and a logit
-link function to assess the factors affecting success rate. Predictors
-are smoothness, squintability, and JSO hyper-parameters. A success rate
-of 0 indicates the optimiser did not come sufficiently close to the
-optimal projection.
+This set of simulations is expanded to assess the performance of JSO
+relative to the index properties, with a second data set type and
+additional PP indexes. The second data set has a sine wave in two
+dimensions and Gaussian noise in the remaining dimensions. Six
+additional PP indexes that should be able to extract the sine wave are
+used: \texttt{dcor2d\_2}, \texttt{loess2d}, \texttt{MIC}, \texttt{TIC},
+\texttt{spline}, and \texttt{stringy}, following Laa and Cook (2020).
+(The supplementary material includes definitions of these PP indexes,
+and descriptions of the pipe and sine wave data simulation.). The JSO
+hyper-parameters, number of jellies and maximum tries, are also
+included. This results in a total of 76 scenarios, comprising of 30
+computed on the pipe data and 46 on the sine wave data. The choice of
+4-12 dimensions covers the range of easy to relatively difficult for the
+optimisers to detect the structured projections. The same approach is
+used, that 50 samples are generated and the success rate is calculated
+at each level of the simulation design. A success rate of 0 indicates
+the optimiser did not come sufficiently close to the optimal projection.
 
 \begin{figure}
 
@@ -929,6 +898,12 @@ Gaussian process model of index values against the sampled bases to
 obtain the smoothness measure.}
 
 \end{figure}%
+
+Figure~\ref{fig-smoothness} describes the procedure to compute
+smoothness. Index values are calculated for each of 500 simulated random
+bases. A Gaussian process model is fitted to the resulting data to
+obtain the smoothness measure for the index, as described in
+Section~\ref{sec-smoothness}.
 
 \begin{figure}
 
@@ -951,6 +926,21 @@ square to obtian the squintability measure using equation
 (\ref{eq-squintability-parametric}).}
 
 \end{figure}%
+
+Figure~\ref{fig-squintability} describes the procedure to compute
+squintability. Index values and projection distances are computed for
+the projections along interpolated paths between 50 random bases and the
+optimal basis. An interpolation step size of 0.005 is used. The
+projection distances are binned to 0.005 intervals and index values are
+averaged in each bin. The four-parameter scaled logistic function
+(\ref{eq-parametric}) is fitted to the index values against projection
+distances, estimated by non-linear least squares to obtain the
+squintability measure as Equation (\ref{eq-squintability-parametric}).
+
+A generalised linear model is fitted using a quasibinomial family and a
+logit link function to assess the factors affecting success rate.
+Predictors are smoothness, squintability, data dimension and JSO
+hyper-parameters.
 
 \section{Results}\label{sec-sim-res}
 
@@ -996,23 +986,18 @@ struggle and less clearly capture the circle shape.
 rate}\label{effect-of-hyper-parameters-effect-on-jso-success-rate}
 
 The effect of JSO hyper-parameters (number of jellyfish and the maximum
-number of tries) on the success rate is presented in
+number of tries) on the success rate is summarised in
 Figure~\ref{fig-proportion}. The uncertainty is quantified through 500
 bootstrap replicates for each case. As the number of jellyfish and
 maximum tries increase, the success rate also increases. For problems
-with relatively lower dimensional search spaces (4 and 6 dimensions),
-small parameter values (20 jellyfish and a maximum of 50 tries) are
-sufficient for space exploration and thus can already achieve a high
-success rate. Higher parameter values (i.e.~100 jellyfish and a maximum
-of 100 tries) enhances exploration of the search space, which is
-particularly beneficial in higher-dimensional problems (8, 10, and 12
-dimensions) where a more complex search is necessary. However, in
-lower-dimensional problems, the benefit may be less pronounced, as the
-space is already relatively easy to navigate. While increasing both
-parameters enhances the performance of JSO, it also extends the
-computational time required for the optimisation, which can be
-computationally intensive when evaluating the index function (such as
-scagnostic indexes) multiple times across numerous iterations.
+with relatively lower dimensional (4, 6) search spaces, small parameter
+values (20 jellyfish and a maximum of 50 tries) are sufficient to
+achieve a high success rate. Many more jellyfish (100 jellyfish and a
+maximum of 100 tries) are needed to obtain a mediocre success rate for
+dimensions 10 and 12. This suggests that even JSO will struggle with
+high dimensions, and require substantial more computational time to have
+an acceptable success rate, especially for difficult PP indexes based on
+scagnostics.
 
 \begin{figure}
 
@@ -1034,45 +1019,42 @@ Maximum number of tries has little effect.}
 \subsection{Effect of index properties on JSO success
 rate}\label{effect-of-index-properties-on-jso-success-rate}
 
-Smoothness and squintability are calculated across a collection of
-pipe-finding and sine-wave finding problems to construct the
-relationship between success rate, JSO hyper-parameters, and index
-properties. Table~\ref{tbl-smoothness-squintability} presents the
-parameters estimated from the Gaussian process (outputscale \(\eta\),
-lengthscale \(\ell\), smoothness \(\nu\), and nugget \(\sigma\)) and
-from the scaled logistic function (\(\theta_1\) to \(\theta_4\)) for
-calculating smoothness and squintability in each PP problem considered.
-The column \(\nu\) is used as the smoothness metric and the column
-\(\varsigma\) is calculated as equation
+Smoothness and squintability are calculated across a collection of pipe
+and sine wave finding problems to construct the relationship between
+success rate, JSO hyper-parameters, and index properties.
+Table~\ref{tbl-smoothness-squintability} presents values computed for a
+subset of PP indexes on the sine wave data for dimensions 4-8. (A full
+table of the parameters estimated from the Gaussian process (outputscale
+\(\eta\), lengthscale \(\ell\), smoothness \(\nu\), and nugget
+\(\sigma\)) and from the scaled logistic function (\(\theta_1\) to
+\(\theta_4\)) for calculating smoothness and squintability for all PP
+indexes and data combinations is included in the supplementary
+materials). The column \(\nu\) is used as the smoothness metric and the
+column \(\varsigma\) is calculated as equation
 (\ref{eq-squintability-parametric}) as the squintability metric.
 
-\begin{figure}
-
-\centering{
-
-\pandocbounded{\includegraphics[keepaspectratio]{jso_files/figure-pdf/fig-idx-proj-dist-1.pdf}}
-
-}
-
-\caption{\label{fig-idx-proj-dist}Five traces of index value against
-projection distance for each of the three indexes (TIC, spline, and
-skinny) in 6D sine data. The traces of the splines index are smooth,
-with a steep increaes before leveling off, suggesting the optimum can be
-detected from a far distance, hence a largest squintability value. In
-contrast, the skinny index (squintability of almost zeor) has a noisy
-trace that only stabilizes near the optimum, suggesting the optimizer
-needs get very close to detect it.}
-
-\end{figure}%
+Figure~\ref{fig-idx-proj-dist} shows a sample of traces from the indexes
+in Table~\ref{tbl-smoothness-squintability} for the 6D sine wave data.
+The traces the PP index values computed for projections along an
+interpolated path between a noise projection and the optimal projection
+(sine wave). (Note index values were self-standardised to range between
+0 and 1, for comparison.) The \texttt{splines} index is very smooth with
+a gradual increase in value between the noise projection and the optimal
+projection. The \texttt{TIC} index is slightly less smooth and slightly
+less gradual change in value. Least desirable is the \texttt{skinny}
+index which is noisier and the optimisation needs to be much closer to
+the optimal angle to have a higher value. This illustrates how the new
+measures for squintability and smoothness work to describe the PP
+indexes.
 
 \begin{table}
 
-\caption{\label{tbl-smoothness-squintability}Parameters estimated from
-the Gaussian process (outputscale \(\eta\), lengthscale \(\ell\),
-smoothness \(\nu\), and nugget \(\sigma\)) and scaled logistic function
-(\(\theta_1\) to \(\theta_4\) and \(\varsigma\)) for the pipe-finding
-and sine-wave finding problems. The columns \(\nu\) and \(\varsigma\)
-represent the smoothness and squintability measures respectively.}
+\caption{\label{tbl-smoothness-squintability}The columns \(\nu\) and
+\(\varsigma\) show the smoothness and squintability measures for three
+PP indexes for the sine wave data. The splines index has the largest
+squint angle and is the smoothest. The skinny index has low smoothness
+and smallest squint angle. As dimension increases the squint angle gets
+smaller but smoothness doesn't change much.}
 
 \centering{
 
@@ -1094,6 +1076,24 @@ sine & skinny & 6 & 2.2352 & 0.0973\\
 
 \end{table}%
 
+\begin{figure}
+
+\centering{
+
+\pandocbounded{\includegraphics[keepaspectratio]{jso_files/figure-pdf/fig-idx-proj-dist-1.pdf}}
+
+}
+
+\caption{\label{fig-idx-proj-dist}Five traces of index value against
+projection distance for each of the three indexes (TIC, spline, and
+skinny) on 6D sine wave data. The traces of the splines index are
+smooth, with a gradual change between noise and otimal projection. In
+contrast, the skinny index has a noisy trace that increases rapidly near
+the optimum. This illustrates the usefulness of the new measures for
+squintability and smoothness.}
+
+\end{figure}%
+
 Table~\ref{tbl-mod-output} presents the results from fitting a logistic
 regression model using the proportion of success as the response and
 smoothness, squintability, dimension, number of jellyfish and maximum
@@ -1109,10 +1109,13 @@ gradient-based optimizers for example. Allowing for more tries also does
 not affect success rate significantly. A unit increase in squintability
 increases the success rate by 24\%. As dimension increases by one the
 success rate almost halves. Increasing the number of jellies by 10
-increases the success rate by 32\%.
+increases the success rate by 32\%. Table~\ref{tbl-joint-output} shows
+the fit statistics supporting that the model is reasonably strong.
 
-\begingroup
-\fontsize{12.0pt}{14.4pt}\selectfont
+Note that the addition of interaction terms for squintability and data
+dimension, and smoothness and data dimension, improves the model a small
+amount, but does not change the interpretation above.
+
 \setlength{\LTpost}{0mm}
 
 \begin{longtable}{lcc}
@@ -1131,9 +1134,9 @@ increasing the number of tries do not.}
 \textbf{Characteristic} & \textbf{OR} \textbf{(95\% CI)}\textsuperscript{\textit{1}} & \textbf{p-value} \\ 
 \midrule\addlinespace[2.5pt]
 Smoothness & 1.00 (0.90 to 1.11) & 0.928 \\ 
-Squintability & 1.24 (1.13 to 1.39) & {\bfseries <0.001} \\ 
-Dimension & 0.57 (0.44 to 0.73) & {\bfseries <0.001} \\ 
-Number of jellyfish & 1.32 (1.17 to 1.50) & {\bfseries <0.001} \\ 
+Squintability & 1.24 (1.13 to 1.39) & \textbf{<0.001} \\ 
+Dimension & 0.57 (0.44 to 0.73) & \textbf{<0.001} \\ 
+Number of jellyfish & 1.32 (1.17 to 1.50) & \textbf{<0.001} \\ 
 Maximum number of tries & 1.06 (0.94 to 1.21) & 0.333 \\ 
 \bottomrule
 
@@ -1142,7 +1145,6 @@ Maximum number of tries & 1.06 (0.94 to 1.21) & 0.333 \\
 \begin{minipage}{\linewidth}
 \textsuperscript{\textit{1}}OR = Odds Ratio, CI = Confidence Interval\\
 \end{minipage}
-\endgroup
 
 \begingroup\fontsize{10}{12}\selectfont
 
@@ -1163,26 +1165,9 @@ Maximum number of tries & 1.06 (0.94 to 1.21) & 0.333 \\
 
 \endgroup{}
 
-The simulation result suggests that squintability and smoothness are
-likely dependent. Intuitively, a highly smooth search space exhibits
-gradual changes, making it easier to perceive the overall structure from
-a distance, thereby increasing the squint angle.
-Table~\ref{tbl-joint-output} compare the model fits when squintability
-and smoothness are included separately. Given that the null deviance
-remains the same across models, the model with squintability yields a
-smaller residual deviance and lower AIC and BIC values, indicating a
-better fit. This suggests that squintability captures the relevant
-variation more effectively than smoothness. While it may seem
-counterintuitive at first that smoothness is not a significant factor,
-this outcome is reasonable in this context, as the swarm-based method
-used in this study, JSO, is designed to perform well even in non-smooth
-search spaces by leveraging population-based exploration.
-
-This study intends to serve as an illustration that the proposed measure
-effectively captures the key factors influencing the success rate of PP.
-The interactions between the two variables were not examined in this
-study due to the limited number of data points, nor was the linearity
-assumption of the relationship with success rate explicitly tested.
+This study intends to serve as an illustration that the proposed
+measures effectively captures the key factors influencing the success
+rate of PP.
 
 \section{Practicalities}\label{sec-discussion}
 
