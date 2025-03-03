@@ -217,11 +217,10 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Squintability and Other Metrics for Assessing Projection Pursuit Indexes, and Guiding Optimisation Choices},
+  pdftitle={Squintability and Other Metrics for Assessing Projection Pursuit Indexes, and Guiding optimization Choices},
   pdfauthor={H. Sherry Zhang; Dianne Cook; Nicolas Langrené; Jessica Wai Yin Leung},
-  pdfkeywords={projection pursuit, jellyfish search optimiser
-(JSO), optimisation, grand tour, high-dimensional data, exploratory data
-analysis},
+  pdfkeywords={Projection Pursuit Guided Tour (PPGT), Jellyfish Search
+Optimizer (JSO)},
   colorlinks=true,
   linkcolor={blue},
   filecolor={Maroon},
@@ -231,7 +230,7 @@ analysis},
 
 
 \title{Squintability and Other Metrics for Assessing Projection Pursuit
-Indexes, and Guiding Optimisation Choices}
+Indexes, and Guiding optimization Choices}
 \author{H. Sherry Zhang$\textsuperscript{1}$, Dianne
 Cook$\textsuperscript{2}$, Nicolas
 Langrené$\textsuperscript{3}$, Jessica Wai Yin
@@ -255,26 +254,28 @@ Mathematical Sciences, Guangdong Provincial/Zhuhai Key Laboratory of
 Interdisciplinary Research and Application for Data Science,
 BNU-HKBU~United~International~College, Zhuhai, China
 \begin{abstract}
-The projection pursuit (PP) guided tour interactively optimizes a
-criterion function known as the PP index, to explore high-dimensional
-data by revealing interesting projections. Optimization of some PP
-indexes can be non-trivial, if they are non-smooth functions, or the
+The projection pursuit (PP) guided tour optimizes a criterion function,
+known as the PP index, to gradually reveal projections of interest from
+high-dimensional data through animation. Optimization of some PP indexes
+can be non-trivial, if they are non-smooth functions, or when the
 optimum has a small ``squint angle'', detectable only from close
 proximity. Here, measures for calculating the smoothness and
 squintability properties of the PP index are defined. These are used to
 investigate the performance of a recently introduced swarm-based
 algorithm, Jellyfish Search Optimizer (JSO), for optimizing PP indexes.
-The performance of JSO for visualizing data is evaluated across various
-hyper-parameter settings and compared with existing optimisers for the
-guided tour. The JSO algorithm has been implemented in the R package,
-\texttt{tourr}, and functions to calculate smoothness and squintability
-measures are implemented in the \texttt{ferrn} package.
+The performance of JSO in detecting the target pattern (pipe shape) is
+compared with existing optimizers in PP. Additionally, JSO's performance
+on detecting the sine-wave shape is evaluated using different PP indexes
+(hence different smoothness and squintability) across various data
+dimensions (d = 4, 6, 8, 10, 12) and JSO hyper-parameters. The JSO
+algorithm has been implemented in the R package, \texttt{tourr}, and
+functions to calculate smoothness and squintability measures are
+implemented in the \texttt{ferrn} package.
 \end{abstract}
 \begin{keywords}
 \def\sep{;\ }
-projection pursuit\sep jellyfish search optimiser
-(JSO)\sep optimisation\sep grand tour\sep high-dimensional data\sep 
-exploratory data analysis
+Projection Pursuit Guided Tour (PPGT)\sep 
+Jellyfish Search Optimizer (JSO)
 \end{keywords}
 
 
@@ -290,20 +291,22 @@ objective function known as the PP index (e.g., Hall 1989; Cook, Buja,
 and Cabrera 1993; Lee and Cook 2010; Loperfido 2018, 2020), which
 defines the criterion for what constitutes interesting or informative
 projections. Let \(X \in \mathbb{R}^{n\times p}\) be the data matrix,
-\(A \in\mathbb{R}^{p \times d}\) be an orthonormal matrix, where \(A\)
-belongs to the Stiefel manifold \(\mathcal{A} = V_d(\mathbb{R}^p)\). The
-projection \(Y = XA\) is a linear transformation that maps data from a
-\(p\)-dimensional space into a \(d\)-dimensional space. The index
-function \(f(XA): \mathbb{R}^{n \times d} \to \mathbb{R}\) is a scalar
-function that measures an interesting aspect of the projected data, such
-as deviation from normality, presence of clusters, or non-linear
-structure. For a fixed sample of data, PP finds the orthonormal basis
-\(A\) that maximizes the index value of the projection, \(Y = XA\):
+\(A \in\mathbb{R}^{p \times d}\) be an orthonormal matrix in the Stiefel
+manifold \(\mathcal{A} = V_d(\mathbb{R}^p)\). The projection \(Y = XA\)
+is a linear transformation of the \(p\)-dimensional data to a
+\(d\)-dimensional space. The index function
+\(f(XA): \mathbb{R}^{n \times d} \to \mathbb{R}\) defines a statistics
+to measure an pattern of interest in the projected data, such as
+deviation from normality, presence of clusters, or non-linear structure.
+For a fixed sample of data, PP finds the orthonormal matrix \(A\) (also
+called \emph{projection basis} in PP literature) that maximizes the
+index value of the projection:
 
 \begin{equation}\phantomsection\label{eq-optimization}{
 \underset{A \in \mathcal{A}}{\max } \quad f(XA) \quad \text{subject to} \quad A'A = I_d
 }\end{equation}
 
+where \(I_d\) is the identity matrix of dimension \(d\).\\
 It is interesting to note that when using PP visually, one cares less
 about \(A\) than the plane described by \(A\), because the orientation
 in the plane is irrelevant. The space of planes belongs to a Grassmann
@@ -325,13 +328,13 @@ best projections of the data as histograms. Indexes like the holes,
 central mass and skewness (Cook, Buja, and Cabrera 1993) are generally
 smooth for most data sets, but capture only large patterns. Many indexes
 are noisy and non-convex, requiring an effective and efficient
-optimisation procedure to explore the data landscape and achieve a
+optimization procedure to explore the data landscape and achieve a
 globally optimal viewpoint of the data. The skewness index computed for
 trimodal data, in (a), is smooth with a large squint angle but has three
 modes, and thus is not convex. The binned normality index (a simple
 version of a non-normality index as described in Huber 1985) computed on
 the famous RANDU data, in (c), is noisier and has a very small squint
-angle. The discreteness cannot be seen unless the optimiser is very
+angle. The discreteness cannot be seen unless the optimizer is very
 close to the optimal projection.
 
 \begin{figure}
@@ -353,64 +356,63 @@ data is also smoother than the binned normality index on RANDU.}
 
 Optimization of PP is often discussed when new indexes are proposed
 (Posse 1995; Marie-Sainte, Berro, and Ruiz-Gazen 2010; Grochowski and
-Duch 2011). Cook et al. (1995) tied the optimisation more closely to the
-index, when they introduced the PPGT, which monitors the optimisation
+Duch 2011). Cook et al. (1995) tied the optimization more closely to the
+index, when they introduced the PPGT, which monitors the optimization
 visually so that the user can see the projected data leading in and out
 of the optimum. An implementation is available in the \texttt{tourr}
 package (Wickham et al. 2011) in R (R Core Team 2023). Zhang et al.
-(2021) illustrated how to diagnose optimisation processes, particularly
+(2021) illustrated how to diagnose optimization processes, particularly
 focusing on the guided tour, and revealed a need for improved
-optimisation. While improving the quality of the optimisation solutions
+optimization. While improving the quality of the optimization solutions
 in the tour is essential, it is also important to be able to view the
-data projections as the optimisation progresses. Integrating the guided
-tour with a global optimisation algorithm that is efficient in finding
+data projections as the optimization progresses. Integrating the guided
+tour with a global optimization algorithm that is efficient in finding
 the global optimal and enables viewing of the projected data during the
 exploration process is a goal.
 
-Here, the potential for a Jellyfish Search Optimizer (JSO) Rajwar, Deep,
-and Das (2023) for the PPGT is explored. JSO, inspired by the search
-behavior of jellyfish in the ocean, is a swarm-based metaheuristic
-designed to solve global optimisation problems. Compared to traditional
-methods, JSO has demonstrated stronger search ability and faster
-convergence, and requires fewer tuning parameters. These practicalities
-make JSO a promising candidate for enhancing PP optimisation.
+In this work, the potential for a Jellyfish Search Optimizer (JSO) (Chou
+and Truong 2021; Rajwar, Deep, and Das 2023) for the PPGT is explored.
+The JSO, inspired by the search behavior of jellyfish in the ocean, is a
+swarm-based metaheuristic designed to solve global optimization
+problems. Compared to other metaheuristic methods, JSO has demonstrated
+stronger search ability and faster convergence, and requires fewer
+tuning parameters. These practicalities make JSO a promising candidate
+for enhancing PP optimization.
 
 The primary goal of the study reported here is to investigate the
-performance of JSO in PP optimisation for the guided tour. It is of
-interest to assess how quickly and closely the optimiser reaches a
+performance of JSO in PP optimization for the guided tour. It is of
+interest to assess how quickly and closely the optimizer reaches a
 global optimum, for various PP indexes that may have differing
 complexities. To observe the performance of JSO with different types of
 PP indexes, metrics are introduced to capture specific properties of the
 index including squintability (based on Tukey and Tukey 1981's squint
-angle) and smoothness. Here, we mathematically define metrics for
+angle) and smoothness. We mathematically define metrics for
 squintability and smoothness, which is a new contribution for PP
-research. A series of simulation experiments using various datasets and
-PP indexes are conducted to assess JSO's behavior and its sensitivity to
-hyper-parameter choices (number of jellyfish and maximum number of
-tries). The relationship between the JSO performance, hyper-parameter
-choices and properties of PP indexes (smoothness and squintability) is
-analysed to provide guidance on selecting optimisers for practitioners
-using projection pursuit. Additionally, this work should guide the
-design of new PP indexes and facilitate better optimization for PP.
+research. A series of simulation experiments are conducted using JSO to
+detect different target patterns (pipe and sine-wave) with different PP
+indexes (holes, MIC, TIC, dcor, loess, splines, skinny, and stringy), as
+well as JSO's hyper-parameter choices (number of jellyfish and maximum
+number of tries). This work should facilitate better optimization for PP
+and guide the choice of optimizer when designing new PP indexes.
 
 The paper is structured as follows. Section~\ref{sec-background}
-introduces the background of the PPGT, reviews existing optimisers and
+introduces the background of the PPGT, reviews existing optimizers and
 index functions in the literature. Section~\ref{sec-PP-properties}
 introduces the metrics that measure two properties of PP indexes,
-smoothness and squintability, and Section~\ref{sec-JSO} describes the
-new JSO to be used for the PPGT. Section~\ref{sec-sim-deets} outlines
-two simulation experiments to assess JSO's performance: one comparing
-JSO's performance improvements relative to an existing optimiser,
-Creeping Random Search (CRS), and the other studying the impact of PP
-index properties on optimisation performance, and
-Section~\ref{sec-sim-res} presents the results.
+smoothness and squintability. Section~\ref{sec-JSO} describes the new
+JSO for PP. Section~\ref{sec-sim-deets} outlines two simulation
+experiments to assess JSO's performance: one comparing JSO's performance
+improvements relative to an existing optimizer, Creeping Random Search
+(CRS), and the other studying the impact of PP index properties,
+controlling for data dimension and JSO hyper-parameters, on optimization
+performance, and Section~\ref{sec-sim-res} presents the results.
 Section~\ref{sec-discussion} discusses the implementation of JSO in the
 \texttt{tourr} package and the PP property calculation in the
-\texttt{ferrn} package. Section~\ref{sec-conclusion} summarises the work
+\texttt{ferrn} package. Section~\ref{sec-conclusion} summarizes the work
 and provides suggestions for future directions.
 
 \section{Projection pursuit, tours, index functions and
-optimisation}\label{sec-background}
+optimization}\label{sec-background}
 
 A tour on high-dimensional data is constructed by geodesically
 interpolating between pairs of planes. Any plane is described by an
@@ -419,10 +421,10 @@ The term ``geodesic'' refers to maintaining the orthonormality
 constraint so that each view shown is correctly a projection of the
 data. The PP guided tour operates by geodesically interpolating to
 target planes (projections) which have high PP index values, as provided
-by the optimiser. The geodesic interpolation means that the viewer sees
+by the optimizer. The geodesic interpolation means that the viewer sees
 a continuous sequence of projections of the data, so they can watch
-patterns of interest forming as the function is optimised. There are
-five optimisation methods implemented in the \texttt{tourr} package:
+patterns of interest forming as the function is optimized. There are
+five optimization methods implemented in the \texttt{tourr} package:
 
 \begin{itemize}
 \tightlist
@@ -430,12 +432,12 @@ five optimisation methods implemented in the \texttt{tourr} package:
   a pseudo-derivative, that searches locally for the best direction,
   based on differencing the index values for very close projections.
 \item
-  a brute-force optimisation (CRS).
+  a brute-force optimization (CRS).
 \item
   a modified brute force algorithm described in Posse (1995).
 \item
   an essentially simulated annealing (Bertsimas and Tsitsiklis 1993)
-  where the search space is reduced during the optimisation.
+  where the search space is reduced during the optimization.
 \item
   a very localized search, to take tiny steps to get closer to the local
   maximum.
@@ -445,19 +447,19 @@ There are numerous PP index functions available: introduced in Huber
 (1985), Cook, Buja, and Cabrera (1993), Lee et al. (2005), Lee and Cook
 (2010), Grimm (2016), Laa et al. (2022). Most are relatively simply
 defined, for any projection dimension, and implemented because they are
-relatively easy to optimist. A goal is to develop PP indexes based on
-scagnostics Wilkinson and Wills (2008), but the blockage is their
-optimisation as these tend to be noisy, with potentially small squint
-angles.
+relatively easy to optimize. A goal is to develop PP indexes based on
+scagnostics (Wilkinson, Anand, and Grossman 2005; Wilkinson and Wills
+2008), but the blockage is their optimization as these tend to be noisy,
+with potentially small squint angles.
 
 An initial investigation of PP indexes, and the potential for
 scagnostics is described in Laa and Cook (2020). To be useful here an
-optimiser needs to be able to handle index functions that are possibly
-not very smooth. In addition, because data structures might be
-relatively fine, the optimiser needs to be able to find maxima that
-occur with a small squint angle, that can only be seen from very close
-by. One last aspect that is useful is for an optimiser to return local
-maxima in addition to the global one because data can contain many
+optimizer needs to be able to handle index functions that are possibly
+not very smooth. In addition, because the target structure in the data
+might be relatively fine, the optimizer needs to be able to find maxima
+that occur with a small squint angle, that can only be seen from very
+close by. One last aspect that is useful is for an optimizer to return
+local maxima in addition to the global one because data can contain many
 different and interesting features.
 
 \section{Properties of PP indexes}\label{sec-PP-properties}
@@ -465,15 +467,12 @@ different and interesting features.
 Laa and Cook (2020) has proposed five criteria for assessing projection
 pursuit indexes (smoothness, squintability, flexibility, rotation
 invariance, and speed). Since not all index properties affect the
-optimisation process, the focus here is on the first two properties,
-\emph{smoothness} (Section~\ref{sec-smoothness}) and
+optimization process, the focus of this work is on the first two
+properties, \emph{smoothness} (Section~\ref{sec-smoothness}) and
 \emph{squintability} (Section~\ref{sec-squintability}), for which
 metrics are proposed to quantify them.
 
 \subsection{Smoothness}\label{sec-smoothness}
-
-This subsection proposes a metric for the smoothness of a projection
-pursuit index.
 
 A classical way to describe the smoothness of a function is to identify
 how many continuous derivatives of the function exist. This can be
@@ -487,18 +486,21 @@ The Sobolev index \(k\) in Definition \ref{def:sobolev_space} can be
 used to characterize the smoothness of a function: if \(f\in W^{k,p}\),
 then the higher \(k\), the smoother \(f\). While this Sobolev index
 \(k\) is a useful measure of smoothness, it can be difficult to compute
-or even estimate in practice.
+or even estimate in practice. For example, the loess and splines indexes
+are not continuous due to the use of the \(\max\) operator in their
+definitions. Scagnostic indexes, such as skinny and stringy, are defined
+based on graph elements (area, diameter, perimeter, and length) of alph
+hull or minimal spanning tree).
 
 To obtain a computable estimator of the smoothness of the index function
 \(f\), we propose an approach based on random fields. If a PP index
-function \(f\) is evaluated at some random bases, as is done at the
-initialization stage of JSO, then these random index values can be
-interpreted as a random field, indexed by a space parameter, namely the
-random projection basis. This analogy suggests to use this random
-training sample to fit a spatial model. We propose to use a Gaussian
-process equipped with a Matérn covariance function, due to the
-connections between this model and Sobolev spaces, see for example Porcu
-et al. (2024).
+function \(f\) is evaluated at some random bases, then these random
+index values can be interpreted as a random field, indexed by a space
+parameter, namely the random projection basis. This analogy suggests to
+use this random training sample to fit a spatial model. We propose to
+use a Gaussian process equipped with a Matérn covariance function, due
+to the connections between this model and Sobolev spaces, see for
+example Porcu et al. (2024).
 
 The distribution of a Gaussian process is fully determined by its mean
 and covariance function. The smoothness property comes into play in the
@@ -571,16 +573,15 @@ smoother surfaces.}
 In view of these results, the parameter \(\nu\) is suggested as a
 measure of the smoothness of the PP index function by fitting a Gaussian
 process prior with Matérn covariance on a dataset generated by random
-evaluations of the index function, as done at the initialization stage
-of the jellyfish search optimization. There exist several R packages,
-such as \texttt{GpGp} (Guinness, Katzfuss, and Fahmy 2021) or
+evaluations of the index function. There exist several R packages, such
+as \texttt{GpGp} (Guinness, Katzfuss, and Fahmy 2021) or
 \texttt{ExaGeoStatR} (Abdulah et al. 2023), to fit the hyper-parameters
 of a GP covariance function on data, which is usually done by maximum
 likelihood estimation. In this project, the \texttt{GpGp} package is
 used.
 
 \begin{defn}
-Let $\mathbf{A}=[A_1, \ldots, A_N] \in (\mathbb{R}^{p \times d})^N$ be d-dimensional projection bases, let $\mathbf{y}=[f(XA_1),\ldots,f(XA_N)]$ be the corresponding PP index values, and let $\mathbf{K}=[K_\theta(A_{i}-A_{j})]_{1\leq i,j\leq N}\in\mathbb{R}^{N\times N}$ be the Matérn covariance matrix evaluated at the input bases, where the vector $\theta$ contains all the parameters of the multivariate Matérn covariance function $K$ (smoothness, outputscale, lengthscales). The log-likelihood of the parameters $\theta$ is defined by 
+Let $\mathbf{A}=[A_1, \ldots, A_N] \in (\mathbb{R}^{p \times d})^N$ be d-dimensional projection bases, $\mathbf{y}=[f(XA_1),\ldots,f(XA_N)]$ be the corresponding PP index values, and $\mathbf{K}=[K_\theta(A_{i}-A_{j})]_{1\leq i,j\leq N}\in\mathbb{R}^{N\times N}$ be the Matérn covariance matrix evaluated at the input bases, where the vector $\theta$ contains all the parameters of the multivariate Matérn covariance function $K$ (smoothness, outputscale, lengthscales). The log-likelihood of the parameters $\theta$ is defined by 
 \begin{equation}
 \mathcal{L}(\theta)=\log p(\mathbf{y}\left|\mathbf{A},\theta\right.)=-\frac{1}{2}\mathbf{y}^{\top}(\mathbf{K}+\sigma^{2}\mathbf{I})^{-1}\mathbf{y}-\frac{1}{2}\mathrm{\log}(\det(\mathbf{K}+\sigma^{2}\mathbf{I}))-\frac{N}{2}\log(2\pi)\, \label{eq:gp_log_likelihood}
 \end{equation}
@@ -598,9 +599,13 @@ function.
 
 \subsection{Squintability}\label{sec-squintability}
 
-This section defines the projection distance and introduces the
-squintability metric, followed by a description of two numerical
-approaches for computing squintability.
+Squintability relates to the notion of squint angle and is defined based
+on how the index value \(f(XA)\) changes with respect to the projection
+distance over the course of the optimization.
+
+\begin{defn}[squint angle]\label{def:squint-angle}
+Let $A$ and $B$ be two $d$-dimensional orthonormal matrices in $\mathbb{R}^p$. The squint angle $\theta$ between the subspace spanned by $A$ and $B$ is defined as the smallest principal angle between these subspaces: $\theta = \min_{i \in \{1, \cdots, d\}} \arccos(\tau_i)$, where $\tau_i$ are the singular values of the matrix $M = A^T B$ obtained from its singular value decomposition.
+\end{defn}
 
 \begin{defn}[projection distance]\label{def:proj-dist}
 Let $A \in \mathbb{R}^{p \times d}$ be a $d$-dimensional orthonormal matrix, and let $A^*$ be the optimal matrix that achieves the maximum index value for a given data. The projection distance between $A$ 
@@ -609,17 +614,6 @@ $r(A, A^*) = \lVert AA^\prime - A^*A^{*\prime}\,\rVert _F$
 where $\lVert . \rVert _F$ denotes the Frobenius norm, given by
 $\lVert M \rVert _F = \sqrt{\sum_{ij} M_{ij}^2}$. 
 \end{defn}
-\begin{defn}[squint angle]\label{def:squint-angle}
- 
-Let $A$ and $B$ be two $d$-dimensional orthonormal matrices in $\mathbb{R}^p$. The squint angle $\theta$ between the subspace spanned by $A$ and $B$ is defined as the smallest principal angle between these subspaces: $\theta = \min_{i \in \{1, \cdots, d\}} \arccos(\tau_i)$, where $\tau_i$ are the singular values of the matrix $M = A^T B$ obtained from its singular value decomposition.
-\end{defn}
-
-Squintability can be defined based on how the index value \(f(XA)\)
-changes with respect to the projection distance \(r(A, A^*)\), over the
-course of the JSO. Suppose that the optimization starts with an
-arbitrary candidate matrix \(A_0\) at a distance \(r_0:=r(A_0, A^*)\)
-from the optimal one. A possible way to define squintability is as
-follows:
 
 \begin{defn}[squintability]\label{def:squintability}
 Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance $r(A, A^*)$ to the index value $f(XA)$, such that $g(r) = g(r(A, A^*)) = f(XA)$.  The squintability of an index function $f$ is defined by 
@@ -651,8 +645,8 @@ angle means that the PP index value improves substantially only when the
 perfect view is close by. As such, low squintability implies rapid
 improvement in the index value when near the perfect view. For PP, a
 small squint angle is considered to be undesirable because it means that
-the optimiser needs to be very close to be able to ``see'' the optimum.
-Thus, it could be difficult for the optimiser to find the optimum.
+the optimizer needs to be very close to be able to ``see'' the optimum.
+Thus, it could be difficult for the optimizer to find the optimum.
 
 It is expected that for a PP index with high squint angle, the
 optimization (\ref{eq-optimization}) should make substantial progress
@@ -700,7 +694,7 @@ nonparametric way, for example by fitting \(g\) using kernel regression,
 then numerically estimate \(\varsigma\) from its definition
 \eqref{eq-squintability}.
 
-\section{The jellyfish optimiser}\label{sec-JSO}
+\section{The jellyfish search optimizer}\label{sec-JSO}
 
 The Jellyfish Search Optimizer (JSO) mimics the natural movements of
 jellyfish, which include passive and active motions driven by ocean
@@ -711,24 +705,24 @@ exploitation (focusing on promising areas). The algorithm aims to find
 the optimal solution by adapting the behavior of jellyfish to navigate
 towards the best solution over iterations (Chou and Truong 2021).
 
-To solve the optimisation problem embedded in the PP guided tour, a
+To solve the optimization problem embedded in the PP guided tour, a
 starting projection, an index function, the number of jellyfish, and the
 maximum number of trials (tries) are provided as input. Then, the
 current projection is evaluated by the index function. The projection is
 then moved in a direction determined by a random factor, influenced by
-how far along we are in the optimisation process. Occasionally,
+how far along we are in the optimization process. Occasionally,
 completely new directions may be taken like a jellyfish might with ocean
 currents. A new projection is accepted if it is an improvement compared
 to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, left=2mm, bottomrule=.15mm, colback=white, colbacktitle=quarto-callout-note-color!10!white, titlerule=0mm, bottomtitle=1mm, opacityback=0, opacitybacktitle=0.6, coltitle=black, breakable, toptitle=1mm, colframe=quarto-callout-note-color-frame, toprule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm, leftrule=.75mm, rightrule=.15mm]
+\begin{tcolorbox}[enhanced jigsaw, title={Algorithm: Jellyfish Optimizer Pseudo Code}, toprule=.15mm, colbacktitle=quarto-callout-note-color!10!white, breakable, titlerule=0mm, colframe=quarto-callout-note-color-frame, coltitle=black, left=2mm, colback=white, leftrule=.75mm, arc=.35mm, bottomtitle=1mm, bottomrule=.15mm, opacityback=0, toptitle=1mm, rightrule=.15mm, opacitybacktitle=0.6]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
 
-\textbf{Output}: \texttt{optimised\_projection}
+\textbf{Output}: \texttt{optimized\_projection}
 
 \textbf{Initialize} \texttt{current\_best} as the projection with the
 best index value from \texttt{current\_projections}, and
@@ -794,7 +788,7 @@ last best projection \textbf{exit}
 \end{quote}
 
 \textbf{return} the set of projections with the updated
-\texttt{current\_best} as the \texttt{optimised\_projection}
+\texttt{current\_best} as the \texttt{optimized\_projection}
 
 \end{tcolorbox}
 
@@ -806,17 +800,17 @@ the algorithm or its application, the focus is on two main parameters
 that are most relevant to our application: the number of jellyfish and
 the maximum number of tries.
 
-\section{Assessing the optimisers}\label{sec-sim-deets}
+\section{Assessing the optimizers}\label{sec-sim-deets}
 
 This section explains the details of two simulation studies: (1)
-comparison between the existing Creeping Random Search (CRS) (Zhang et
-al. 2021; Laa and Cook 2020) and JSO, and (2) examining the factors
+comparison between the existing creeping random search (Zhang et al.
+2021; Laa and Cook 2020) and JSO, and (2) examining the factors
 affecting the performance of JSO.
 
 \subsection{Performance of JSO relative to CRS}\label{sec-app-1}
 
-The CRS is the main optimisation routine currently used for the guided
-tour. Here the two optimisers are compared on the task of finding the
+The CRS is the main optimization routine currently used for the guided
+tour. Here the two optimizers are compared on the task of finding the
 pipe using the \texttt{holes} index in data with dimensions,
 \(d = 6, 8, 10, 12\). Fifty simulated data sets are used for each
 dimension. JSO uses 100 jellyfish with a maximum of 100 tries, while the
@@ -833,7 +827,7 @@ This is motivated by Laa and Cook (2020)'s approach to investigating PP
 indexes.
 
 The results of the simulation are collected using the data structure
-used in Zhang et al. (2021) for assessing PP optimisers. The design
+used in Zhang et al. (2021) for assessing PP optimizers. The design
 parameters are stored along with index value, projection basis, random
 seed, and computation time.
 
@@ -846,7 +840,7 @@ seed, and computation time.
 }
 
 \caption{\label{fig-success-rate}How success rate is calculated,
-illustrated using the optimal projections from 50 optimisations of 8D
+illustrated using the optimal projections from 50 optimizations of 8D
 pipe data sorted by index value. The pipe shape is recognisable in the
 projection index values between 0.933-0.969. Of the 50 simulations, 43
 achieved an index value within 0.05 of the best, resulting in a success
@@ -878,10 +872,10 @@ hyper-parameters, number of jellies and maximum tries, are also
 included. This results in a total of 76 scenarios, comprising of 30
 computed on the pipe data and 46 on the sine wave data. The choice of
 4-12 dimensions covers the range of easy to relatively difficult for the
-optimisers to detect the structured projections. The same approach is
+optimizers to detect the structured projections. The same approach is
 used, that 50 samples are generated and the success rate is calculated
 at each level of the simulation design. A success rate of 0 indicates
-the optimiser did not come sufficiently close to the optimal projection.
+the optimizer did not come sufficiently close to the optimal projection.
 
 \begin{figure}
 
@@ -946,8 +940,8 @@ hyper-parameters.
 \section{Results}\label{sec-sim-res}
 
 This section summarises the findings from the simulations that compare
-the JSO performance with the existing CRS optimiser, and the
-relationship between optimisation success and hyper-parameter choices
+the JSO performance with the existing CRS optimizer, and the
+relationship between optimization success and hyper-parameter choices
 and PP index properties.
 
 \begin{figure}
@@ -971,16 +965,16 @@ dimension increases both have more difficulty finding the pipe.}
 CRS}\label{performance-of-jso-relative-to-crs}
 
 The performance of JSO is assessed relative to the existing CRS
-optimiser based on the optimal projection obtained. The final
-projections for the pipe data sets found by the two optimisers are shown
+optimizer based on the optimal projection obtained. The final
+projections for the pipe data sets found by the two optimizers are shown
 in Figure~\ref{fig-proj}, with rows corresponding to data dimension. The
 50 simulations in each data dimension are sorted by index value, and the
 projections corresponding to each 10th quantile value are shown, with
 minimum at left and maximum at right. Index value is printed on the
 plot. The purpose is to summarize the views of the data resulting from
 different optimization, and hence compare results between the two
-optimisers. Generally, the JSO does a more consistent job of finding the
-pipe structure clearly. As the data dimension increases, both optimisers
+optimizers. Generally, the JSO does a more consistent job of finding the
+pipe structure clearly. As the data dimension increases, both optimizers
 struggle and less clearly capture the circle shape.
 
 \subsection{Effect of hyper-parameters effect on JSO success
@@ -1009,7 +1003,7 @@ scagnostics.
 }
 
 \caption{\label{fig-proportion}Summary of the relationship between JSO
-hyper-parameters on optimisation success, using the holes index for pipe
+hyper-parameters on optimization success, using the holes index for pipe
 data of dimensions 4-12. Bootstrap samples show the variability in
 success rate. Success rate mostly plateaus by 50 jellies. The JSO has
 some difficulty finding the pipe when dimension is higher than 8!
@@ -1043,7 +1037,7 @@ interpolated path between a noise projection and the optimal projection
 a gradual increase in value between the noise projection and the optimal
 projection. The \texttt{TIC} index is slightly less smooth and slightly
 less gradual change in value. Least desirable is the \texttt{skinny}
-index which is noisier and the optimisation needs to be much closer to
+index which is noisier and the optimization needs to be much closer to
 the optimal angle to have a higher value. This illustrates how the new
 measures for squintability and smoothness work to describe the PP
 indexes.
@@ -1127,7 +1121,7 @@ amount, but does not change the interpretation above.
 properties and jellyfish hyper-parameters. This is the summary from a
 logistic regression fit to smoothness, squintability, dimension, number
 of jellyfish and maximum number of tries. Interestingly, squintability
-and dimension strongly affect jellyfish optimisation success. The number
+and dimension strongly affect jellyfish optimization success. The number
 of jellies marginally affects success, but index smoothness, and
 increasing the number of tries do not.}
 
@@ -1177,17 +1171,17 @@ rate of PP.
 
 The simulation studies have compared the JSO with CRS and shown how
 smoothness and squintability affect the JSO success rate. Here we
-explain how they can be used for new index and optimiser development.
-Using the JSO optimiser for PPGT requires a change in user behavior. For
-all the existing optimisers a single optimisation path is followed. The
-JSO has multiple optimisation paths, and needs additional tools to
+explain how they can be used for new index and optimizer development.
+Using the JSO optimizer for PPGT requires a change in user behavior. For
+all the existing optimizers a single optimization path is followed. The
+JSO has multiple optimization paths, and needs additional tools to
 incorporate into the PPGT, as explained here.
 
 \subsection{Using the JSO in a PPGT}\label{using-the-jso-in-a-ppgt}
 
 To use JSO for PPGT in the \texttt{tourr} package, specify
 \texttt{search\_f\ =\ search\_jellyfish} in the guided tour. Unlike
-existing optimisers, the animation function \texttt{animate\_*()} won't
+existing optimizers, the animation function \texttt{animate\_*()} won't
 directly render the tour path for JSO due to the generation of multiple
 tour paths. To visualize the path visited by each individual jellyfish,
 assign the animation to an object
@@ -1250,7 +1244,7 @@ non-parametric case, it shows the maximum gradient attained
 
 This paper has presented new metrics to mathematically define desirable
 features of PP indexes, squintability and smoothness, and used these to
-assess the performance of the new jellyfish search optimiser. The
+assess the performance of the new jellyfish search optimizer. The
 metrics will be generally useful for characterizing PP indexes, and help
 with developing new indexes.
 
@@ -1270,7 +1264,7 @@ can find the optimum. However, interestingly smoothness does not affect
 the JSO performance.
 
 One future direction of this work is to test the JSO, along with its
-variations and other swarm-based optimisers, on a broader range of
+variations and other swarm-based optimizers, on a broader range of
 indexes, for example, scagnostic indexes.
 
 \section{Acknowledgement}\label{acknowledgement}
