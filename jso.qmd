@@ -1166,9 +1166,10 @@ Nicolas Langrené acknowledges the partial support of the Guangdong
 Provincial/Zhuhai Key Laboratory IRADS (2022B1212010006) and the UIC
 Start-up Research Fund UICR0700041-22.
 
-The R packages used in this work include: `tidyverse` [@tidyverse];
-`patchwork` [@patchwork]; `ggh4x` [@ggh4x]; `broom` [@broom]; 
-`kableExtra` [@kabelextra]; `ferrn` [@RJ-2021-105]; and `cassowaryr` [@cassowaryr]. 
+The R packages used in this work include: `tidyr` [@tidyr], `dplyr` [@dplyr], 
+`ggplot2` [@ggplot2], `knitr` [@knitr],`gtsummary` [@gtsummary],
+`patchwork` [@patchwork], `ggh4x` [@ggh4x], `broom` [@broom], 
+`kableExtra` [@kabelextra], `ferrn` [@RJ-2021-105], and `cassowaryr` [@cassowaryr]. 
 
 
 # Supplementary materials {.unnumbered}
