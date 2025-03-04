@@ -392,8 +392,8 @@ research. A series of simulation experiments are conducted using JSO to
 detect different target patterns (pipe and sine-wave) with different PP
 indexes (holes, MIC, TIC, dcor, loess, splines, skinny, and stringy), as
 well as JSO's hyper-parameter choices (number of jellyfish and maximum
-number of tries). This work should facilitate better optimization for PP
-and guide the choice of optimizer when designing new PP indexes.
+number of iterations). This work should facilitate better optimization
+for PP and guide the choice of optimizer when designing new PP indexes.
 
 The paper is structured as follows. Section~\ref{sec-background}
 introduces the background of the PPGT, reviews existing optimizers and
@@ -696,17 +696,17 @@ towards the best solution over iterations (Chou and Truong 2021).
 
 To solve the optimization problem embedded in the PPGT with JSO, a
 starting projection, an index function, the number of jellyfish, and the
-maximum number of trials (tries) are provided as input. Then, the
-current projection is evaluated by the index function. The projection is
-then moved in a direction determined by a random factor, influenced by
-how far along we are in the optimization process. Occasionally,
-completely new directions may be taken like a jellyfish might with ocean
-currents. A new projection is accepted if it is an improvement compared
-to the current one, rejected otherwise. This process continues and
-iteratively improves the projection, until the pre-specified maximum
-number of trials is reached.
+maximum number of iterations are provided as input. Then, the current
+projection is evaluated by the index function. The projection is then
+moved in a direction determined by a random factor, influenced by how
+far along we are in the optimization process. Occasionally, completely
+new directions may be taken like a jellyfish might with ocean currents.
+A new projection is accepted if it is an improvement compared to the
+current one, rejected otherwise. This process continues and iteratively
+improves the projection, until the pre-specified maximum number of
+trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, bottomrule=.15mm, leftrule=.75mm, breakable, coltitle=black, colback=white, colbacktitle=quarto-callout-note-color!10!white, arc=.35mm, colframe=quarto-callout-note-color-frame, toptitle=1mm, opacitybacktitle=0.6, opacityback=0, left=2mm, bottomtitle=1mm, rightrule=.15mm, toprule=.15mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, titlerule=0mm]
+\begin{tcolorbox}[enhanced jigsaw, arc=.35mm, colback=white, coltitle=black, colbacktitle=quarto-callout-note-color!10!white, bottomtitle=1mm, titlerule=0mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, rightrule=.15mm, breakable, toprule=.15mm, leftrule=.75mm, opacityback=0, opacitybacktitle=0.6, toptitle=1mm, colframe=quarto-callout-note-color-frame, bottomrule=.15mm, left=2mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -787,7 +787,7 @@ to guide the exploration and exploitation phases of the algorithm. While
 the specific implementation details can vary depending on the version of
 the algorithm or its application, the focus is on two main parameters
 that are most relevant to our application: the number of jellyfish and
-the maximum number of tries.
+the maximum number of iterations
 
 \section{Assessing the optimizers}\label{sec-sim-deets}
 
@@ -859,9 +859,9 @@ used: \texttt{dcor2d\_2}, \texttt{loess2d}, \texttt{MIC}, \texttt{TIC},
 \texttt{splines2d}, \texttt{skinny} and \texttt{stringy2}, following Laa
 and Cook (2020). (The supplementary material includes definitions of
 these PP indexes, and descriptions of the pipe and sine wave data
-simulation.). The JSO hyper-parameters, number of jellies and maximum
-tries, are also included. This results in a total of 76 scenarios,
-comprising of 30 computed on the pipe data and 46 on the sine wave data.
+simulation.). The JSO hyper-parameters, number of jellyfish and maximum
+iterations, are also included. This results in a total of 77 scenarios,
+comprising of 30 computed on the pipe data and 47 on the sine wave data.
 The choice of 4-12 dimensions covers the range of easy to relatively
 difficult for the optimizers to detect the structured projections. The
 same approach is used, that each experiment is repeated 50 times and
@@ -888,7 +888,7 @@ Recall that smoothness and squintability are metrics used to
 characterize the index function for PP tasks and are invariant to the
 optimizer and its hyper-parameters. Thus simulations with different JSO
 hyper-parameters for the same PP task share the same smoothness value.
-In total, smoothness and squintability metrics are calculated on the 22
+In total, smoothness and squintability metrics are calculated on the 23
 PP tasks in our simulation.
 
 Figure~\ref{fig-smoothness} describes the procedure to compute
@@ -931,7 +931,9 @@ calculate the squintability measure using Equation
 A generalized linear model is fitted using a quasibinomial family and a
 logit link function to assess the factors affecting the success rate.
 Predictors are smoothness, squintability, data dimension, and JSO
-hyper-parameters.
+hyper-parameters. Due to the scale of the smoothness and squintability
+measure, the rank of the two metrics, rather than the nominal values,
+are used in the model.
 
 \section{Results}\label{sec-sim-res}
 
@@ -951,43 +953,40 @@ and PP index properties.
 \caption{\label{fig-proj}Visual comparison of JSO and CRS results, using
 optimal data projections obtained over 50 simulations of the pipe data.
 Rows correspond to data dimension. Columns correspond to quantiles of
-the index values, with 0 being minimum, 100 being maximum, and 50 the
-median. JSO achieves the better views of the pipe generally than CRS. As
-dimension increases both have more difficulty finding the pipe.}
+the index values, with 0 being the minimum, 100 being the maximum, and
+50 the median. JSO achieves the better views of the pipe generally than
+CRS. As dimension increases both have more difficulty finding the pipe.}
 
 \end{figure}%
 
 \subsection{Performance of JSO relative to
 CRS}\label{performance-of-jso-relative-to-crs}
 
-The performance of JSO is assessed relative to the existing CRS
-optimizer based on the optimal projection obtained. The final
-projections for the pipe data sets found by the two optimizers are shown
-in Figure~\ref{fig-proj}, with rows corresponding to data dimension. The
-50 simulations in each data dimension are sorted by index value, and the
-projections corresponding to each 10th quantile value are shown, with
-minimum at left and maximum at right. Index value is printed on the
-plot. The purpose is to summarize the views of the data resulting from
-different optimization, and hence compare results between the two
-optimizers. Generally, the JSO does a more consistent job of finding the
-pipe structure clearly. As the data dimension increases, both optimizers
+The optimal projection is compared between JSO and CRS for the pipe data
+at dimensions 6, 8, 10, and 12 in Figure~\ref{fig-proj}. The columns
+show the quantile of index value in the 50 optimal projection, with 0
+being the minimum, 100 being the maximum, and 50 the median. The purpose
+is to summarize the views of the data resulting from different
+optimization, and hence compare results between the two optimizers.
+Generally, the JSO does a more consistent job of finding the pipe
+structure clearly. As the data dimension increases, both optimizers
 struggle and less clearly capture the circle shape.
 
 \subsection{Effect of hyper-parameters effect on JSO success
 rate}\label{effect-of-hyper-parameters-effect-on-jso-success-rate}
 
 The effect of JSO hyper-parameters (number of jellyfish and the maximum
-number of tries) on the success rate is summarized in
+number of iteration) on the success rate is summarized in
 Figure~\ref{fig-proportion}. The uncertainty is quantified through 500
-bootstrap replicates for each case. As the number of jellyfish and
-maximum tries increase, the success rate also increases. For problems
-with relatively lower dimensional (4, 6) search spaces, small parameter
-values (20 jellyfish and a maximum of 50 tries) are sufficient to
-achieve a high success rate. Many more jellyfish (100 jellyfish and a
-maximum of 100 tries) are needed to obtain a mediocre success rate for
-dimensions 10 and 12. This suggests that even JSO will struggle with
-high dimensions, and require substantial more computational time to have
-an acceptable success rate, especially for difficult PP indexes based on
+bootstrap replicates sampled from the simulation for each case. As the
+number of jellyfish and maximum iteration allowed increase, the success
+rate also increases. For problems in lower dimensional (4, 6) search
+spaces, small parameter values (20 jellyfish and 50 iterations) are
+sufficient to achieve a high success rate. Many more jellyfish (100
+jellyfish and 100 iterations) are neede for finding the pipe structure
+in d = 10, and 12. This suggests that even JSO will struggle with high
+dimensions, and require substantial more computational time to have an
+acceptable success rate, especially for difficult PP indexes based on
 scagnostics.
 
 \begin{figure}
@@ -999,20 +998,17 @@ scagnostics.
 }
 
 \caption{\label{fig-proportion}Summary of the relationship between JSO
-hyper-parameters on optimization success, using the holes index for pipe
-data of dimensions 4-12. Bootstrap samples show the variability in
-success rate. Success rate mostly plateaus by 50 jellies. The JSO has
-some difficulty finding the pipe when dimension is higher than 8!
-Maximum number of tries has little effect.}
+hyper-parameters on optimization success rate, using the holes index for
+pipe data of dimensions 4-12. Bootstrap samples show the variability in
+success rate. Success rate mostly plateaus by 50 jellyfish. The JSO has
+some difficulty finding the pipe when dimension is higher than 8 and
+maximum number of iteration has little effect.}
 
 \end{figure}%
 
 \subsection{Effect of index properties on JSO success
 rate}\label{effect-of-index-properties-on-jso-success-rate}
 
-Smoothness and squintability are calculated across a collection of pipe
-and sine wave finding problems to construct the relationship between
-success rate, JSO hyper-parameters, and index properties.
 Table~\ref{tbl-smoothness-squintability} presents values computed for a
 subset of PP indexes on the sine wave data for dimensions 4-8. (A full
 table of the parameters estimated from the Gaussian process (outputscale
@@ -1026,17 +1022,17 @@ column \(\varsigma\) is calculated as equation
 
 Figure~\ref{fig-idx-proj-dist} shows a sample of traces from the indexes
 in Table~\ref{tbl-smoothness-squintability} for the 6D sine wave data.
-The traces the PP index values computed for projections along an
-interpolated path between a noise projection and the optimal projection
-(sine wave). (Note index values were self-standardized to range between
-0 and 1, for comparison.) The \texttt{splines} index is very smooth with
-a gradual increase in value between the noise projection and the optimal
-projection. The \texttt{TIC} index is slightly less smooth and slightly
-less gradual change in value. Least desirable is the \texttt{skinny}
-index which is noisier and the optimization needs to be much closer to
-the optimal angle to have a higher value. This illustrates how the new
-measures for squintability and smoothness work to describe the PP
-indexes.
+This traces the PP index values computed for projections along an
+interpolated path between a randomly generated noise projection and the
+optimal projection (sine wave). (Note index values were
+self-standardized to range between 0 and 1, for comparison.) The
+\texttt{splines} index is very smooth with a gradual increase in value
+between the noise projection and the optimal projection. The
+\texttt{TIC} index is slightly less smooth and slightly less gradual
+change in value. Least desirable is the \texttt{skinny} index which is
+noisier and the optimization needs to be much closer to the optimal
+angle to have a higher value. This illustrates how the new measures for
+squintability and smoothness work to describe the PP indexes.
 
 \begin{table}
 
@@ -1060,6 +1056,7 @@ sine & TIC & 4 & 3.4854 & 0.3839\\
 sine & TIC & 8 & 2.7223 & 0.3785\\
 sine & TIC & 6 & 3.0807 & 0.3747\\
 sine & skinny & 6 & 2.2352 & 0.0973\\
+sine & skinny & 4 & 2.5213 & 0.0810\\
 \bottomrule
 \end{tabular}
 
@@ -1088,24 +1085,26 @@ squintability and smoothness.}
 Table~\ref{tbl-mod-output} presents the results from fitting a logistic
 regression model using the proportion of success as the response and
 smoothness, squintability, dimension, number of jellyfish and maximum
-number of tries, as predictors. The fit suggests that the JSO success
-rate is only affected by squintability, dimension and number of jellies.
-As expected, the JSO success rate is higher with higher squintability
-and/or more jellyfish, and lower when dimension is higher
+number of iteration, as predictors. The fit suggests that the JSO
+success rate is only affected by squintability, dimension and number of
+jellyfish. As expected, the JSO success rate is higher with higher
+squintability and/or more jellyfish, and lower when dimension is higher
 (higher-dimensional optimization is more difficult). Interestingly, the
 JSO is unaffected by the smoothness of the index function. This is
 consistent with the way random search algorithms jump from value to
 value without taking local regularity into account, as opposed to
-gradient-based optimizers for example. Allowing for more tries also does
-not affect success rate significantly. A unit increase in squintability
-increases the success rate by 24\%. As dimension increases by one the
-success rate almost halves. Increasing the number of jellies by 10
-increases the success rate by 32\%. Table~\ref{tbl-joint-output} shows
-the fit statistics supporting that the model is reasonably strong.
+gradient-based optimizers for example. Allowing for more iterations also
+does not affect success rate significantly. A unit increase in
+squintability increases the success rate by 23\%. As dimension increases
+by one the success rate almost halves. Increasing the number of jellies
+by 10 increases the success rate by 32\%. Table~\ref{tbl-joint-output}
+shows the fit statistics supporting that the model is reasonably strong.
 
 Note that the addition of interaction terms for squintability and data
 dimension, and smoothness and data dimension, improves the model a small
-amount, but does not change the interpretation above.
+amount, but does not change the interpretation above. This study intends
+to serve as an illustration that the proposed measures effectively
+captures the key factors influencing the success rate of PP.
 
 \begingroup
 \fontsize{12.0pt}{14.4pt}\selectfont
@@ -1116,21 +1115,21 @@ amount, but does not change the interpretation above.
 \caption{\label{tbl-mod-output}Jellyfish success rate relative to index
 properties and jellyfish hyper-parameters. This is the summary from a
 logistic regression fit to smoothness, squintability, dimension, number
-of jellyfish and maximum number of tries. Interestingly, squintability
-and dimension strongly affect jellyfish optimization success. The number
-of jellies marginally affects success, but index smoothness, and
-increasing the number of tries do not.}
+of jellyfish and maximum number of iterations. Interestingly,
+squintability and dimension strongly affect jellyfish optimization
+success. The number of jellies marginally affects success, but index
+smoothness, and increasing the number of iterations do not.}
 
 \tabularnewline
 
 \toprule
 \textbf{Characteristic} & \textbf{OR} \textbf{(95\% CI)}\textsuperscript{\textit{1}} & \textbf{p-value} \\ 
 \midrule\addlinespace[2.5pt]
-Smoothness & 1.00 (0.90 to 1.11) & 0.928 \\ 
-Squintability & 1.24 (1.13 to 1.39) & {\bfseries <0.001} \\ 
-Dimension & 0.57 (0.44 to 0.73) & {\bfseries <0.001} \\ 
+Smoothness & 1.01 (0.92 to 1.11) & 0.810 \\ 
+Squintability & 1.23 (1.12 to 1.38) & {\bfseries <0.001} \\ 
+Dimension & 0.58 (0.45 to 0.73) & {\bfseries <0.001} \\ 
 Number of jellyfish & 1.32 (1.17 to 1.50) & {\bfseries <0.001} \\ 
-Maximum number of tries & 1.06 (0.94 to 1.21) & 0.333 \\ 
+Maximum number of iterations & 1.06 (0.94 to 1.20) & 0.328 \\ 
 \bottomrule
 
 \end{longtable}
@@ -1152,35 +1151,30 @@ Maximum number of tries & 1.06 (0.94 to 1.21) & 0.333 \\
 \toprule
 \textbf{Deviance} & \textbf{DF Residual} & \textbf{Null Deviance} & \textbf{DF Null}\\
 \midrule
-20.69 & 70 & 49.29 & 75\\
+20.89 & 71 & 49.77 & 76\\
 \bottomrule
 
 \end{longtable}
 
 \endgroup{}
 
-This study intends to serve as an illustration that the proposed
-measures effectively captures the key factors influencing the success
-rate of PP.
-
 \section{Practicalities}\label{sec-discussion}
 
-The simulation studies have compared the JSO with CRS and shown how
-smoothness and squintability affect the JSO success rate. Here we
-explain how they can be used for new index and optimizer development.
-Using the JSO optimizer for PPGT requires a change in user behavior. For
-all the existing optimizers a single optimization path is followed. The
-JSO has multiple optimization paths, and needs additional tools to
-incorporate into the PPGT, as explained here.
+Using the JSO optimizer for PPGT in the \texttt{tourr} package requires
+a change in user behavior. For all the existing optimizers a single
+optimization path is followed. The JSO has multiple optimization paths,
+and needs additional tools to incorporate into the PPGT, as explained
+here.
 
 \subsection{Using the JSO in a PPGT}\label{using-the-jso-in-a-ppgt}
 
 To use JSO for PPGT in the \texttt{tourr} package, specify
-\texttt{search\_f\ =\ search\_jellyfish} in the guided tour. Unlike
-existing optimizers, the animation function \texttt{animate\_*()} won't
-directly render the tour path for JSO due to the generation of multiple
-tour paths. To visualize the path visited by each individual jellyfish,
-assign the animation to an object
+\texttt{search\_f\ =\ search\_jellyfish} in the guided tour.
+
+The animation function \texttt{animate\_*()} won't directly render the
+animated projection for JSO, as with other existing optimizers since
+multiple tour paths will need to be generated. To visualize the path
+visited by each individual jellyfish, assign the animation to an object
 (\texttt{res\ \textless{}-\ animate\_xy(...)}). This will save the bases
 visited by JSO, along with relevant metadata, as a tibble data object
 (see Zhang et al. 2021 for more details on the data object). The bases
@@ -1190,33 +1184,33 @@ the \texttt{planned\_tour()} function.
 \subsection{Computing the index properties for your new
 index}\label{computing-the-index-properties-for-your-new-index}
 
-The \texttt{ferrn} package (Zhang et al. 2021) provides functionality
-for computing the smoothness and squintability metrics. Both metrics
-require sampling random bases using the \texttt{sample\_bases()}
-function, followed by the metric calculation with
+The \texttt{ferrn} package (Zhang et al. 2021) has now included
+functionality for computing the smoothness and squintability metrics.
+Both metrics require sampling random bases using the
+\texttt{sample\_bases()} function, followed by the calculation with
 \texttt{calc\_smoothness()} or \texttt{calc\_squintability()}.
 
 \subsubsection{Smoothness}\label{smoothness}
 
-To sample bases for calculating smoothness, the following arguments are
+To sample bases for calculating smoothness, the following inputs are
 required: the index function, the dataset, and the number of random
 bases to sample. The output of \texttt{sample\_bases()} is a data frame
-with a list-column of sampled basis matrix and index value.
-Particularization is available to speed up the index value computation
-through the \texttt{parallel\ =\ TRUE} argument.
+with a list-column of sampled bases and index values. Parallelization is
+available to speed up the index value calculation through the
+\texttt{parallel\ =\ TRUE} argument.
 
 The \texttt{calc\_smoothness()} function takes the output from
 \texttt{sample\_bases()} and fits a Gaussian process model to the index
-values against the sampled basis, as the location, to obtain the
+values against the sampled bases, as the location, to obtain the
 smoothness metric. Starting parameters and additional Gaussian process
 arguments can be specified and details of the fit can be accessed
 through the \texttt{fit\_res} attribute of the output.
 
 \subsubsection{Squintability}\label{squintability}
 
-Bases sampling for squintability includes an additional step of
-interpolating between the sampled bases and the best basis. This step is
-performed when the arguments \texttt{step\_size} and
+Bases sampling for calculating squintability includes an additional step
+of interpolating between the sampled bases and the optimal basis. This
+step is performed when the arguments \texttt{step\_size} and
 \texttt{min\_proj\_dist} in the \texttt{sample\_bases()} function are
 set to non-NA numerical values. Given the projection distance typically
 ranging from 0 to 2, it is recommended to set \texttt{step\_size} to 0.1
@@ -1228,8 +1222,8 @@ two methods: 1) parametrically, by fitting a scaled sigmoid function
 through non-linear least square (\texttt{method\ =\ "nls"}), and 2)
 non-parametrically, using kernel smoothing (\texttt{method\ =\ "ks"}). A
 \texttt{bin\_width} argument is required to average the index values
-over the projection distance before the fit. For the parametric case,
-the output provides the estimated parameters for the scaled sigmoid
+over the projection distance before the fitting. For the parametric
+case, the output provides the estimated parameters for the logistic
 function (\(\theta_1\) to \(\theta_4\)) and the calculated squintability
 metric as Equation (\ref{eq-squintability-parametric}). For the
 non-parametric case, it shows the maximum gradient attained
@@ -1240,9 +1234,9 @@ non-parametric case, it shows the maximum gradient attained
 
 This paper has presented new metrics to mathematically define desirable
 features of PP indexes, squintability and smoothness, and used these to
-assess the performance of the new jellyfish search optimizer. The
-metrics will be generally useful for characterizing PP indexes, and help
-with developing new indexes.
+assess the performance of the new JSO. The metrics will be generally
+useful for characterizing PP indexes, and help with developing new
+indexes.
 
 In the comparison of the JSO against the currently used CRS, as expected
 the JSO vastly outperforms CRS, and provides a high probability of
@@ -1252,16 +1246,18 @@ showing the structure more clearly.
 
 The JSO performance is affected by the hyper-parameters, with a higher
 chance of reaching the global optimum when more jellyfish are used and
-the maximum number of tries is increased. However, it comes at a
+the maximum number of iteration is increased. However, it comes at a
 computational cost, as expected. The performance declines if the
 projection dimension increases and if the PP index has low
 squintability. The higher the squintability the better chance the JSO
 can find the optimum. However, interestingly smoothness does not affect
 the JSO performance.
 
-One future direction of this work is to test the JSO, along with its
-variations and other swarm-based optimizers, on a broader range of
-indexes, for example, scagnostic indexes.
+Future work can focus on developing more efficient optimization
+algorithm for noise indexes with low squintability metric, which
+resemble a needle-in-a-haystack problem. Additionally, if the index
+function is differentiable, automatic differentiation can be used to
+implement new gradient-based optimizers.
 
 \section{Acknowledgement}\label{acknowledgement}
 
