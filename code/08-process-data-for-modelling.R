@@ -102,6 +102,7 @@ load(here::here("data-raw/sim_sine_4d_dcor2d.rda"))
 load(here::here("data-raw/sim_sine_4d_loess2d.rda"))
 load(here::here("data-raw/sim_sine_4d_MICTIC.rda"))
 load(here::here("data-raw/sim_sine_4d_splines2d.rda"))
+load(here::here("data-raw/sim_sine_4d_skinny.rda"))
 pipe_setup_summ_4d <- sim_pipe_4d |>
   mutate(id2 = paste0(index, n_jellies, max_tries, sim, d)) |>
   get_best(group = id2) |>
@@ -114,7 +115,7 @@ pipe_setup_summ_4d <- sim_pipe_4d |>
 
 sim_data_sine_4d <- bind_rows(
   sim_sine_4d_dcor2d |> mutate(index = "dcor2d_2") , sim_sine_4d_loess2d, sim_sine_4d_MICTIC,
-  sim_sine_4d_splines2d)
+  sim_sine_4d_splines2d, sim_sine_4d_skinny |> mutate(index = "skinny"))
 
 sine_run_df_4d <- sim_data_sine_4d |>
   mutate(id2 = paste0(index, n_jellies, max_tries, sim, d)) |>
@@ -127,6 +128,8 @@ sine_setup_summ_4d <- sine_run_df_4d |>
     P_J = sum(abs(I_max - index_val) <= 0.05)/n(),
     time = mean(time)
   )
+
+
 
 #############################################################################
 #############################################################################

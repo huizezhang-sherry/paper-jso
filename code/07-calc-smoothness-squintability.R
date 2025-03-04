@@ -27,7 +27,7 @@ holes_tidy <- smoothness_holes |>
   unnest(smooth)
 
 ##################################################
-idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "stringy2", "splines2d", "skinny")
+idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "splines2d", "skinny", "stringy2")
 smoothness_sine <- tibble::tibble(
   n = 6, index = idx_names, data = list(sine1000),
   best = list(matrix(c(rep(0, 8), 1, 0, 0, 1), nrow = 6, byrow = TRUE))) |>
@@ -39,7 +39,7 @@ smoothness_sine <- tibble::tibble(
   dplyr::mutate(basis_df = list(sample_bases(index, n_basis = 500, best = best,
                                              data = as.matrix(data))))
 
-idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "splines2d", "stringy2")
+idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "splines2d", "skinny", "stringy2")
 smoothness_4d <- tibble::tibble(
   n = 4, index = idx_names, data = list(sine1000_4d),
   best = list(matrix(c(rep(0, 4), 1, 0, 0, 1), nrow = 4, byrow = TRUE))) |>
@@ -53,11 +53,10 @@ sine_tidy <- bind_rows(smoothness_sine, smoothness_4d) |>
 
 smoothness <- bind_rows(sine_tidy, holes_tidy) |>
   mutate(index = factor(index, levels = c("holes", "MIC", "TIC", "dcor2d_2",
-                                          "loess2d", "splines2d", "stringy2", "skinny"))) |>
+                                          "loess2d", "splines2d", "skinny", "stringy2"))) |>
   arrange(index) |>
   select(index, n, variance:nugget)
 save(smoothness, file = here::here("data", "smoothness.rda"))
-
 ################################################################################
 ################################################################################
 # squintability - sample bases
@@ -77,7 +76,7 @@ sq_holes_basis_df <- tibble::tibble(
                    step_size = 0.005, best = best)}))
 save(sq_holes_basis_df, file = here::here("data/sq_holes_basis_df.rda"))
 
-idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "splines2d", "stringy2", "skinny")
+idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "splines2d", "skinny", "stringy2")
 # about 40 mins
 sq_sine_68s_basis_df <- tibble::tibble(
   n = 6, index = idx_names, data = list(sine1000),
@@ -96,7 +95,7 @@ sq_sine_68s_basis_df <- tibble::tibble(
 sq_sine_basis_df2 <- sq_sine_basis_df |> filter(index != "stringy") |> bind_rows(stringy)
 
 # about 5 mins
-idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "splines2d", "stringy2")
+idx_names <- c("dcor2d_2", "loess2d", "MIC", "TIC", "splines2d", "skinny", "stringy2")
 sq_4d_basis_df <- tibble::tibble(
   n = 4, index = idx_names, data = list(sine1000_4d),
   best = list(matrix(c(rep(0, 4), 1, 0, 0, 1), nrow = 4, byrow = TRUE))) |>
@@ -120,7 +119,7 @@ res_holes <- sq_holes_basis_df |>
 
 param_tbl <- tibble(other_params =  c(
   rep(list(start = list(theta1 = 1, theta2 = 1, theta3 = 2, theta4 = 0)), 11),
-  list(start = list(theta1 = 1, theta2 = 0, theta3 = 10, theta4 = 0.1)),
+  rep(list(start = list(theta1 = 1, theta2 = 0, theta3 = 10, theta4 = 0.1)), 2),
   rep(list(start = list(theta1 = 1, theta2 = 1, theta3 = 2, theta4 = 0)), 3),
   rep(list(start = list(theta1 = 1, theta2 = 0, theta3 = 10, theta4 = 0.15)), 2)
   ))
@@ -128,7 +127,7 @@ param_tbl <- tibble(other_params =  c(
 # TIC, stringy2 and skinny need scale
 res_sine <- sq_sine_basis_df |>
   bind_cols(other_params = param_tbl) |>
-  bind_cols(scale = c(rep(FALSE, 3), rep(TRUE, 3), rep(FALSE, 5), TRUE, rep(FALSE, 3), rep(TRUE, 2))) |>
+  bind_cols(scale = c(rep(FALSE, 3), rep(TRUE, 3), rep(FALSE, 5), rep(FALSE, 2), rep(FALSE, 3), rep(TRUE, 2))) |>
   mutate(res = calc_squintability(
     basis_df, method = "nls", bin_width = 0.005, scale = scale,
     other_params = list(start = other_params))) |>
