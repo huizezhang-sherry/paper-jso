@@ -142,7 +142,6 @@
 \usepackage{makecell}
 \usepackage{xcolor}
 \usepackage{caption}
-\usepackage{anyfontsize}
 \usepackage{orcidlink}
 \usepackage{algorithm}
 \usepackage{float}
@@ -217,7 +216,7 @@
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  pdftitle={Squintability and Other Metrics for Assessing Projection Pursuit Indexes, and Guiding optimization Choices},
+  pdftitle={Squintability and Other Metrics for Assessing Projection Pursuit Indexes, and Guiding Optimization Choices},
   pdfauthor={H. Sherry Zhang; Dianne Cook; Nicolas Langrené; Jessica Wai Yin Leung},
   pdfkeywords={Projection Pursuit Guided Tour (PPGT), Jellyfish Search
 Optimizer (JSO)},
@@ -230,7 +229,7 @@ Optimizer (JSO)},
 
 
 \title{Squintability and Other Metrics for Assessing Projection Pursuit
-Indexes, and Guiding optimization Choices}
+Indexes, and Guiding Optimization Choices}
 \author{H. Sherry Zhang$\textsuperscript{1}$, Dianne
 Cook$\textsuperscript{2}$, Nicolas
 Langrené$\textsuperscript{3}$, Jessica Wai Yin
@@ -706,7 +705,11 @@ to the current one, rejected otherwise. This process continues and
 iteratively improves the projection, until the pre-specified maximum
 number of trials is reached.
 
+<<<<<<< HEAD
 \begin{tcolorbox}[enhanced jigsaw, toptitle=1mm, rightrule=.15mm, opacitybacktitle=0.6, left=2mm, leftrule=.75mm, opacityback=0, arc=.35mm, colbacktitle=quarto-callout-note-color!10!white, colback=white, coltitle=black, titlerule=0mm, bottomrule=.15mm, bottomtitle=1mm, toprule=.15mm, breakable, colframe=quarto-callout-note-color-frame, title={Algorithm: Jellyfish Optimizer Pseudo Code}]
+=======
+\begin{tcolorbox}[enhanced jigsaw, toprule=.15mm, bottomtitle=1mm, titlerule=0mm, leftrule=.75mm, opacitybacktitle=0.6, colback=white, breakable, toptitle=1mm, coltitle=black, colbacktitle=quarto-callout-note-color!10!white, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm, bottomrule=.15mm, opacityback=0, left=2mm, rightrule=.15mm, colframe=quarto-callout-note-color-frame]
+>>>>>>> d7930a50da285218b654ae95c3bf9a126a08afaa
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -1100,8 +1103,6 @@ Note that the addition of interaction terms for squintability and data
 dimension, and smoothness and data dimension, improves the model a small
 amount, but does not change the interpretation above.
 
-\begingroup
-\fontsize{12.0pt}{14.4pt}\selectfont
 \setlength{\LTpost}{0mm}
 
 \begin{longtable}{lcc}
@@ -1120,9 +1121,9 @@ increasing the number of tries do not.}
 \textbf{Characteristic} & \textbf{OR} \textbf{(95\% CI)}\textsuperscript{\textit{1}} & \textbf{p-value} \\ 
 \midrule\addlinespace[2.5pt]
 Smoothness & 1.00 (0.90 to 1.11) & 0.928 \\ 
-Squintability & 1.24 (1.13 to 1.39) & {\bfseries <0.001} \\ 
-Dimension & 0.57 (0.44 to 0.73) & {\bfseries <0.001} \\ 
-Number of jellyfish & 1.32 (1.17 to 1.50) & {\bfseries <0.001} \\ 
+Squintability & 1.24 (1.13 to 1.39) & \textbf{<0.001} \\ 
+Dimension & 0.57 (0.44 to 0.73) & \textbf{<0.001} \\ 
+Number of jellyfish & 1.32 (1.17 to 1.50) & \textbf{<0.001} \\ 
 Maximum number of tries & 1.06 (0.94 to 1.21) & 0.333 \\ 
 \bottomrule
 
@@ -1131,7 +1132,6 @@ Maximum number of tries & 1.06 (0.94 to 1.21) & 0.333 \\
 \begin{minipage}{\linewidth}
 \textsuperscript{\textit{1}}OR = Odds Ratio, CI = Confidence Interval\\
 \end{minipage}
-\endgroup
 
 \begingroup\fontsize{10}{12}\selectfont
 
