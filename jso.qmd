@@ -533,7 +533,7 @@ exploitation (focusing on promising areas). The algorithm aims to find
 the optimal solution by adapting the behavior of jellyfish to navigate
 towards the best solution over iterations [@chou_novel_2021].
 
-To solve the optimization problem embedded in the PPGT, a starting
+To solve the optimization problem embedded in the PPGT with JSO, a starting
 projection, an index function, the number of jellyfish, and the maximum
 number of trials (tries) are provided as input. Then, the current
 projection is evaluated by the index function. The projection is then
@@ -559,7 +559,7 @@ index values for each projection in `current_projections`
 
 **for** each `trial_id` in 1 to `max_tries` **do**
 
-> Calculate the time control value, $c_t$, based on `current_idx` and
+> Calculate the time control value, $c_t$, based on `trial_id` and
 > `max_trial`
 
 > **if** $c_t$ is greater than or equal to $0.5$ **then**
@@ -578,8 +578,8 @@ index values for each projection in `current_projections`
 > >
 > > **else**
 > >
-> > > For each projection, compare with a random jellyfish and adjust
-> > > towards or away from it (active)
+> > > For each projection, compare with a random jellyfish in `current_projections`
+> > > and adjust towards or away from it based on their corresponding `current_idx` (active)
 >
 > Update the orientation of each projection to maintain consistency
 >
@@ -591,7 +591,6 @@ index values for each projection in `current_projections`
 > > Determine the projection with the best index value as the new
 > > `current_best`
 
-> **if** `trial_id` $\ge$ `max_trial`, print the last best projection
 > **exit**
 
 **return** the set of projections with the updated `current_best` as the
@@ -611,22 +610,25 @@ the maximum number of tries.
 # Assessing the optimizers {#sec-sim-deets}
 
 This section explains the details of two simulation studies: (1)
-comparison between the existing creeping random search [@RJ-2021-105;
-@laa_using_2020] and JSO, and (2) examining the factors affecting the
-performance of JSO.
+a comparison between the JSO and an existing optimizer, creeping random
+search [@RJ-2021-105; @laa_using_2020], and (2) a modelling study to examine 
+how factors (smoothness, squintability, data dimension, and JSO hyper-parameters)
+affect its success rate in detecting holes and sine-wave pattern across 
+a collection of index functions.
 
 ## Performance of JSO relative to CRS {#sec-app-1}
 
 The CRS is the main optimization routine currently used for the guided
-tour. Here the two optimizers are compared on the task of finding the
-pipe using the `holes` index in data with dimensions,
-$d = 6, 8, 10, 12$. Fifty simulated data sets are used for each
-dimension. JSO uses 100 jellyfish with a maximum of 100 tries, while the
-CRS allows a maximum of 1000 tries at each iteration before the
-algorithm terminates. These choices enable fair comparison between CRS
-and JSO, that conforms to how they are used in practice.
+tour. Here the two optimizers are compared on the task of finding the 2D
+pipe structure using the `holes` index in data at dimensions
+6, 8, 10, and 12. Additional variables are Gaussian noise. JSO uses 100 
+jellyfish with 100 iterations, while CRS allows up to 1000 trials per 
+iteration terminates if no better projection is found within these 
+trials. These choices enable fair comparison between CRS and JSO, 
+that conforms to how they are used in practice. Each task is 
+repeated 50 times to evaluate the performance between the two optimizers. 
 
-The performance of the opt misers is measured by the success rate, which
+The performance of the optimizers is measured by the success rate, which
 is defined as the proportion of simulations that achieves a final index
 value within 0.05 of the best index value found among all 50
 simulations. @fig-success-rate illustrates why the choice of 0.05 is
@@ -635,12 +637,11 @@ motivated by @laa_using_2020's approach to investigating PP indexes.
 
 The results of the simulation are collected using the data structure
 used in @RJ-2021-105 for assessing PP optimizers. The design parameters
-are stored along with index value, projection basis, random seed, and
-computation time.
+are stored along with index value, projection basis, and random seed used.
 
 ```{r}
 #| label: fig-success-rate
-#| fig.cap: "How success rate is calculated, illustrated using the optimal projections from 50 optimizations of 8D pipe data sorted by index value. The pipe shape is recognisable in the projection index values between 0.933-0.969. Of the 50 simulations, 43 achieved an index value within 0.05 of the best, resulting in a success rate of 0.86."
+#| fig.cap: "How success rate is calculated, illustrated using the optimal projections from 50 optimizations of 8D pipe data sorted by index value. The pipe shape is recognizable in the projection index values between 0.933-0.969. Of the 50 simulations, 43 achieved an index value within 0.05 of the best, resulting in a success rate of 0.86."
 # pipe_jellyfish_12d <- pipe_better |> 
 #   filter(dim == 2) |> 
 #   mutate(dim = as.numeric(dim) * 8, sim = as.numeric(sim)) 
@@ -669,18 +670,16 @@ knitr::include_graphics(here::here("figures", "success-rate.png"))
 
 To examine the performance of JSO relative to hyper-parameter choices,
 the `holes` index is used to find the 2D pipe in data of dimensions
-4-12. Additional variables are Gaussian noise. The levels of
-hyper-parameters are 20, 50, and 100 jellyfish and a maximum of 50 and
-100 attempts. Fifty samples of each data set are generated, and the
-success rate is calculated in the same manner as described in
-@sec-app-1.
+4, 6, 8, 10, and 12. The levels of hyper-parameters are 20, 50, and 
+100 jellyfish and a maximum of 50 and 100 attempts. Each task is repeated
+fifty times to calculate the success rate as described in @sec-app-1.
 
 This set of simulations is expanded to assess the performance of JSO
 relative to the index properties, with a second data set type and
 additional PP indexes. The second data set has a sine wave in two
-dimensions and Gaussian noise in the remaining dimensions. Six
+dimensions and Gaussian noise in the remaining dimensions. Seven
 additional PP indexes that should be able to extract the sine wave are
-used: `dcor2d_2`, `loess2d`, `MIC`, `TIC`, `spline`, and `stringy`,
+used: `dcor2d_2`, `loess2d`, `MIC`, `TIC`, `splines2d`, `skinny` and `stringy2`,
 following @laa_using_2020. (The supplementary material includes
 definitions of these PP indexes, and descriptions of the pipe and sine
 wave data simulation.). The JSO hyper-parameters, number of jellies and
@@ -691,15 +690,13 @@ maximum tries, are also included. This results in a total of
 choice of 4-12 dimensions covers the range of easy to relatively
 difficult for the optimizers to detect the structured projections.
 <!-- A list of combinations of the data shape, dimensions and PP indexes that are considered in this study is provided in @tbl-smoothness-squintability.-->
-The same approach is used, that 50 samples are generated and the success
-rate is calculated at each level of the simulation design. A success
-rate of 0 indicates the optimizer did not come sufficiently close to the
-optimal projection.
+The same approach is used, that each experiment is repeated 50 times and success
+rate is calculated at each level of the simulation design. 
 
 ```{r}
 #| label: fig-smoothness
 #| out.width: 100%
-#| fig.cap: "Steps for calculating smoothness in a projection pursuit problem. Given the target shape, data dimension and the index function: 1) sample random bases given the orthonormality contraint and calculate their corresponding index values, and 2) fit a Gaussian process model of index values against the sampled bases to obtain the smoothness measure."
+#| fig.cap: "Steps for calculating smoothness in a projection pursuit problem: 1) sample random bases given the orthonormality contraint and calculate their corresponding index values, 2) fit a Gaussian process model of index values against the bases to obtain the smoothness measure, 3) take the smoothness parameter from the Gaussian process as the smoothness metric."
 # basis_smoothness <- sample_bases(idx = "splines2d", n_basis = 1000)
 # basis_smoothness |>
 #    ggplot(aes(x = dist, y = index)) +
@@ -710,16 +707,22 @@ optimal projection.
 knitr::include_graphics(here::here("figures", "smoothness.png"))
 ```
 
-@fig-smoothness describes the procedure to compute smoothness. Index
-values are calculated for each of 500 simulated random bases. A Gaussian
-process model is fitted to the resulting data to obtain the smoothness
-measure for the index, as described in @sec-smoothness.
+Recall that smoothness and squintability are metrics used to characterize the index 
+function for PP tasks and are invariant to the optimizer and its 
+hyper-parameters. Thus simulations with different JSO hyper-parameters 
+for the same PP task share the same smoothness value. In total, smoothness and
+squintability metrics are calculated on the 22 PP tasks in our simulation.
+
+@fig-smoothness describes the procedure to compute smoothness. For each PP task,
+500 random bases are simulated and index values are calculated for each. A Gaussian
+process model is then fitted to the resulting data to obtain the smoothness
+measure for the index, as described in @sec-smoothness. 
 
 ```{r}
 #| label: fig-squintability
 #| out.width: 100%
 #| fig.cap: |
-#|   Steps for calculating squintability in a projection pursuit problem. Given the target shape, data dimension and the index function: 1) sample random bases given the orthonormality and projection distance contraint and calculates their corresponding index values, 2) interpolate the sampled bases to the optimal basis and calculate the projection distance and the index value. 3) bin the index values by projection distances through averaging index value, 4) fit the scaled sigmoid function in equation \eqref{eq-squintability} to the binned index values against projection distances using non-linear least square to obtian the squintability measure using equation (@eq-squintability-parametric).
+#|   Steps for calculating squintability in a projection pursuit problem: 1) sample random bases given the orthonormality and projection distance contraint and calculates their corresponding index values, 2) interpolate the sampled bases to the optimal basis and calculate the projection distance and the index value. 3) average the index values by projection distances at each 0.005 distance bin, 4) fit the scaled sigmoid function in Equation \eqref{eq-logistic} and \eqref{eq-parametric} , 5) calculate the squintability metric using Equation (@eq-squintability-parametric).
 # p1 <- sim_sine_6d_spline_projdist |> 
 #   ggplot(aes(x = proj_dist, y = index_val)) +
 #   geom_point(size = 0.1, alpha = 0.5) + 
@@ -744,19 +747,18 @@ measure for the index, as described in @sec-smoothness.
 knitr::include_graphics(here::here("figures", "squintability.png"))
 ```
 
-@fig-squintability describes the procedure to compute squintability.
-Index values and projection distances are computed for the projections
-along interpolated paths between 50 random bases and the optimal basis.
-An interpolation step size of 0.005 is used. The projection distances
-are binned to 0.005 intervals and index values are averaged in each bin.
-The four-parameter scaled logistic function (@eq-parametric) is fitted
-to the index values against projection distances, estimated by
-non-linear least squares to obtain the squintability measure as Equation
+@fig-squintability describes the procedure to compute squintability. For each 
+PP task, 50 random bases are generated and interpolated to the optimal basis 
+with a step size of 0.005. The index values are averaged over the distance 
+window of 0.005. Index values are calculated for all the interpolated bases and 
+averaged over the distance bin of 0.005. The logisitic function in
+Equation (@eq-logistic) and (@eq-parametric) is fitted with non-linear least squares 
+and calculate the squintability measure using Equation 
 (@eq-squintability-parametric).
 
 A generalized linear model is fitted using a quasibinomial family and a
-logit link function to assess the factors affecting success rate.
-Predictors are smoothness, squintability, data dimension and JSO
+logit link function to assess the factors affecting the success rate.
+Predictors are smoothness, squintability, data dimension, and JSO
 hyper-parameters. <!-- The data is
 pre-processed by 1) scaling the JSO hyper-parameters by a factor of 10
 for interpretation, 2) creating a new binary variable `long_time` to
