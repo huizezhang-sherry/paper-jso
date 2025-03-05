@@ -679,10 +679,10 @@ relative to the index properties, with a second data set type and
 additional PP indexes. The second data set has a sine wave in two
 dimensions and Gaussian noise in the remaining dimensions. Seven
 additional PP indexes that should be able to extract the sine wave are
-used: `dcor2d_2`, `loess2d`, `MIC`, `TIC`, `splines2d`, `skinny` and `stringy2`,
-following @laa_using_2020. (The supplementary material includes
+used (dcor, loess, MIC, TIC, splines, skinny and stringy2) following @laa_using_2020. 
+(The supplementary material includes
 definitions of these PP indexes, and descriptions of the pipe and sine
-wave data simulation.). The JSO hyper-parameters, number of jellyfish and
+wave data simulation.) The JSO hyper-parameters, number of jellyfish and
 maximum iterations, are also included. This results in a total of
 `r nrow(sim_df)` scenarios, comprising of
 `r nrow(filter(sim_df, index == "holes"))` computed on the pipe data and
@@ -1040,10 +1040,10 @@ equation (@eq-squintability-parametric) as the squintability metric.
 PP index values computed for projections along an interpolated path
 between a randomly generated noise projection and the optimal projection (sine wave). (Note
 index values were self-standardized to range between 0 and 1, for
-comparison.) The `splines` index is very smooth with a gradual increase
+comparison.) The splines index is very smooth with a gradual increase
 in value between the noise projection and the optimal projection. The
-`TIC` index is slightly less smooth and slightly less gradual change in
-value. Least desirable is the `skinny` index which is noisier and the
+TIC index is slightly less smooth and slightly less gradual change in
+value. Least desirable is the skinny index which is noisier and the
 optimization needs to be much closer to the optimal angle to have a
 higher value. This illustrates how the new measures for squintability
 and smoothness work to describe the PP indexes.
@@ -1209,7 +1209,7 @@ The supplementary materials available at
 <https://github.com/huizezhang-sherry/paper-jso> include: 1) details of
 the indexes used in the simulation study, 2) the script to get started
 with using JSO in a PPGT and calculating smoothness and squintability,
-as explained in @sec-discussion, and (3) the full code to reproduce the
-plots and summaries in this paper.
+as explained in @sec-discussion, (3) the table of the Gaussian
+process parameters and logistic function parameters for all 23 PP problems investigated, along with (4) the full code to reproduce the plots and summaries in this paper.
 
 # References

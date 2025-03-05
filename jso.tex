@@ -142,7 +142,6 @@
 \usepackage{makecell}
 \usepackage{xcolor}
 \usepackage{caption}
-\usepackage{anyfontsize}
 \usepackage{orcidlink}
 \usepackage{algorithm}
 \usepackage{float}
@@ -706,7 +705,7 @@ current one, rejected otherwise. This process continues and iteratively
 improves the projection, until the pre-specified maximum number of
 trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, colframe=quarto-callout-note-color-frame, opacityback=0, arc=.35mm, opacitybacktitle=0.6, left=2mm, colback=white, bottomtitle=1mm, titlerule=0mm, toptitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomrule=.15mm, rightrule=.15mm, coltitle=black, toprule=.15mm, breakable, colbacktitle=quarto-callout-note-color!10!white, leftrule=.75mm]
+\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, toptitle=1mm, opacityback=0, coltitle=black, titlerule=0mm, bottomtitle=1mm, colbacktitle=quarto-callout-note-color!10!white, leftrule=.75mm, breakable, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm, rightrule=.15mm, bottomrule=.15mm, toprule=.15mm, left=2mm, colback=white]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -855,11 +854,10 @@ relative to the index properties, with a second data set type and
 additional PP indexes. The second data set has a sine wave in two
 dimensions and Gaussian noise in the remaining dimensions. Seven
 additional PP indexes that should be able to extract the sine wave are
-used: \texttt{dcor2d\_2}, \texttt{loess2d}, \texttt{MIC}, \texttt{TIC},
-\texttt{splines2d}, \texttt{skinny} and \texttt{stringy2}, following Laa
+used (dcor, loess, MIC, TIC, splines, skinny and stringy2) following Laa
 and Cook (2020). (The supplementary material includes definitions of
 these PP indexes, and descriptions of the pipe and sine wave data
-simulation.). The JSO hyper-parameters, number of jellyfish and maximum
+simulation.) The JSO hyper-parameters, number of jellyfish and maximum
 iterations, are also included. This results in a total of 77 scenarios,
 comprising of 30 computed on the pipe data and 47 on the sine wave data.
 The choice of 4-12 dimensions covers the range of easy to relatively
@@ -1059,8 +1057,6 @@ squintability and smoothness.}
 \subsection{Effect of index properties on JSO success
 rate}\label{effect-of-index-properties-on-jso-success-rate}
 
-\begingroup
-\fontsize{12.0pt}{14.4pt}\selectfont
 \setlength{\LTpost}{0mm}
 
 \begin{longtable}{lcc}
@@ -1079,9 +1075,9 @@ smoothness, and increasing the number of iterations do not.}
 \textbf{Characteristic} & \textbf{OR} \textbf{(95\% CI)}\textsuperscript{\textit{1}} & \textbf{p-value} \\ 
 \midrule\addlinespace[2.5pt]
 Smoothness & 1.01 (0.92 to 1.11) & 0.810 \\ 
-Squintability & 1.23 (1.12 to 1.38) & {\bfseries <0.001} \\ 
-Dimension & 0.58 (0.45 to 0.73) & {\bfseries <0.001} \\ 
-Number of jellyfish & 1.32 (1.17 to 1.50) & {\bfseries <0.001} \\ 
+Squintability & 1.23 (1.12 to 1.38) & \textbf{<0.001} \\ 
+Dimension & 0.58 (0.45 to 0.73) & \textbf{<0.001} \\ 
+Number of jellyfish & 1.32 (1.17 to 1.50) & \textbf{<0.001} \\ 
 Maximum number of iterations & 1.06 (0.94 to 1.20) & 0.328 \\ 
 \bottomrule
 
@@ -1090,7 +1086,6 @@ Maximum number of iterations & 1.06 (0.94 to 1.20) & 0.328 \\
 \begin{minipage}{\linewidth}
 \textsuperscript{\textit{1}}OR = Odds Ratio, CI = Confidence Interval\\
 \end{minipage}
-\endgroup
 
 \begingroup\fontsize{10}{12}\selectfont
 
@@ -1127,31 +1122,31 @@ in Table~\ref{tbl-smoothness-squintability} for the 6D sine wave data.
 This traces the PP index values computed for projections along an
 interpolated path between a randomly generated noise projection and the
 optimal projection (sine wave). (Note index values were
-self-standardized to range between 0 and 1, for comparison.) The
-\texttt{splines} index is very smooth with a gradual increase in value
-between the noise projection and the optimal projection. The
-\texttt{TIC} index is slightly less smooth and slightly less gradual
-change in value. Least desirable is the \texttt{skinny} index which is
-noisier and the optimization needs to be much closer to the optimal
-angle to have a higher value. This illustrates how the new measures for
-squintability and smoothness work to describe the PP indexes.
-Table~\ref{tbl-mod-output} presents the results from fitting a logistic
-regression model using the proportion of success as the response and
-smoothness, squintability, dimension, number of jellyfish and maximum
-number of iteration, as predictors. The fit suggests that the JSO
-success rate is only affected by squintability, dimension and number of
-jellyfish. As expected, the JSO success rate is higher with higher
-squintability and/or more jellyfish, and lower when dimension is higher
-(higher-dimensional optimization is more difficult). Interestingly, the
-JSO is unaffected by the smoothness of the index function. This is
-consistent with the way random search algorithms jump from value to
-value without taking local regularity into account, as opposed to
-gradient-based optimizers for example. Allowing for more iterations also
-does not affect success rate significantly. A unit increase in
-squintability increases the success rate by 23\%. As dimension increases
-by one the success rate almost halves. Increasing the number of jellies
-by 10 increases the success rate by 32\%. Table~\ref{tbl-joint-output}
-shows the fit statistics supporting that the model is reasonably strong.
+self-standardized to range between 0 and 1, for comparison.) The splines
+index is very smooth with a gradual increase in value between the noise
+projection and the optimal projection. The TIC index is slightly less
+smooth and slightly less gradual change in value. Least desirable is the
+skinny index which is noisier and the optimization needs to be much
+closer to the optimal angle to have a higher value. This illustrates how
+the new measures for squintability and smoothness work to describe the
+PP indexes. Table~\ref{tbl-mod-output} presents the results from fitting
+a logistic regression model using the proportion of success as the
+response and smoothness, squintability, dimension, number of jellyfish
+and maximum number of iteration, as predictors. The fit suggests that
+the JSO success rate is only affected by squintability, dimension and
+number of jellyfish. As expected, the JSO success rate is higher with
+higher squintability and/or more jellyfish, and lower when dimension is
+higher (higher-dimensional optimization is more difficult).
+Interestingly, the JSO is unaffected by the smoothness of the index
+function. This is consistent with the way random search algorithms jump
+from value to value without taking local regularity into account, as
+opposed to gradient-based optimizers for example. Allowing for more
+iterations also does not affect success rate significantly. A unit
+increase in squintability increases the success rate by 23\%. As
+dimension increases by one the success rate almost halves. Increasing
+the number of jellies by 10 increases the success rate by 32\%.
+Table~\ref{tbl-joint-output} shows the fit statistics supporting that
+the model is reasonably strong.
 
 Note that the addition of interaction terms for squintability and data
 dimension, and smoothness and data dimension, improves the model a small
@@ -1288,8 +1283,10 @@ The supplementary materials available at
 \url{https://github.com/huizezhang-sherry/paper-jso} include: 1) details
 of the indexes used in the simulation study, 2) the script to get
 started with using JSO in a PPGT and calculating smoothness and
-squintability, as explained in Section~\ref{sec-discussion}, and (3) the
-full code to reproduce the plots and summaries in this paper.
+squintability, as explained in Section~\ref{sec-discussion}, (3) the
+table of the Gaussian process parameters and logistic function
+parameters for all 23 PP problems investigated, along with (4) the full
+code to reproduce the plots and summaries in this paper.
 
 \section*{References}\label{references}
 \addcontentsline{toc}{section}{References}
