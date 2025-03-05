@@ -1166,8 +1166,8 @@ the JSO performance.
 
 Future work can focus on developing more efficient optimization algorithm for
 noise indexes with low squintability metric, which resemble a needle-in-a-haystack 
-problem. Additionally, if the index function is differentiable, automatic 
-differentiation can be used to implement new gradient-based optimizers.
+problem [@siemenn2023fast]. Additionally, if the index function is differentiable, automatic 
+differentiation can be used to implement new gradient-based optimizers [@prince2023understanding].
 
 
 

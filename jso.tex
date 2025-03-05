@@ -142,6 +142,7 @@
 \usepackage{makecell}
 \usepackage{xcolor}
 \usepackage{caption}
+\usepackage{anyfontsize}
 \usepackage{orcidlink}
 \usepackage{algorithm}
 \usepackage{float}
@@ -705,7 +706,7 @@ current one, rejected otherwise. This process continues and iteratively
 improves the projection, until the pre-specified maximum number of
 trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, colframe=quarto-callout-note-color-frame, toptitle=1mm, opacityback=0, coltitle=black, titlerule=0mm, bottomtitle=1mm, colbacktitle=quarto-callout-note-color!10!white, leftrule=.75mm, breakable, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm, rightrule=.15mm, bottomrule=.15mm, toprule=.15mm, left=2mm, colback=white]
+\begin{tcolorbox}[enhanced jigsaw, breakable, titlerule=0mm, coltitle=black, colframe=quarto-callout-note-color-frame, rightrule=.15mm, bottomtitle=1mm, colback=white, opacityback=0, leftrule=.75mm, opacitybacktitle=0.6, toprule=.15mm, left=2mm, toptitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, arc=.35mm, colbacktitle=quarto-callout-note-color!10!white, bottomrule=.15mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -1057,6 +1058,8 @@ squintability and smoothness.}
 \subsection{Effect of index properties on JSO success
 rate}\label{effect-of-index-properties-on-jso-success-rate}
 
+\begingroup
+\fontsize{12.0pt}{14.4pt}\selectfont
 \setlength{\LTpost}{0mm}
 
 \begin{longtable}{lcc}
@@ -1075,9 +1078,9 @@ smoothness, and increasing the number of iterations do not.}
 \textbf{Characteristic} & \textbf{OR} \textbf{(95\% CI)}\textsuperscript{\textit{1}} & \textbf{p-value} \\ 
 \midrule\addlinespace[2.5pt]
 Smoothness & 1.01 (0.92 to 1.11) & 0.810 \\ 
-Squintability & 1.23 (1.12 to 1.38) & \textbf{<0.001} \\ 
-Dimension & 0.58 (0.45 to 0.73) & \textbf{<0.001} \\ 
-Number of jellyfish & 1.32 (1.17 to 1.50) & \textbf{<0.001} \\ 
+Squintability & 1.23 (1.12 to 1.38) & {\bfseries <0.001} \\ 
+Dimension & 0.58 (0.45 to 0.73) & {\bfseries <0.001} \\ 
+Number of jellyfish & 1.32 (1.17 to 1.50) & {\bfseries <0.001} \\ 
 Maximum number of iterations & 1.06 (0.94 to 1.20) & 0.328 \\ 
 \bottomrule
 
@@ -1086,6 +1089,7 @@ Maximum number of iterations & 1.06 (0.94 to 1.20) & 0.328 \\
 \begin{minipage}{\linewidth}
 \textsuperscript{\textit{1}}OR = Odds Ratio, CI = Confidence Interval\\
 \end{minipage}
+\endgroup
 
 \begingroup\fontsize{10}{12}\selectfont
 
@@ -1251,9 +1255,10 @@ the JSO performance.
 
 Future work can focus on developing more efficient optimization
 algorithm for noise indexes with low squintability metric, which
-resemble a needle-in-a-haystack problem. Additionally, if the index
-function is differentiable, automatic differentiation can be used to
-implement new gradient-based optimizers.
+resemble a needle-in-a-haystack problem (Siemenn et al. 2023).
+Additionally, if the index function is differentiable, automatic
+differentiation can be used to implement new gradient-based optimizers
+(Prince 2023).
 
 \section{Acknowledgement}\label{acknowledgement}
 
@@ -1449,6 +1454,9 @@ Posse, C. 1995. {``Projection Pursuit Exploratory Data Analysis.''}
 \emph{Computational Statistics and Data Analysis} 20 (6): 669--87.
 \url{https://doi.org/10.1016/0167-9473(95)00002-8}.
 
+\bibitem[\citeproctext]{ref-prince2023understanding}
+Prince, Simon JD. 2023. \emph{Understanding Deep Learning}. MIT press.
+
 \bibitem[\citeproctext]{ref-R}
 R Core Team. 2023. \emph{R: A Language and Environment for Statistical
 Computing}. Vienna, Austria: R Foundation for Statistical Computing.
@@ -1468,6 +1476,12 @@ for Machine Learning}. The MIT Press.
 Robinson, D., A. Hayes, and S. Couch. 2024. \emph{{b}room: Convert
 Statistical Objects into Tidy Tibbles}.
 \url{https://CRAN.R-project.org/package=broom}.
+
+\bibitem[\citeproctext]{ref-siemenn2023fast}
+Siemenn, Alexander E, Zekun Ren, Qianxiao Li, and Tonio Buonassisi.
+2023. {``Fast Bayesian Optimization of Needle-in-a-Haystack Problems
+Using Zooming Memory-Based Initialization (ZoMBI).''} \emph{Npj
+Computational Materials} 9 (1): 79.
 
 \bibitem[\citeproctext]{ref-gtsummary}
 Sjoberg, D. D., K. Whiting, M. Curry, J. A. Lavery, and J. Larmarange.
