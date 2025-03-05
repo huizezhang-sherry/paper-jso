@@ -927,31 +927,6 @@ res_quantile |>
   ylab("Proportion of success")
 ```
 
-## Effect of index properties on JSO success rate
-
-@tbl-smoothness-squintability presents values computed for a subset of
-PP indexes on the sine wave data for dimensions 4-8. (A full table of
-the parameters estimated from the Gaussian process (outputscale $\eta$,
-lengthscale $\ell$, smoothness $\nu$, and nugget $\sigma$) and from the
-scaled logistic function ($\theta_1$ to $\theta_4$) for calculating
-smoothness and squintability for all PP indexes and data combinations is
-included in the supplementary materials). The column $\nu$ is used as
-the smoothness metric and the column $\varsigma$ is calculated as
-equation (@eq-squintability-parametric) as the squintability metric.
-
-@fig-idx-proj-dist shows a sample of traces from the indexes in
-@tbl-smoothness-squintability for the 6D sine wave data. This traces the
-PP index values computed for projections along an interpolated path
-between a randomly generated noise projection and the optimal projection (sine wave). (Note
-index values were self-standardized to range between 0 and 1, for
-comparison.) The `splines` index is very smooth with a gradual increase
-in value between the noise projection and the optimal projection. The
-`TIC` index is slightly less smooth and slightly less gradual change in
-value. Least desirable is the `skinny` index which is noisier and the
-optimization needs to be much closer to the optimal angle to have a
-higher value. This illustrates how the new measures for squintability
-and smoothness work to describe the PP indexes.
-
 ```{r}
 #| label: tbl-smoothness-squintability
 #| tbl-cap: The columns $\nu$ and $\varsigma$ show the smoothness and squintability measures for three PP indexes for the sine wave data. The splines index has the largest squint angle and is the smoothest. The skinny index has low smoothness and smallest squint angle. As dimension increases the squint angle gets smaller but smoothness doesn't change much.
@@ -963,20 +938,17 @@ dt <- tibble(shape = c(rep("pipe", 5), rep("sine", 18)), smoothness) |>
          variance = sqrt(variance)) 
 dt |> 
   filter(shape == "sine", index %in% c("TIC", "splines", "skinny")) |>
+  mutate(index = factor(index, levels = c("splines", "TIC", "skinny"))) |> 
   select(shape, index, d, smooth, squint) |>
-  arrange(desc(squint)) |>
+  arrange(index, d) |>
   knitr::kable(
     digits = 4, format = "latex", 
-    col.names = c(
-      "shape", "index", "d",
-      #"$\\eta$", "$\\ell$", 
-      "$\\nu$", #"$\\sigma$",
-      #"$\\theta_1$", "$\\theta_2$", "$\\theta_3$", "$\\theta_4$", 
-      "$\\varsigma$"), linesep = "",
-    booktabs = TRUE, escape = FALSE, row.names = FALSE, align = "|llr|rr") #align = "|llr|rrrr|rrrrr") |> 
-  #column_spec(1, border_left = TRUE) |> 
-  #column_spec(c(4, 8, 13), border_right = TRUE) |> 
-  #kable_styling(font_size = 10)  
+    col.names = c("shape", "index", "d", "$\\nu$", "$\\varsigma$"), linesep = c("", "", "\\hline"),
+    booktabs = TRUE, escape = FALSE, row.names = FALSE, align = "|llr|rr") |> 
+  #column_spec(1, border_left = TRUE) |>
+  column_spec(c(3,5), border_right = TRUE) 
+  #row_spec(c(3, 6), extra_latex_after = "\\cline{1-5}")
+  #kable_styling(font_size = 10)   
 ```
 
 ```{r}
@@ -993,6 +965,7 @@ mod4 <- glm(proportion ~ squintability*d + n_jellies, data = sim_df2, family = q
 mod5 <- glm(proportion ~ smoothness*d + squintability*d + n_jellies, data = sim_df2, family = quasibinomial)
 ```
 
+
 ```{r}
 #| label: fig-idx-proj-dist
 #| fig.width: 8
@@ -1007,32 +980,7 @@ sq_basis_df_6d_TIC_spline_skinny |>
   theme(legend.position = "bottom")
 ```
 
-@tbl-mod-output presents the results from fitting a logistic regression
-model using the proportion of success as the response and smoothness,
-squintability, dimension, number of jellyfish and maximum number of
-iteration, as predictors. The fit suggests that the JSO success rate is only
-affected by squintability, dimension and number of jellyfish. As expected,
-the JSO success rate is higher with higher squintability and/or more
-jellyfish, and lower when dimension is higher (higher-dimensional
-optimization is more difficult). Interestingly, the JSO is unaffected by
-the smoothness of the index function. This is consistent with the way
-random search algorithms jump from value to value without taking local
-regularity into account, as opposed to gradient-based optimizers for
-example. Allowing for more iterations also does not affect success rate
-significantly. A unit increase in squintability increases the success
-rate by `r round(100 * (exp(broom::tidy(mod1)$estimate[3])-1), 0)`%. As
-dimension increases by one the success rate almost halves. Increasing
-the number of jellies by 10 increases the success rate by
-`r round(100 * (exp(broom::tidy(mod1)$estimate[5])-1), 0)`%.
-@tbl-joint-output shows the fit statistics supporting that the model is
-reasonably strong.
-
-Note that the addition of interaction terms for squintability and data
-dimension, and smoothness and data dimension, improves the model a small
-amount, but does not change the interpretation above. This study intends 
-to serve as an illustration that the proposed
-measures effectively captures the key factors influencing the success
-rate of PP.
+## Effect of index properties on JSO success rate
 
 ```{r}
 #| tbl-pos: H
@@ -1075,6 +1023,56 @@ summary_table |>
   kable_styling(font_size = 10) |>
   row_spec(0, bold = TRUE) #, width = "5em")
 ```
+
+
+@tbl-smoothness-squintability presents values computed for a subset of
+PP indexes on the sine wave data for dimensions 4-8. (A full table of
+the parameters estimated from the Gaussian process (outputscale $\eta$,
+lengthscale $\ell$, smoothness $\nu$, and nugget $\sigma$) and from the
+scaled logistic function ($\theta_1$ to $\theta_4$) for calculating
+smoothness and squintability for all PP indexes and data combinations is
+included in the supplementary materials). The column $\nu$ is used as
+the smoothness metric and the column $\varsigma$ is calculated as
+equation (@eq-squintability-parametric) as the squintability metric.
+
+@fig-idx-proj-dist shows a sample of traces from the indexes in
+@tbl-smoothness-squintability for the 6D sine wave data. This traces the
+PP index values computed for projections along an interpolated path
+between a randomly generated noise projection and the optimal projection (sine wave). (Note
+index values were self-standardized to range between 0 and 1, for
+comparison.) The `splines` index is very smooth with a gradual increase
+in value between the noise projection and the optimal projection. The
+`TIC` index is slightly less smooth and slightly less gradual change in
+value. Least desirable is the `skinny` index which is noisier and the
+optimization needs to be much closer to the optimal angle to have a
+higher value. This illustrates how the new measures for squintability
+and smoothness work to describe the PP indexes.
+@tbl-mod-output presents the results from fitting a logistic regression
+model using the proportion of success as the response and smoothness,
+squintability, dimension, number of jellyfish and maximum number of
+iteration, as predictors. The fit suggests that the JSO success rate is only
+affected by squintability, dimension and number of jellyfish. As expected,
+the JSO success rate is higher with higher squintability and/or more
+jellyfish, and lower when dimension is higher (higher-dimensional
+optimization is more difficult). Interestingly, the JSO is unaffected by
+the smoothness of the index function. This is consistent with the way
+random search algorithms jump from value to value without taking local
+regularity into account, as opposed to gradient-based optimizers for
+example. Allowing for more iterations also does not affect success rate
+significantly. A unit increase in squintability increases the success
+rate by `r round(100 * (exp(broom::tidy(mod1)$estimate[3])-1), 0)`%. As
+dimension increases by one the success rate almost halves. Increasing
+the number of jellies by 10 increases the success rate by
+`r round(100 * (exp(broom::tidy(mod1)$estimate[5])-1), 0)`%.
+@tbl-joint-output shows the fit statistics supporting that the model is
+reasonably strong.
+
+Note that the addition of interaction terms for squintability and data
+dimension, and smoothness and data dimension, improves the model a small
+amount, but does not change the interpretation above. This study intends 
+to serve as an illustration that the proposed
+measures effectively captures the key factors influencing the success
+rate of PP.
 
 # Practicalities {#sec-discussion}
 

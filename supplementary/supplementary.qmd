@@ -256,15 +256,25 @@ dp2 <- ggplot(pipe1000, aes(x=V5, y=V6)) + geom_point()
 dp1 + dp2 + plot_layout(ncol=2)
 ```
 
-# Gaussian process estimates for all PP indexes and data sets
+# Calculated smoothness and squintability metrics for all PP indexes and data sets
+
+Smoothness and squintability are metrics used to characterize the index 
+function for PP tasks and are invariant to the optimizer and its 
+hyper-parameters. @tbl-smoothness-squintability presents the Gaussian process
+parameters (outputscale $\eta$, lengthscale $\ell$, smoothness $\nu$, and 
+nugget $\sigma$) and scaled logistic function parameters ($\theta_1$ to 
+$\theta_4$ and $\varsigma$) for all 23 PP problems investigated in our work. 
+The columns $\nu$ and $\varsigma$ represent the smoothness and squintability 
+measures respectively. 
 
 ```{r}
 #| label: tbl-smoothness-squintability
 #| tbl-cap: Parameters estimated from the Gaussian process (outputscale $\eta$, lengthscale $\ell$, smoothness $\nu$, and nugget $\sigma$) and scaled logistic function ($\theta_1$ to $\theta_4$ and $\varsigma$) for the pipe-finding and sine-wave finding problems.  The columns $\nu$ and $\varsigma$ represent the smoothness and squintability measures respectively.
-dt <- tibble(shape = c(rep("pipe", 5), rep("sine", 17)), smoothness) |>
+dt <- tibble(shape = c(rep("pipe", 5), rep("sine", 18)), smoothness) |>
   left_join(squintability) |> 
   rename(d = n, smooth = smoothness) |> 
-  mutate(index = ifelse(index == "dcor2d_2", "dcor", index),
+  mutate(index = as.character(index),
+         index = ifelse(index == "dcor2d_2", "dcor", index),
          index = ifelse(index == "loess2d", "loess", index),
          index = ifelse(index == "splines2d", "splines", index),
          variance = sqrt(variance)) 
