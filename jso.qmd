@@ -89,6 +89,7 @@ load(here::here("data/sim_sine_6d_spline_best.rda"))
 load(here::here("data/sim_sine_6d_spline_projdist.rda"))
 load(here::here("data/pipe_better.rda"))
 load(here::here("data/pipe_jellyfish.rda"))
+load(here::here("data/sq_sine_basis_df.rda"))
 load(here::here("data/smoothness.rda"))
 load(here::here("data/squintability.rda"))
 load(here::here("data/sq_basis_df_6d_TIC_spline_skinny.rda"))
@@ -449,8 +450,7 @@ means that the PP index value improves substantially only when the
 target view is close by. As such, low squintability implies rapid
 improvement in the index value when near the target view. For PP, a
 small squint angle is considered to be undesirable because it means that
-the optimizer needs to be very close to be able to "see" the optimum.
-Thus, it could be difficult for the optimizer to find the optimum.
+the optimizer needs to be very close to be able to "see" the optimum, making it difficult for the optimizer to find the optimum. 
 
 \begin{defn}[squint angle]\label{def:squint-angle}
 Let $A$ and $B$ be two $d$-dimensional orthonormal matrices in $\mathbb{R}^p$. The squint angle $\theta$ between the subspace spanned by $A$ and $B$ is defined as the smallest principal angle between these subspaces: $\theta = \min_{i \in \{1, \cdots, d\}} \arccos(\tau_i)$, where $\tau_i$ are the singular values of the matrix $M = A^T B$ obtained from its singular value decomposition.
@@ -462,10 +462,34 @@ early on. Conversely, for a PP index with low squint angle, it might
 take a long while for the optimization to make substantial progress, as
 the candidate projections would need to be very close to the optimal one
 for the structure of the index function to be visible enough to be
-amenable to efficient optimization. This observation suggests that the
-half-point index value improvement percentage provides an appropriate
+amenable to efficient optimization. This observation, shown in the simulated trace from different index functions in @fig-squintability-ill, suggests that the half-point index value improvement percentage provides an appropriate
 mathematical definition of squintability, which matches the intuition
 behind this concept, while being amenable to numerical computation.
+
+```{r}
+#| label: fig-squintability-ill
+#| fig.width: 8
+#| fig.height: 4
+#| fig.cap: "Simulated traces of index value as a function of projection distances for four PP index functions: MIC, splines2d, skinny, and stringy2. The index function MIC and splines2d make early progression towards the optimal index value, indicating a large squint angle, whereas the traces from skinny, and specially stringy2, show improvement only near the optimal projection, suggesting low squintability."
+sq_sine_basis_df |> 
+  filter(n == 4) |> 
+  unnest(basis_df, names_repair = "unique") |> 
+  filter(id <= 3) |> 
+  rename(index = index...2, value = index...8) |> 
+  filter(index %in% c("MIC", "skinny", "stringy2", "splines2d")) |> 
+  group_by(id, index, n) |> 
+  mutate(value = (value - min(value)) / (max(value) - min(value))) |>
+  ggplot(aes(x = dist, y = value, 
+             group = interaction(index, id, n), 
+             color = index)) +
+  geom_line() + 
+  scale_color_brewer(palette = "Dark2") +
+  xlab("Projection distance") + ylab("Index value") +
+  theme_bw() + 
+  theme(legend.position = "bottom")
+```
+
+
 
 \begin{defn}[projection distance]\label{def:proj-dist}
 Let $A \in \mathbb{R}^{p \times d}$ be a $d$-dimensional orthonormal matrix, and let $A^*$ be the optimal matrix that achieves the maximum index value for a given data. The projection distance between $A$ 
@@ -487,7 +511,7 @@ Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the p
 Remark that the amount by which the index value can improve from the
 starting matrix $A_0$ to the optimal one $A^*$ is given by
 $g(0)-g(r_{0})$. As a result, equation \eqref{eq-squintability}
-represent the proportion of this maximum improvement which has been
+represents the proportion of this maximum improvement which has been
 achieved by the time the distance $r_0$ to the optimal matrix has been
 reduced by half ($r_0/2$).
 
@@ -929,7 +953,7 @@ res_quantile |>
 
 ```{r}
 #| label: tbl-smoothness-squintability
-#| tbl-cap: The columns $\nu$ and $\varsigma$ show the smoothness and squintability measures for three PP indexes for the sine wave data. The splines index has the largest squint angle and is the smoothest. The skinny index has low smoothness and smallest squint angle. As dimension increases the squint angle gets smaller but smoothness doesn't change much.
+#| tbl-cap: The columns $\nu$ and $\varsigma$ show the smoothness and squintability measures for three PP indexes for the sine wave data. The splines index has the largest squint angle and is the smoothest. The skinny index has low smoothness and smallest squint angle. As dimension increases the smoothness becomes smaller but squintability doesn't change much.
 dt <- tibble(shape = c(rep("pipe", 5), rep("sine", 18)), smoothness) |>
   left_join(squintability) |> 
   rename(d = n, smooth = smoothness) |> 
@@ -953,10 +977,14 @@ dt |>
 
 ```{r}
 #| label: fit-logistic
-sim_df2 <- sim_df |>   
+sim_df2 <- sim_df |>  
+  # the original smoothness and squintability score is in the data
+  # but we use their rank in the modelling.
+  select(-smoothness, -squintability) |> 
+  rename(smoothness = smoothness_rank,
+         squintability = squintability_rank) |>
   mutate(n_jellies = n_jellies/10, max_tries = max_tries/10) |> 
-  rename(proportion = P_J) #|>
-  #filter(d < 10) 
+  rename(proportion = P_J) 
 
 mod1 <- glm(proportion ~ smoothness + squintability + d + n_jellies + max_tries, data = sim_df2, family = quasibinomial) 
 mod2 <- glm(proportion ~ squintability + d + n_jellies + max_tries, data = sim_df2, family = quasibinomial)
@@ -974,7 +1002,7 @@ mod5 <- glm(proportion ~ smoothness*d + squintability*d + n_jellies, data = sim_
 sq_basis_df_6d_TIC_spline_skinny |>
   ggplot(aes(x = dist, y = index, group = interaction(index_name, id), color = index_name)) +
   geom_line() + 
-  scale_color_brewer(palette = "Dark2") +
+  scale_color_brewer(palette = "Dark2", name = "Index function") +
   xlab("Projection distance") + ylab("Index value") +
   theme_bw() + 
   theme(legend.position = "bottom")

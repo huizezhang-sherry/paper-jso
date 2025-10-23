@@ -145,8 +145,14 @@ save(sim_summary, file = here::here("data", "sim_summary.rda"))
 load(here::here("data", "squintability.rda"))
 load(here::here("data", "smoothness.rda"))
 sim_df <- sim_summary |>
-  left_join(smoothness |> mutate(smoothness = rank(smoothness)) |> select(n, index, smoothness) |> rename(d = n)) |>
-  left_join(squintability |> mutate(squint = rank(squint)) |> select(index, n, squint) |> rename(d = n, squintability = squint))
+  left_join(smoothness |>
+              mutate(smoothness_rank = rank(smoothness)) |>
+              select(n, index, smoothness, smoothness_rank) |>
+              rename(d = n)) |>
+  left_join(squintability |>
+              mutate(squint_rank = rank(squint)) |>
+              select(index, n, squint, squint_rank) |>
+              rename(d = n, squintability = squint, squintability_rank = squint_rank))
 save(sim_df, file = here::here("data", "sim_df.rda"))
 
 
