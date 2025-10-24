@@ -561,9 +561,12 @@ To solve the optimization problem embedded in the PPGT with JSO, a starting
 projection, an index function, the number of jellyfish, and the maximum
 number of iterations are provided as input. Then, the current
 projection is evaluated by the index function. The projection is then
-moved in a direction determined by a random factor, influenced by how
-far along we are in the optimization process. Occasionally, completely
-new directions may be taken like a jellyfish might with ocean currents.
+moved in a direction determined by a random time control function, $c_t$, whose value decreases as 
+the number of trials increases (subject to randomness) to guide the exploration and exploitation phases 
+of the algorithm. When $c_t \ge 0.5$, new 
+directions will be taken like a jellyfish explores with the ocean trend, defined as 
+the difference of the current best jellyfish and average of all the current jellyfish.
+When $1- c_t$ is smaller than a randomly generated number in $[0, 1]$, jellyfish will move passively with small random perturbations, otherwise, it will move actively towards or away from another jellyfish based on their index values. 
 A new projection is accepted if it is an improvement compared to the
 current one, rejected otherwise. This process continues and iteratively
 improves the projection, until the pre-specified maximum number of
@@ -588,9 +591,9 @@ index values for each projection in `current_projections`
 
 > **if** $c_t$ is greater than or equal to $0.5$ **then**
 >
-> > Define trend based on the `current_best` and `current_projections`
+> > Define the ocean current trend as the difference of the `current_best` and the average of the `current_projections`
 >
-> > Update each projection towards the trend using a random factor and
+> > Update each projection towards the ocean trend using a random factor and
 > > orthonormalisation
 >
 > **else**
@@ -624,9 +627,8 @@ index values for each projection in `current_projections`
 <!-- Var names in the function and in the text needs to be consistent??? -->
 
 The JSO implementation involves several key parameters that control its
-search process in optimization problems. These parameters are designed
-to guide the exploration and exploitation phases of the algorithm. While
-the specific implementation details can vary depending on the version of
+search process in optimization problems. While the specific implementation
+details can vary depending on the version of
 the algorithm or its application, the focus is on two main parameters
 that are most relevant to our application: the number of jellyfish and
 the maximum number of iterations
@@ -665,7 +667,7 @@ are stored along with index value, projection basis, and random seed used.
 
 ```{r}
 #| label: fig-success-rate
-#| fig.cap: "How success rate is calculated, illustrated using the optimal projections from 50 optimizations of 8D pipe data sorted by index value. The pipe shape is recognizable in the projection index values between 0.933-0.969. Of the 50 simulations, 43 achieved an index value within 0.05 of the best, resulting in a success rate of 0.86."
+#| fig.cap: "How success rate is calculated, illustrated using the optimal projections from 50 optimizations of 8D pipe data, optimised by CRS, sorted by index value. The pipe shape is recognizable in the projection index values between 0.933-0.969. Of the 50 simulations, 43 achieved an index value within 0.05 of the best, resulting in a success rate of 0.86."
 # pipe_jellyfish_12d <- pipe_better |> 
 #   filter(dim == 2) |> 
 #   mutate(dim = as.numeric(dim) * 8, sim = as.numeric(sim)) 
@@ -870,8 +872,8 @@ struggle and less clearly capture the circle shape.
 
 The effect of JSO hyper-parameters (number of jellyfish and the maximum
 number of iteration) on the success rate is summarized in @fig-proportion.
-The uncertainty is quantified through 500 bootstrap replicates sampled from 
-the simulation for each case. As the number of jellyfish and maximum iteration allowed 
+Bootstrap resampling is used to quantify the uncertainty of the success rate through 500 bootstrap samples with replacement from the original 50 simulation results for each task: optimizing a high-dimensional data (d = 4, 6, 8, 10, or 12) with different number of jellyfish ( 20, 50, or 100) and maximum number of iteration (50 or 100). 
+As the number of jellyfish and maximum iteration allowed 
 increase, the success rate also increases. For problems in lower dimensional (4,
 6) search spaces, small parameter values (20 jellyfish and 50 iterations) 
 are sufficient to achieve a high success rate. Many more
@@ -1112,17 +1114,19 @@ incorporate into the PPGT, as explained here.
 ## Using the JSO in a PPGT
 
 To use JSO for PPGT in the `tourr` package, specify
-`search_f = search_jellyfish` in the guided tour.
-
+`search_f = search_jellyfish` in the guided tour. 
 The animation function `animate_*()` won't directly render the animated 
 projection for JSO, as with other existing optimizers since multiple tour 
 paths will need to be generated. To
 visualize the path visited by each individual jellyfish, assign the
-animation to an object (`res <- animate_xy(...)`). This will save the
+animation to an object (`res <- animate_xy(...)`). This will save all the
 bases visited by JSO, along with relevant metadata, as a tibble data
-object [see @RJ-2021-105 for more details on the data object]. The bases
-visited for individual jellyfish can then be extracted and viewed using
-the `planned_tour()` function.
+object [see @RJ-2021-105 for more details on the data object]. Users can 
+then view the path of individual jellyfish through extracting the relevant 
+bases recorded and construct it as a planned tour (using the `planned_tour()` function).
+Users may wish to view the 
+optimisation path of the most successful jellyfish, or a random selection of jellyfish, 
+or some specific runs that find local maximum.
 
 ## Computing the index properties for your new index
 

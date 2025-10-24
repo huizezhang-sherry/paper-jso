@@ -39,15 +39,16 @@ We would like to thank the reviewers and editor for taking the time to review ou
 
 7. I was also wondering how the dependence of the smoothness on d can be explained, since it is not intuitive that this should change so much? (Note also that the last sentence in the caption for Table 1 seems to mix up squintability and smoothness.)
 
-**\textcolor{purple}{TODO The caption has been fixed.}**.
+**\textcolor{purple}{TODO The caption has been fixed.}**
 
 8. Finally, I appreciate the practical advice in section 7. Here, 7.1 should be somewhat extended in my opinion: does the planned tour then run through all the individual paths, should we follow the most successful jellyfish, or how would we pick?
 
-**\textcolor{purple}{our responses are in red}**.
+**\textcolor{purple}{We make Section 7.1 clearer that the planned tour can be run to trace the optimisation of individual jellyfish path. Users may wish to follow the most successful jellyfish, a random selection, or interesting jellyfish that result in local optimum. DISCUSSION: should I include a small example with the code?}**
 
 Finally I have also collected a few minor remarks: 
 
-  * After defining Eq. 4 the additional parameter should probably be theta_4 and not theta_2.  **\textcolor{purple}{our responses are in red}**.
-  * In the algorithm pseudo-code it is not clear what c_t and the trend actually are.  **\textcolor{purple}{our responses are in red}**.
-  * In Fig. 4 please specify what optimizer was used. From the last sentence of Section 5, it is not clear to me why the ranks need to be used, why not scale the metrics?  **\textcolor{purple}{our responses are in red}**.
-  * In 6.2 it is not really clear what is being bootstrapped for the evaluation of the uncertainty. **\textcolor{purple}{our responses are in red}**.
+  * After defining Eq. 4 the additional parameter should probably be theta_4 and not theta_2.  **\textcolor{purple}{our responses are in red.}**
+  * In the algorithm pseudo-code it is not clear what c_t and the trend actually are.  **\textcolor{purple}{In the text and the pseudo-code, we include information that $c_t$ is the time control function determine the exploration and exploitation phase of the algorithm. We also include information that the (ocean) trend is defined as the difference between the best jellyfish and the average of all current jellyfish.}**
+  * In Fig. 4 please specify what optimizer was used. **\textcolor{purple}{We have included the information in the caption that the CRS optimised is used for this illustration. }**
+  * From the last sentence of Section 5, it is not clear to me why the ranks need to be used, why not scale the metrics?  **\textcolor{purple}{our responses are in red}**.
+  * In 6.2 it is not really clear what is being bootstrapped for the evaluation of the uncertainty. **\textcolor{purple}{We have included further description in the paper to describe the bootstrap procedure as drawing 500 bootstrap samples with replacement from the original 50 simulations for each setting: an optimisation with high-dimensional data (d = 4, 6, 8, 10, or 12) with different number of jellyfish (20, 50, or 100) and maximum number of iteration (50 or 100)}**.
