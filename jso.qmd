@@ -443,28 +443,24 @@ function.
 
 ## Squintability {#sec-squintability}
 
-From @barnett1981interpreting and @laa_using_2020, a large squint angle
-implies that the objective function value is close to optimal even when
-the target view to see the structure is far away. A small squint angle
-means that the PP index value improves substantially only when the
-target view is close by. As such, low squintability implies rapid
-improvement in the index value when near the target view. For PP, a
-small squint angle is considered to be undesirable because it means that
-the optimizer needs to be very close to be able to "see" the optimum, making it difficult for the optimizer to find the optimum. 
+
+The squintability metric is inspired by the concept of squint angle in Definition \ref{def:squint-angle}, originally introduced in @barnett1981interpreting and later discussed in @laa_using_2020. Consider the space of all projection bases: those near the optimal basis correspond to projections with interesting structure we're researching. The size of this neighborhood depends on the choice of the index function. For some indexes, projections resemble the target even when relatively far from the optimum, corresponding to a large squint angle, while for others, projections need to be close to the optimum to reveal structure we're interested, resulting in a small squint angle. For PP, a small squint angle is considered to be undesirable because it means that the optimizer needs to sample into a be very narrow region to be able to "see" the optimum, making it difficult for the optimizer to find the optimum. 
 
 \begin{defn}[squint angle]\label{def:squint-angle}
 Let $A$ and $B$ be two $d$-dimensional orthonormal matrices in $\mathbb{R}^p$. The squint angle $\theta$ between the subspace spanned by $A$ and $B$ is defined as the smallest principal angle between these subspaces: $\theta = \min_{i \in \{1, \cdots, d\}} \arccos(\tau_i)$, where $\tau_i$ are the singular values of the matrix $M = A^T B$ obtained from its singular value decomposition.
 \end{defn}
 
-It is expected that for a PP index with high squint angle, the
-optimization \eqref{eq-optimization} should make substantial progress
-early on. Conversely, for a PP index with low squint angle, it might
-take a long while for the optimization to make substantial progress, as
-the candidate projections would need to be very close to the optimal one
-for the structure of the index function to be visible enough to be
-amenable to efficient optimization. This observation, shown in the simulated trace from different index functions in @fig-squintability-ill, suggests that the half-point index value improvement percentage provides an appropriate
-mathematical definition of squintability, which matches the intuition
-behind this concept, while being amenable to numerical computation.
+To quantify how close projections need be before structures of interest can be observed (the optimizer starts hill-climbing), we can track how the index value changes as we move from an initial projection basis towards the optimal one, that is, how index value changes as the projection distance becomes smaller. 
+
+
+
+\begin{defn}[projection distance]\label{def:proj-dist}
+Let $A \in \mathbb{R}^{p \times d}$ be a $d$-dimensional orthonormal matrix, and let $A^*$ be the optimal matrix that achieves the maximum index value for a given data. The projection distance between $A$ 
+and $A^*$, $r(A, A^*)$, is defined by
+$r(A, A^*) = \lVert AA^\prime - A^*A^{*\prime}\,\rVert _F$
+where $\lVert . \rVert _F$ denotes the Frobenius norm, given by
+$\lVert M \rVert _F = \sqrt{\sum_{ij} M_{ij}^2}$. 
+\end{defn}
 
 ```{r}
 #| label: fig-squintability-ill
@@ -490,14 +486,10 @@ sq_sine_basis_df |>
 ```
 
 
+@fig-squintability-ill illustrates some simulated traces for different PP index functions: MIC, splines2d, skinny, and stringy2. It is expected that for a PP index with high squint angle, the optimization \eqref{eq-optimization} should make substantial progress early on. Conversely, for a PP index with low squint angle, it might take a long while for the optimization to make substantial progress, as the candidate projections would need to be very close to the optimal one for the structure of the index function to be visible enough to be amenable to efficient optimization. This observation suggests that the half-point index value improvement percentage provides an appropriate
+mathematical definition of squintability, which matches the intuition
+behind this concept, while being amenable to numerical computation.
 
-\begin{defn}[projection distance]\label{def:proj-dist}
-Let $A \in \mathbb{R}^{p \times d}$ be a $d$-dimensional orthonormal matrix, and let $A^*$ be the optimal matrix that achieves the maximum index value for a given data. The projection distance between $A$ 
-and $A^*$, $r(A, A^*)$, is defined by
-$r(A, A^*) = \lVert AA^\prime - A^*A^{*\prime}\,\rVert _F$
-where $\lVert . \rVert _F$ denotes the Frobenius norm, given by
-$\lVert M \rVert _F = \sqrt{\sum_{ij} M_{ij}^2}$. 
-\end{defn}
 \begin{defn}[squintability]\label{def:squintability}
 Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance $r(A, A^*)$ to the index value $f(XA)$, such that $g(r) = g(r(A, A^*)) = f(XA)$.  The squintability of an index function $f$ is defined by 
 
@@ -785,8 +777,7 @@ and calculate the squintability measure using Equation
 A generalized linear model is fitted using a quasibinomial family and a
 logit link function to assess the factors affecting the success rate.
 Predictors are smoothness, squintability, data dimension, and JSO
-hyper-parameters. Due to the scale of the smoothness and squintability measure,
-the rank of the two metrics, rather than the nominal values, are used in the model.
+hyper-parameters. For numerical stability related to small squintability values associated with the stringy index (squintability less than 0.002), we decide to use the rank of the two metrics, rather than the nominal values, in the model. 
 
 # Results {#sec-sim-res}
 
@@ -958,7 +949,7 @@ res_quantile |>
 #| tbl-cap: The columns $\nu$ and $\varsigma$ show the smoothness and squintability measures for three PP indexes for the sine wave data. The splines index has the largest squint angle and is the smoothest. The skinny index has low smoothness and smallest squint angle. As dimension increases the smoothness becomes smaller but squintability doesn't change much.
 dt <- tibble(shape = c(rep("pipe", 5), rep("sine", 18)), smoothness) |>
   left_join(squintability) |> 
-  rename(d = n, smooth = smoothness) |> 
+  rename(d = n,  smooth = smoothness) |> 
   mutate(index = as.character(index),
          index = ifelse(index == "splines2d", "splines", index),
          variance = sqrt(variance)) 
