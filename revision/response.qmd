@@ -7,7 +7,7 @@ format: pdf
 ---
 
 
-We sincerely thank the reviewers and the editor for the time and care devoted to evaluating our manuscript and for providing thoughtful and constructive feedback. Below, we provide a point-by-point response detailing the revisions made. The reviewers’ comments appear in regular text, and \textcolor{purple}{our responses are in pink}.
+We sincerely thank the reviewers and the editor for the time and care devoted to evaluating our manuscript and for providing thoughtful and constructive feedback. Below, we provide a point-by-point response detailing the revisions made. The reviewers’ comments appear in regular text, and \textcolor{blue}{our responses are in blue}.
 
 # Reviewer 1
 
@@ -15,45 +15,45 @@ We sincerely thank the reviewers and the editor for the time and care devoted to
 
 1. The paper introduces two interesting new developments to projection pursuit research: the quantification of index properties that enables better comparison, and a new optimization approach based on Jellyfish Search Optimizer. The results show the good performance of the new optimization strategy, and how it can be related to the new metrics introduced. While the overall presentation is clear, it feels like the authors are conflicted about what the main focus of the paper actually should be. The introduction mentions that the primary goal is to investigate the potential for the jellyfish search optimization, however the title does not even mention this, and much of the paper seems to focus on the new metrics introduced. Having a more well defined focus should help guide the flow of the paper better (currently it feels like jumping around between the two objectives).
 
-**\textcolor{purple}{TODO: Di}**.
+**\textcolor{blue}{TODO: Di}**.
 
 2. I also think additional clarifications are needed in the definition of squintability. It seems to me Definition 4 is simply defining an angle between planes (without reference to "squinting"), while in the following the definition of squintability is based on index values at given projection distances?
 
-\textcolor{purple}{We thank the reviewer for this helpful comment, which prompted us to clarify the relationship between the squint angle and the metric squintability. Squint angle is the fundamental geometric notion that motivates the metric squintability, and for this reason we introduce it separately in Definition 4. Intuitively, across all possible projection bases, those that lie close to the optimal basis yield projections that exhibit the structural features of interest. However, different indexes vary in how quickly such structure emerges: for some indexes, projections may resemble the target even when the basis is relatively far from optimal. This corresponds to a larger squint angle and a problem that is easier to optimize, as the optimizer can more readily sample points within the relevant neighbourhood. To quantify how close a projection must be before the structure of interest becomes detectable (i.e., before the optimizer begins effective hill-climbing), we track how the index value changes as we move from an initial basis toward the optimal one. This motivates the definition of projection distance (Definition 5) and squintability (Definition 6). We have revised Section 3.2 to articulate these connections more clearly.}
+\textcolor{blue}{We thank the reviewer for this helpful comment, which prompted us to clarify the relationship between the squint angle and the metric squintability. Squint angle is the fundamental geometric notion that motivates the metric squintability, and for this reason we introduce it separately in Definition 4. Intuitively, across all possible projection bases, those that lie close to the optimal basis yield projections that exhibit the structural features of interest. However, different indexes vary in how quickly such structure emerges: for some indexes, projections may resemble the target even when the basis is relatively far from optimal. This corresponds to a larger squint angle and a problem that is easier to optimize, as the optimizer can more readily sample points within the relevant neighbourhood. To quantify how close a projection must be before the structure of interest becomes detectable (i.e., before the optimizer begins effective hill-climbing), we track how the index value changes as we move from an initial basis toward the optimal one. This motivates the definition of projection distance (Definition 5) and squintability (Definition 6). We have revised Section 3.2 to articulate these connections more clearly.}
 
 
 3. In Definition 6 it is not clear why g should be strictly a decreasing function? Also it seems it is implicitly assumed that the index function will depend only on the projection distance, but not on the direction, and that in practice the index values across directions are averaged to find a single value for g at any given distance? In practice I would expect potentially large deviations from such an assumption, in particular since there may be local optima in certain directions.
 
-**\textcolor{purple}{TODO}**.
+**\textcolor{blue}{TODO}**.
 
 4. The definition in Eq. (5) depends on the selected distance r_0, but it is not explained how this is selected or derived.
 
-**\textcolor{purple}{TODO: Nicolas}**.
+**\textcolor{blue}{TODO: Nicolas}**.
 
 5. Some more practical aspects of how the new metrics are defined are given later in the paper (Fig. 5 and 6), in my opinion the illustrations in the Figures are not needed, but the practical details should be explained together with the definitions in section 3. For the smoothness metric the examples in Fig 2 and 3 are useful to get an intuition about the index, and something comparable would help with better understanding the squintability metric (probably some additional information on something like Fig 9 would help here).
 
-\textcolor{purple}{We thank the reviewer for this insightful suggestion. In line with the reviewer’s recommendation, we have also strengthened Section 3.2 by adding a new figure (Figure 4) that provides intuition for the squintability metric. We have retained the two illustrative figures (now Figures 6 and 7) in Section 5.2, as we believe that some readers may still find the visualisation helpful when interpreting the practical behaviour of the metrics.}
+\textcolor{blue}{We thank the reviewer for this insightful suggestion. In line with the reviewer’s recommendation, we have also strengthened Section 3.2 by adding a new figure (Figure 4) that provides intuition for the squintability metric. We have retained the two illustrative figures (now Figures 6 and 7) in Section 5.2, as we believe that some readers may still find the visualisation helpful when interpreting the practical behaviour of the metrics.}
 
 6. The results in section 6 are very interesting. However, I was wondering about some details in 6.3: from the results shown it seems that the smoothness and squintability for the selected data examples are highly correlated, could this cause issues with the model fit shown in Table 2? It would be interesting if a similar result for CRS could be included, to see the effect of smoothness in that setting.
 
-**\textcolor{purple}{The correlation between the two variables are 0.55, which should not affect the modelling. (TODO: Di - do you mind checking if we need more here?) We did try CRS for the same sine-wave optimisation reported in Section 6, but most runs yield a failed result with the optimum not found by CRS, hence not included.}**
+**\textcolor{blue}{The correlation between the two variables are 0.55, which should not affect the modelling. (TODO: Di - do you mind checking if we need more here?) We did try CRS for the same sine-wave optimisation reported in Section 6, but most runs yield a failed result with the optimum not found by CRS, hence not included.}**
 
 7. I was also wondering how the dependence of the smoothness on d can be explained, since it is not intuitive that this should change so much? (Note also that the last sentence in the caption for Table 1 seems to mix up squintability and smoothness.)
 
-\textcolor{purple}{Table 1 is a subset of the PP index estimated and it happens that the three chosen ones all decrease as n goes larger. This is not necessary the case in the full table shown in the Appendix. The caption for Table 1 has been fixed.}
+\textcolor{blue}{Table 1 is a subset of the PP index estimated and it happens that the three chosen ones all decrease as n goes larger. This is not necessary the case in the full table shown in the Appendix. The caption for Table 1 has been fixed.}
 
 8. Finally, I appreciate the practical advice in section 7. Here, 7.1 should be somewhat extended in my opinion: does the planned tour then run through all the individual paths, should we follow the most successful jellyfish, or how would we pick?
 
-\textcolor{purple}{We make Section 7.1 clearer that the planned tour can be run to trace the optimisation of individual jellyfish path. Users may wish to follow the most successful jellyfish, a random selection, or interesting jellyfish that result in local optimum. DISCUSSION: should I include a small example with the code?}
+\textcolor{blue}{We make Section 7.1 clearer that the planned tour can be run to trace the optimisation of individual jellyfish path. Users may wish to follow the most successful jellyfish, a random selection, or interesting jellyfish that result in local optimum. DISCUSSION: should I include a small example with the code?}
 
 ## Minor comments
 
-1. After defining Eq. 4 the additional parameter should probably be theta_4 and not theta_2.  **\textcolor{purple}{TODO: Nicolas}**
+1. After defining Eq. 4 the additional parameter should probably be theta_4 and not theta_2.  **\textcolor{blue}{TODO: Nicolas}**
   
-2. In the algorithm pseudo-code it is not clear what c_t and the trend actually are.  \textcolor{purple}{In the text and the pseudo-code, we include information that $c_t$ is the time control function determine the exploration and exploitation phase of the algorithm. We also include information that the (ocean) trend is defined as the difference between the best jellyfish and the average of all current jellyfish.}
+2. In the algorithm pseudo-code it is not clear what c_t and the trend actually are.  \textcolor{blue}{In the text and the pseudo-code, we include information that $c_t$ is the time control function determine the exploration and exploitation phase of the algorithm. We also include information that the (ocean) trend is defined as the difference between the best jellyfish and the average of all current jellyfish.}
 
-3. In Fig. 4 please specify what optimizer was used. \textcolor{purple}{We have included the information in the caption that the CRS optimised is used for this illustration. }
+3. In Fig. 4 please specify what optimizer was used. \textcolor{blue}{We have included the information in the caption that the CRS optimised is used for this illustration. }
 
-4. From the last sentence of Section 5, it is not clear to me why the ranks need to be used, why not scale the metrics?  \textcolor{purple}{We include further explanation in the end of Section 5 on the choice of using rank for the modelling. The reason is because of the numerical instability due to the small squintability value associated with the string index (less than 0.002). Scaling is less ideal here because we define the two metrics to be between [0, 1 ] and scaling will distort the interpretation of the GLM coefficients.}.
+4. From the last sentence of Section 5, it is not clear to me why the ranks need to be used, why not scale the metrics?  \textcolor{blue}{We include further explanation in the end of Section 5 on the choice of using rank for the modelling. The reason is because of the numerical instability due to the small squintability value associated with the string index (less than 0.002). Scaling is less ideal here because we define the two metrics to be between [0, 1 ] and scaling will distort the interpretation of the GLM coefficients.}.
 
-5. In 6.2 it is not really clear what is being bootstrapped for the evaluation of the uncertainty. \textcolor{purple}{Thank you for the clarification. We have included further description in the paper to describe the bootstrap procedure as drawing 500 bootstrap samples with replacement from the original 50 simulations for each setting: an optimisation with high-dimensional data (d = 4, 6, 8, 10, or 12) with different number of jellyfish (20, 50, or 100) and maximum number of iteration (50 or 100)}.
+5. In 6.2 it is not really clear what is being bootstrapped for the evaluation of the uncertainty. \textcolor{blue}{Thank you for the clarification. We have included further description in the paper to describe the bootstrap procedure as drawing 500 bootstrap samples with replacement from the original 50 simulations for each setting: an optimisation with high-dimensional data (d = 4, 6, 8, 10, or 12) with different number of jellyfish (20, 50, or 100) and maximum number of iteration (50 or 100)}.
