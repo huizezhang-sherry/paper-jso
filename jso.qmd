@@ -450,8 +450,7 @@ The squintability metric is inspired by the concept of squint angle in Definitio
 Let $A$ and $B$ be two $d$-dimensional orthonormal matrices in $\mathbb{R}^p$. The squint angle $\theta$ between the subspace spanned by $A$ and $B$ is defined as the smallest principal angle between these subspaces: $\theta = \min_{i \in \{1, \cdots, d\}} \arccos(\tau_i)$, where $\tau_i$ are the singular values of the matrix $M = A^T B$ obtained from its singular value decomposition.
 \end{defn}
 
-To quantify how close projections need be before structures of interest can be observed (the optimizer starts hill-climbing), we can track how the index value changes as we move from an initial projection basis towards the optimal one, that is, how index value changes as the projection distance becomes smaller. 
-
+To quantify how close projections need to be before structures of interest can be observed (the optimizer starts hill-climbing), we can track how the index value changes as we move from an initial projection basis towards the optimal one, that is, how index value changes as the projection distance becomes smaller. 
 
 
 \begin{defn}[projection distance]\label{def:proj-dist}
