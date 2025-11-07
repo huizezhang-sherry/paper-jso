@@ -66,4 +66,4 @@ We sincerely thank the reviewers and the editor for the time and care devoted to
 
 5. In 6.2 it is not really clear what is being bootstrapped for the evaluation of the uncertainty.
 
-\textcolor{blue}{Thank you for the clarification. We have included further description in the paper to describe the bootstrap procedure as drawing $500$ bootstrap samples with replacement from the original $50$ simulations for each setting: an optimisation with high-dimensional data ($d = 4, 6, 8, 10$, or $12$) with different number of jellyfish ($20, 50, or 100$) and maximum number of iteration ($50$ or $100$)}.
+\textcolor{blue}{Thank you for the clarification. We have included further description in the paper to describe the bootstrap procedure as drawing $500$ bootstrap samples with replacement from the original $50$ simulations for each setting: an optimisation with high-dimensional data ($d = 4, 6, 8, 10$, or $12$) with different number of jellyfish ($20, 50$, or $100$) and maximum number of iteration ($50$ or $100$)}.
