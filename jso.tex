@@ -756,7 +756,7 @@ accepted if it is an improvement compared to the current one, rejected
 otherwise. This process continues and iteratively improves the
 projection, until the pre-specified maximum number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, opacitybacktitle=0.6, opacityback=0, colframe=quarto-callout-note-color-frame, leftrule=.75mm, toprule=.15mm, arc=.35mm, toptitle=1mm, bottomtitle=1mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, left=2mm, breakable, colback=white, titlerule=0mm, rightrule=.15mm, bottomrule=.15mm, coltitle=black, colbacktitle=quarto-callout-note-color!10!white]
+\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-note-color!10!white, arc=.35mm, breakable, coltitle=black, title={Algorithm: Jellyfish Optimizer Pseudo Code}, colframe=quarto-callout-note-color-frame, bottomrule=.15mm, left=2mm, colback=white, bottomtitle=1mm, opacityback=0, toprule=.15mm, toptitle=1mm, titlerule=0mm, rightrule=.15mm, leftrule=.75mm, opacitybacktitle=0.6]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -837,7 +837,7 @@ search process in optimization problems. While the specific
 implementation details can vary depending on the version of the
 algorithm or its application, the focus is on two main parameters that
 are most relevant to our application: the number of jellyfish and the
-maximum number of iterations
+maximum number of iterations.
 
 \section{Assessing the optimizers}\label{sec-sim-deets}
 
@@ -873,7 +873,7 @@ used in Zhang et al. (2021) for assessing PP optimizers. The design
 parameters are stored along with index value, projection basis, and
 random seed used.
 
-\begin{figure}
+\begin{figure}[!ht]
 
 \centering{
 
@@ -992,7 +992,7 @@ the JSO performance with the existing CRS optimizer, and the
 relationship between optimization success and hyper-parameter choices
 and PP index properties.
 
-\begin{figure}
+\begin{figure}[!ht]
 
 \centering{
 
@@ -1109,10 +1109,7 @@ squintability and smoothness.}
 
 \end{figure}%
 
-\subsection{Effect of index properties on JSO success
-rate}\label{effect-of-index-properties-on-jso-success-rate}
-
-\begin{table}[H]
+\begin{table}[!ht]
 
 \caption{\label{tbl-mod-output}Jellyfish success rate relative to index
 properties and jellyfish hyper-parameters. This is the summary from a
@@ -1163,6 +1160,9 @@ Abbreviations: CI = Confidence Interval, OR = Odds Ratio\\
 
 \endgroup{}
 
+\subsection{Effect of index properties on JSO success
+rate}\label{effect-of-index-properties-on-jso-success-rate}
+
 Table~\ref{tbl-smoothness-squintability} presents values computed for a
 subset of PP indexes on the sine wave data for dimensions 4-8. (A full
 table of the parameters estimated from the Gaussian process (outputscale
@@ -1186,30 +1186,37 @@ smooth and slightly less gradual change in value. Least desirable is the
 skinny index which is noisier and the optimization needs to be much
 closer to the optimal angle to have a higher value. This illustrates how
 the new measures for squintability and smoothness work to describe the
-PP indexes. Table~\ref{tbl-mod-output} presents the results from fitting
-a logistic regression model using the proportion of success as the
-response and smoothness, squintability, dimension, number of jellyfish
-and maximum number of iteration, as predictors. The fit suggests that
-the JSO success rate is only affected by squintability, dimension and
-number of jellyfish. As expected, the JSO success rate is higher with
-higher squintability and/or more jellyfish, and lower when dimension is
-higher (higher-dimensional optimization is more difficult).
-Interestingly, the JSO is unaffected by the smoothness of the index
-function. This is consistent with the way random search algorithms jump
-from value to value without taking local regularity into account, as
-opposed to gradient-based optimizers for example. Allowing for more
-iterations also does not affect success rate significantly. A unit
-increase in squintability increases the success rate by 23\%. As
-dimension increases by one the success rate almost halves. Increasing
-the number of jellies by 10 increases the success rate by 32\%.
-Table~\ref{tbl-joint-output} shows the fit statistics supporting that
-the model is reasonably strong.
+PP indexes.
 
-Note that the addition of interaction terms for squintability and data
-dimension, and smoothness and data dimension, improves the model a small
-amount, but does not change the interpretation above. This study intends
-to serve as an illustration that the proposed measures effectively
-captures the key factors influencing the success rate of PP.
+Table~\ref{tbl-mod-output} presents the results from fitting a logistic
+regression model using the proportion of success as the response and
+smoothness, squintability, dimension, number of jellyfish and maximum
+number of iteration, as predictors. The fit suggests that the JSO
+success rate is only affected by squintability, dimension and number of
+jellyfish. As expected, the JSO success rate is higher with higher
+squintability and/or more jellyfish, and lower when dimension is higher
+(higher-dimensional optimization is more difficult). Interestingly, the
+JSO is unaffected by the smoothness of the index function. This is
+consistent with the way random search algorithms jump from value to
+value without taking local regularity into account, as opposed to
+gradient-based optimizers for example. Allowing for more iterations also
+does not affect success rate significantly. A unit increase in
+squintability increases the success rate by 23\%. As dimension increases
+by one the success rate almost halves. Increasing the number of jellies
+by 10 increases the success rate by 32\%. Table~\ref{tbl-joint-output}
+shows the fit statistics supporting that the model is reasonably strong.
+
+In relation to the model fit, it should be noted that there is moderate
+correlation between squintability and smoothness, but this does not
+substantially affect the fit. Fitting smoothness alone results in this
+variable being weakly significant for explaining success rate, but the
+effect is dominated by squintability. The addition of interaction terms
+for squintability and data dimension, and smoothness and data dimension,
+improves the model slightly, but not enough to be practically important
+or change the interpretation above.
+
+This results support the use of the proposed measures to effectively
+capture key factors affecting the success rate of PP.
 
 \section{Practicalities}\label{sec-discussion}
 
