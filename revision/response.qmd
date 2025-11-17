@@ -15,7 +15,7 @@ We sincerely thank the reviewers and the editor for the time and care devoted to
 
 1. The paper introduces two interesting new developments to projection pursuit research: the quantification of index properties that enables better comparison, and a new optimization approach based on Jellyfish Search Optimizer. The results show the good performance of the new optimization strategy, and how it can be related to the new metrics introduced. While the overall presentation is clear, it feels like the authors are conflicted about what the main focus of the paper actually should be. The introduction mentions that the primary goal is to investigate the potential for the jellyfish search optimization, however the title does not even mention this, and much of the paper seems to focus on the new metrics introduced. Having a more well defined focus should help guide the flow of the paper better (currently it feels like jumping around between the two objectives).
 
-**\textcolor{blue}{TODO: Di}**.
+**\textcolor{blue}{Point taken. The title has been changed to better reflect the content. Attention has been paid to the flow of the paper in the revision.}**.
 
 2. I also think additional clarifications are needed in the definition of squintability. It seems to me Definition 4 is simply defining an angle between planes (without reference to "squinting"), while in the following the definition of squintability is based on index values at given projection distances?
 

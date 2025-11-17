@@ -79,6 +79,7 @@ library(tidyverse)
 library(patchwork)
 library(ggh4x)
 library(broom)
+library(broom.helpers)
 library(kableExtra)
 library(tourr)
 library(ferrn)
@@ -212,9 +213,9 @@ sqa1 + sqa2 + sqa3 + sqa4 + plot_layout(ncol=2, widths=c(2,2))
 
 ```
 
-Optimization of PP is often discussed when new indexes are proposed
+Optimization of PP is sometimes discussed when new indexes are proposed
 [@posse95; @marie-sainte2010; @grochowski2011]. @cook1995grand tied the
-optimization more closely to the index, when they introduced the PPGT,
+optimization closely to the index with the introduction of the PPGT,
 which monitors the optimization visually so that the user can see the
 projected data leading in and out of the optimum. An implementation is
 available in the `tourr` package [@tourr] in R [@R]. @RJ-2021-105

@@ -14,3 +14,5 @@ optim_cache
 .RDataTmp2
 .RDataTmp3
 jso_files.zip
+
+**/*.quarto_ipynb
