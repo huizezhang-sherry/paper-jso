@@ -36,7 +36,7 @@ We sincerely thank the reviewers and the editor for the time and care devoted to
 
 6. The results in section 6 are very interesting. However, I was wondering about some details in 6.3: from the results shown it seems that the smoothness and squintability for the selected data examples are highly correlated, could this cause issues with the model fit shown in Table 2? It would be interesting if a similar result for CRS could be included, to see the effect of smoothness in that setting.
 
-**\textcolor{blue}{We have revised the text to include a comment on the correlation and why CRS cannot be run for the sine-wave optimization.  (TODO: Di - do you mind checking if we need more here?)}**
+\textcolor{blue}{We have revised the text to include a comment on the correlation. It is moderate and does not practically affect the fit. We have also noted that it is not feasible to run CRS for the sine-wave optimization because it is not an efficient optimizer and fails to converge too often. On small dimensionality, it can be seen that it is not affected by lack of smoothness of an index. This would be expected because it is not a derivative-based optimizer, and, similarly to JSO small local fluctuations won't affect it's search.}
 
 7. I was also wondering how the dependence of the smoothness on d can be explained, since it is not intuitive that this should change so much? (Note also that the last sentence in the caption for Table 1 seems to mix up squintability and smoothness.)
 

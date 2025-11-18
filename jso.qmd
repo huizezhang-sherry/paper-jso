@@ -1051,9 +1051,9 @@ summary_table |>
 
 @tbl-smoothness-squintability presents values computed for a subset of
 PP indexes on the sine wave data for dimensions 4-8. (A full table of
-the parameters estimated from the Gaussian process (outputscale $\eta$,
-lengthscale $\ell$, smoothness $\nu$, and nugget $\sigma$) and from the
-scaled logistic function ($\theta_1$ to $\theta_4$) for calculating
+the parameters estimated from the Gaussian process <!-- (outputscale $\eta$,
+lengthscale $\ell$, smoothness $\nu$, and nugget $\sigma$)--> and from the
+scaled logistic function <!--($\theta_1$ to $\theta_4$)--> for calculating
 smoothness and squintability for all PP indexes and data combinations is
 included in the supplementary materials). The column $\nu$ is used as
 the smoothness metric and the column $\varsigma$ is calculated as
@@ -1093,9 +1093,9 @@ the number of jellies by 10 increases the success rate by
 reasonably strong.
 
 In relation to the model fit, it should be noted that there is moderate correlation between squintability and smoothness, but this does not substantially affect the fit. Fitting smoothness alone results in this variable being weakly significant for explaining success rate, but the effect is dominated by squintability. The addition of interaction terms for squintability and data
-dimension, and smoothness and data dimension, improves the model slightly, but not enough to be practically important or change the interpretation above. 
+dimension, and smoothness and data dimension, improves the model slightly, but not enough to be practically important or change the interpretation above. The CRS optimizer couldn't be used here because it is not efficient (@fig-proj) but we would expect that smoothness does not overly affect it either. Both JSO and CRS are expected to be robust to small local fluctuations.
 
-This results support the use of the proposed
+These results also support the use of the proposed
 measures to effectively capture key factors affecting the success
 rate of PP.
 
