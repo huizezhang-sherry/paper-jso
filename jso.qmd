@@ -480,7 +480,7 @@ sq_sine_basis_df |>
              group = interaction(index, id, n), 
              color = index)) +
   geom_line() + 
-  scale_color_brewer(palette = "Dark2") +
+  scale_color_manual(values = palette.colors()[1:4]) + 
   xlab("Projection distance") + ylab("Index value") +
   theme_bw() + 
   theme(legend.position = "bottom")
@@ -932,12 +932,14 @@ res_quantile |>
              group = d, color = d)) + 
   geom_segment(aes(xend = n_jellies + 0.5), size = 0.05) + 
   geom_segment(aes(x = n_jellies - 1, xend = n_jellies + 1), 
-               data = res_quantile |> summarise(proportion = mean(proportion)), 
+               data = res_quantile |> 
+                 summarise(proportion = mean(proportion)), 
                size = 2) + 
   geom_line(aes(x = n_jellies), 
-               data = res_quantile |> summarise(proportion = mean(proportion)), 
+            data = res_quantile |> 
+              summarise(proportion = mean(proportion)), 
             alpha = 0.3) + 
-  scale_color_brewer(palette = "Dark2", name = "dimension") +
+  scale_color_manual(values = palette.colors()[1:5], name = "Dimension") + 
   scale_x_continuous(breaks = c(20, 50, 100), labels = c("20", "50", "100")) +
   facet_wrap(vars(`max # of iteration`), 
              labeller = "label_both") + 
@@ -998,7 +1000,9 @@ mod5 <- glm(proportion ~ smoothness*d + squintability*d + n_jellies, data = sim_
 sq_basis_df_6d_TIC_spline_skinny |>
   ggplot(aes(x = dist, y = index, group = interaction(index_name, id), color = index_name)) +
   geom_line() + 
-  scale_color_brewer(palette = "Dark2", name = "Index function") +
+  scale_color_manual(values = palette.colors()[1:3],
+                     name = "Index function") + 
+  #scale_color_brewer(palette = "Dark2", name = "Index function") +
   xlab("Projection distance") + ylab("Index value") +
   theme_bw() + 
   theme(legend.position = "bottom")
@@ -1226,7 +1230,7 @@ Provincial/Zhuhai Key Laboratory IRADS (2022B1212010006) and the UIC
 Start-up Research Fund UICR0700041-22.
 
 The R packages used in this work include: `tidyr` [@tidyr], `dplyr`
-[@dplyr], `ggplot2` [@ggplot2], `knitr` [@knitr],`gtsummary`
+[@dplyr], `ggplot2` [@ggplot2], `knitr` [@knitr], `gtsummary`
 [@gtsummary], `patchwork` [@patchwork], `ggh4x` [@ggh4x], `broom`
 [@broom], `kableExtra` [@kabelextra], `ferrn` [@RJ-2021-105], and
 `cassowaryr` [@cassowaryr].

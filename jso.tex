@@ -598,7 +598,7 @@ Let $\mathbf{A}=[A_1, \ldots, A_N] \in (\mathbb{R}^{p \times d})^N$ be d-dimensi
 \mathcal{L}(\theta)=\log p(\mathbf{y}\left|\mathbf{A},\theta\right.)=-\frac{1}{2}\mathbf{y}^{\top}(\mathbf{K}+\sigma^{2}\mathbf{I})^{-1}\mathbf{y}-\frac{1}{2}\mathrm{\log}(\det(\mathbf{K}+\sigma^{2}\mathbf{I}))-\frac{N}{2}\log(2\pi)\, \label{eq:gp_log_likelihood}
 \end{equation}
 where the nugget parameter $\sigma$ is the standard deviation of the intrinsic noise of the Gaussian process.
-The optimal parameters (including smoothness) are obtained by maximum log-likelihood
+The optimal parameters are obtained by maximum log-likelihood
 \begin{equation}
 \theta^* = \underset{\theta}{\max}\mathcal{L}(\theta)
 \end{equation}
@@ -757,7 +757,7 @@ accepted if it is an improvement compared to the current one, rejected
 otherwise. This process continues and iteratively improves the
 projection, until the pre-specified maximum number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, rightrule=.15mm, bottomtitle=1mm, colback=white, toprule=.15mm, left=2mm, opacityback=0, colframe=quarto-callout-note-color-frame, arc=.35mm, bottomrule=.15mm, leftrule=.75mm, colbacktitle=quarto-callout-note-color!10!white, breakable, coltitle=black, toptitle=1mm, titlerule=0mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, opacitybacktitle=0.6]
+\begin{tcolorbox}[enhanced jigsaw, coltitle=black, titlerule=0mm, opacitybacktitle=0.6, left=2mm, toprule=.15mm, colback=white, leftrule=.75mm, arc=.35mm, colframe=quarto-callout-note-color-frame, toptitle=1mm, breakable, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomtitle=1mm, rightrule=.15mm, bottomrule=.15mm, colbacktitle=quarto-callout-note-color!10!white, opacityback=0]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -1338,12 +1338,11 @@ Start-up Research Fund UICR0700041-22.
 
 The R packages used in this work include: \texttt{tidyr} (Wickham,
 Vaughan, and Girlich 2024), \texttt{dplyr} (Wickham et al. 2023),
-\texttt{ggplot2} (Wickham 2016), \texttt{knitr} (Xie
-2014),\texttt{gtsummary} (Sjoberg et al. 2021), \texttt{patchwork}
-(Pedersen 2024), \texttt{ggh4x} (Van Den Brand 2024), \texttt{broom}
-(Robinson, Hayes, and Couch 2024), \texttt{kableExtra} (Zhu 2024),
-\texttt{ferrn} (Zhang et al. 2021), and \texttt{cassowaryr} (Mason et
-al. 2022).
+\texttt{ggplot2} (Wickham 2016), \texttt{knitr} (Xie 2014),
+\texttt{gtsummary} (Sjoberg et al. 2021), \texttt{patchwork} (Pedersen
+2024), \texttt{ggh4x} (Van Den Brand 2024), \texttt{broom} (Robinson,
+Hayes, and Couch 2024), \texttt{kableExtra} (Zhu 2024), \texttt{ferrn}
+(Zhang et al. 2021), and \texttt{cassowaryr} (Mason et al. 2022).
 
 \section*{Supplementary materials}\label{supplementary-materials}
 \addcontentsline{toc}{section}{Supplementary materials}
