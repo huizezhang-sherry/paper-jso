@@ -670,10 +670,10 @@ Conversely, for a PP index with low squint angle, it might take a long
 while for the optimization to make substantial progress, as the
 candidate projections would need to be very close to the optimal one for
 the structure of the index function to be visible enough to be amenable
-to efficient optimization. This observation suggests that the half-point
-index value improvement percentage provides an appropriate mathematical
-definition of squintability, which matches the intuition behind this
-concept, while being amenable to numerical computation.
+to efficient optimization. These empirical observations suggest that the
+half-point index value improvement percentage provides an appropriate
+mathematical definition of squintability, which matches the intuition
+behind this concept, while being amenable to numerical computation.
 
 \begin{defn}[squintability]\label{def:squintability}
 Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance $r(A, A^*)$ to the index value $f(XA)$, such that $g(r) = g(r(A, A^*)) = f(XA)$.  The squintability of an index function $f$ is defined by 
@@ -685,12 +685,13 @@ Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the p
 
 \end{defn}
 
-Remark that the amount by which the index value can improve from the
-starting matrix \(A_0\) to the optimal one \(A^*\) is given by
-\(g(0)-g(r_{0})\). As a result, equation~\eqref{eq-squintability}
-represents the proportion of this maximum improvement which has been
-achieved by the time the distance \(r_0\) to the optimal matrix has been
-reduced by half (\(r_0/2\)).
+where \(r_0 = r(A_0, A^*)\) is the projection distance from the initial
+projection \(A_0\) to the optimal one \(A^*\). Remark that the amount by
+which the index value can improve from the starting matrix \(A_0\) to
+the optimal one \(A^*\) is given by \(g(0)-g(r_{0})\). As a result,
+equation~\eqref{eq-squintability} represents the proportion of this
+maximum improvement which has been achieved by the time the distance
+\(r_0\) to the optimal matrix has been reduced by half (\(r_0/2\)).
 
 To compute the squintability metric \eqref{eq-squintability} in
 practice, several approaches are possible. The first one is to propose a
@@ -709,7 +710,7 @@ g(x)=(\theta_{1}-\theta_{4})\frac{\ell(x)-\ell(r_0)}{\ell(0)-\ell(r_0)}+\theta_{
 }\end{equation}
 
 which depends on three additional parameters, \(\theta_1\),
-\(\theta_2\), and \(r_0\), such that \(g(0)=\theta_1\) and
+\(\theta_4\), and \(r_0\), such that \(g(0)=\theta_1\) and
 \(g(r_0)=\theta_4\). Under the parametric model (\ref{eq-parametric}),
 the squintability metric \eqref{eq-squintability} can be shown to be
 equal to
@@ -756,7 +757,7 @@ accepted if it is an improvement compared to the current one, rejected
 otherwise. This process continues and iteratively improves the
 projection, until the pre-specified maximum number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, colbacktitle=quarto-callout-note-color!10!white, opacityback=0, title={Algorithm: Jellyfish Optimizer Pseudo Code}, breakable, bottomtitle=1mm, leftrule=.75mm, titlerule=0mm, toprule=.15mm, left=2mm, colback=white, bottomrule=.15mm, colframe=quarto-callout-note-color-frame, arc=.35mm, coltitle=black, toptitle=1mm, rightrule=.15mm, opacitybacktitle=0.6]
+\begin{tcolorbox}[enhanced jigsaw, rightrule=.15mm, bottomtitle=1mm, colback=white, toprule=.15mm, left=2mm, opacityback=0, colframe=quarto-callout-note-color-frame, arc=.35mm, bottomrule=.15mm, leftrule=.75mm, colbacktitle=quarto-callout-note-color!10!white, breakable, coltitle=black, toptitle=1mm, titlerule=0mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, opacitybacktitle=0.6]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}

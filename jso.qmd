@@ -172,37 +172,38 @@ best_proj <- matrix(c(-0.44157005,  0.80959831,
 flea2D <- as.matrix(flea[,1:6]) %*% best_proj
 colnames(flea2D) <- c("X1", "X2")
 flea2D <- as.data.frame(flea2D)
-flea_huber <- prep_huber(flea2D, index = skewness())
-sqa1 <- ggplot() +
-  geom_huber(data = flea_huber$idx_df, aes(x = x, y = y)) +
-  geom_point(data = flea2D, aes(x = X1, y = X2)) +
-  geom_abline(slope = flea_huber$slope, intercept = 0) + 
-  coord_fixed() +
-  theme_huber() +
+
+sqa1 <- ggplot() + 
+  geom_huber(data = flea2D, aes(x = X1, y = X2), 
+             index.fun = skewness()) + 
+  theme_huber() + 
+  coord_fixed() + 
   ggtitle("(a) Skewness index")
 
-sqa2 <- ggplot(flea_huber$proj_df, aes(x=x)) + 
+flea_huber <- prep_huber_best_proj(flea2D, index_fun = skewness())
+sqa2 <- ggplot(flea_huber, aes(x=x)) + 
   geom_histogram(binwidth=0.25, colour="white") +
   xlab("") + ylab("") +
   ggtitle("(b) Optimally projected data") +
   theme_bw() +
   theme(axis.text.y = element_blank())
 
+
 data(randu)
 randu_std <- as.data.frame(apply(randu, 2, function(x) (x-mean(x))/sd(x)))
 randu_std$yz <- sqrt(35)/6*randu_std$y-randu_std$z/6
 randu_df <- randu_std[c(1,4)]
-randu_huber <- prep_huber(randu_df, index = norm_bin(nr = nrow(randu_df)))
 
-sqa3 <- ggplot() +
-  geom_huber(data = randu_huber$idx_df, aes(x = x, y = y)) +
-  geom_point(data = randu_df, aes(x = x, y = yz)) +
-  geom_abline(slope = randu_huber$slope, intercept = 0) +
-  theme_huber() +
+sqa3 <- ggplot() + 
+  geom_huber(data = randu_df, aes(x = x, y = yz), 
+             index.fun = norm_bin(nr = nrow(randu_df)))  + 
+  theme_huber() + 
   coord_fixed() + 
   ggtitle("(c) Binned normality index")
 
-sqa4 <- ggplot(randu_huber$proj_df, aes(x = x)) +
+randu_huber <- prep_huber_best_proj(
+  randu_df, index_fun = norm_bin(nr = nrow(randu_df)))
+sqa4 <- ggplot(randu_huber, aes(x = x)) +
   geom_histogram(breaks = seq(-2.2, 2.4, 0.12)) +
   xlab("") + ylab("") +
   theme_bw() +
@@ -431,7 +432,7 @@ Let $\mathbf{A}=[A_1, \ldots, A_N] \in (\mathbb{R}^{p \times d})^N$ be d-dimensi
 \mathcal{L}(\theta)=\log p(\mathbf{y}\left|\mathbf{A},\theta\right.)=-\frac{1}{2}\mathbf{y}^{\top}(\mathbf{K}+\sigma^{2}\mathbf{I})^{-1}\mathbf{y}-\frac{1}{2}\mathrm{\log}(\det(\mathbf{K}+\sigma^{2}\mathbf{I}))-\frac{N}{2}\log(2\pi)\, \label{eq:gp_log_likelihood}
 \end{equation}
 where the nugget parameter $\sigma$ is the standard deviation of the intrinsic noise of the Gaussian process.
-The optimal parameters (including smoothness) are obtained by maximum log-likelihood
+The optimal parameters are obtained by maximum log-likelihood
 \begin{equation}
 \theta^* = \underset{\theta}{\max}\mathcal{L}(\theta)
 \end{equation}
@@ -486,7 +487,7 @@ sq_sine_basis_df |>
 ```
 
 
-@fig-squintability-ill illustrates some simulated traces for different PP index functions: MIC, splines2d, skinny, and stringy2. It is expected that for a PP index with high squint angle, the optimization \eqref{eq-optimization} should make substantial progress early on. Conversely, for a PP index with low squint angle, it might take a long while for the optimization to make substantial progress, as the candidate projections would need to be very close to the optimal one for the structure of the index function to be visible enough to be amenable to efficient optimization. This observation suggests that the half-point index value improvement percentage provides an appropriate
+@fig-squintability-ill illustrates some simulated traces for different PP index functions: MIC, splines2d, skinny, and stringy2. It is expected that for a PP index with high squint angle, the optimization \eqref{eq-optimization} should make substantial progress early on. Conversely, for a PP index with low squint angle, it might take a long while for the optimization to make substantial progress, as the candidate projections would need to be very close to the optimal one for the structure of the index function to be visible enough to be amenable to efficient optimization. These empirical observations suggest that the half-point index value improvement percentage provides an appropriate
 mathematical definition of squintability, which matches the intuition
 behind this concept, while being amenable to numerical computation.
 
@@ -500,7 +501,7 @@ Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the p
 
 \end{defn}
 
-Remark that the amount by which the index value can improve from the
+where $r_0 = r(A_0, A^*)$ is the projection distance from the initial projection $A_0$ to the optimal one $A^*$. Remark that the amount by which the index value can improve from the
 starting matrix $A_0$ to the optimal one $A^*$ is given by
 $g(0)-g(r_{0})$. As a result, equation \eqref{eq-squintability}
 represents the proportion of this maximum improvement which has been
@@ -521,7 +522,7 @@ Then, define $$
 g(x)=(\theta_{1}-\theta_{4})\frac{\ell(x)-\ell(r_0)}{\ell(0)-\ell(r_0)}+\theta_{4}\ ,
 $$ {#eq-parametric}
 
-which depends on three additional parameters, $\theta_1$, $\theta_2$,
+which depends on three additional parameters, $\theta_1$, $\theta_4$,
 and $r_0$, such that $g(0)=\theta_1$ and $g(r_0)=\theta_4$. Under the
 parametric model (@eq-parametric), the squintability metric
 \eqref{eq-squintability} can be shown to be equal to $$
