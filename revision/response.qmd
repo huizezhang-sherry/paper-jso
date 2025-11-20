@@ -45,7 +45,7 @@ We sincerely thank the reviewers and the editor for the time and care devoted to
 
 8. Finally, I appreciate the practical advice in section 7. Here, 7.1 should be somewhat extended in my opinion: does the planned tour then run through all the individual paths, should we follow the most successful jellyfish, or how would we pick?
 
-\textcolor{blue}{We make Section 7.1 clearer that the planned tour can be run to trace the optimisation of individual jellyfish path. Users may wish to follow the most successful jellyfish, a random selection, or interesting jellyfish that result in local optimum. DISCUSSION: should I include a small example with the code?}
+\textcolor{blue}{We make Section 7.1 clearer that the planned tour can be run to trace the optimisation of individual jellyfish path. Users may wish to follow the most successful jellyfish, a random selection, or interesting jellyfish that result in local optimum.}
 
 ## Minor comments
 
