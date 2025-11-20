@@ -1123,7 +1123,7 @@ animation to an object (`res <- animate_xy(...)`). This will save all the
 bases visited by JSO, along with relevant metadata, as a tibble data
 object [see @RJ-2021-105 for more details on the data object]. Users can 
 then view the path of individual jellyfish through extracting the relevant 
-bases recorded and construct it as a planned tour (using the `planned_tour()` function).
+bases recorded and construct it as a planned tour using the `planned_tour()` function (see the examples via `?search_jellyfish`).
 Users may wish to view the 
 optimisation path of the most successful jellyfish, or a random selection of jellyfish, 
 or some specific runs that find local maximum.

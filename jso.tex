@@ -757,7 +757,7 @@ accepted if it is an improvement compared to the current one, rejected
 otherwise. This process continues and iteratively improves the
 projection, until the pre-specified maximum number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, coltitle=black, titlerule=0mm, opacitybacktitle=0.6, left=2mm, toprule=.15mm, colback=white, leftrule=.75mm, arc=.35mm, colframe=quarto-callout-note-color-frame, toptitle=1mm, breakable, title={Algorithm: Jellyfish Optimizer Pseudo Code}, bottomtitle=1mm, rightrule=.15mm, bottomrule=.15mm, colbacktitle=quarto-callout-note-color!10!white, opacityback=0]
+\begin{tcolorbox}[enhanced jigsaw, left=2mm, breakable, coltitle=black, colframe=quarto-callout-note-color-frame, title={Algorithm: Jellyfish Optimizer Pseudo Code}, opacityback=0, colback=white, leftrule=.75mm, bottomrule=.15mm, colbacktitle=quarto-callout-note-color!10!white, bottomtitle=1mm, arc=.35mm, toptitle=1mm, titlerule=0mm, rightrule=.15mm, toprule=.15mm, opacitybacktitle=0.6]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -1240,10 +1240,11 @@ visited by each individual jellyfish, assign the animation to an object
 bases visited by JSO, along with relevant metadata, as a tibble data
 object (see Zhang et al. 2021 for more details on the data object).
 Users can then view the path of individual jellyfish through extracting
-the relevant bases recorded and construct it as a planned tour (using
-the \texttt{planned\_tour()} function). Users may wish to view the
-optimisation path of the most successful jellyfish, or a random
-selection of jellyfish, or some specific runs that find local maximum.
+the relevant bases recorded and construct it as a planned tour using the
+\texttt{planned\_tour()} function (see the examples via
+\texttt{?search\_jellyfish}). Users may wish to view the optimisation
+path of the most successful jellyfish, or a random selection of
+jellyfish, or some specific runs that find local maximum.
 
 \subsection{Computing the index properties for your new
 index}\label{computing-the-index-properties-for-your-new-index}
