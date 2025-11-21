@@ -21,8 +21,8 @@ nu_array = np.array([1.0,2.0,4.0])
 n_samples = 5
 x = np.linspace(0, 6, 2001)
 X = x.reshape(-1, 1)
-# RdPu but I change the end chroma to 200
-palette = ["#490062", "#AB1998", "#FF49B1", "#FF8A88", "#FFCB00"]
+# RdPu, but I change the end chroma to 100
+palette = ["#490062", "#963E87", "#E775A8", "#FFAEAD", "#FFE08C"]
 sns.set_palette(palette)
 
 
