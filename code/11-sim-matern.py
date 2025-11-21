@@ -21,7 +21,10 @@ nu_array = np.array([1.0,2.0,4.0])
 n_samples = 5
 x = np.linspace(0, 6, 2001)
 X = x.reshape(-1, 1)
-sns.set_palette("cividis")
+# RdPu but I change the end chroma to 200
+palette = ["#490062", "#AB1998", "#FF49B1", "#FF8A88", "#FFCB00"]
+sns.set_palette(palette)
+
 
 fig, axs = plt.subplots(ncols=np.size(nu_array), sharex=False, sharey=False, figsize=(12, 4))
 for (i,nu) in enumerate(nu_array):
@@ -30,7 +33,7 @@ for (i,nu) in enumerate(nu_array):
     gpr = GaussianProcessRegressor(kernel=kernel, random_state=100)
     y_samples = gpr.sample_y(X, n_samples)
     for n in np.arange(n_samples):
-        sns.lineplot(x=x,y=y_samples[:,n],ax=axs[i],linewidth=2,alpha=0.9)
+        sns.lineplot(x=x,y=y_samples[:,n],ax=axs[i],linewidth=1,alpha=0.9)
     axs[i].set_xlim([0,6])
     axs[i].set_ylim([-3,3])
     axs[i].set_xticks([0,1,2,3,4,5,6])
@@ -65,7 +68,7 @@ for (i,nu) in enumerate(nu_array):
     for n in np.arange(nx):
         zv[n,:] = np.squeeze(z_samples[n*nx:(n+1)*nx])
     
-    surf = ax.plot_surface(xv, yv, zv, cmap=cm.cividis,linewidth=0, antialiased=False)
+    surf = ax.plot_surface(xv, yv, zv, cmap=cm.RdPu,linewidth=0, antialiased=False)
     ax.zaxis.set_major_locator(LinearLocator(6))
     ax.zaxis.set_major_formatter('{x:.0f}')
     ax.set_xlim([0,5])

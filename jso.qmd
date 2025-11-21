@@ -475,12 +475,14 @@ sq_sine_basis_df |>
   rename(index = index...2, value = index...8) |> 
   filter(index %in% c("MIC", "skinny", "stringy2", "splines2d")) |> 
   group_by(id, index, n) |> 
-  mutate(value = (value - min(value)) / (max(value) - min(value))) |>
+  mutate(value = (value - min(value)) / (max(value) - min(value)),
+         index = fct_relevel(index, c("stringy2", "skinny", "MIC", "splines2d"))) |>
   ggplot(aes(x = dist, y = value, 
              group = interaction(index, id, n), 
              color = index)) +
   geom_line() + 
-  scale_color_manual(values = palette.colors()[1:4]) + 
+  colorspace::scale_color_discrete_sequential(palette = "RdPu", name = "Index function", 
+                                              c2 = 100, rev = FALSE) + 
   xlab("Projection distance") + ylab("Index value") +
   theme_bw() + 
   theme(legend.position = "bottom")
@@ -929,20 +931,20 @@ res_quantile <- res_interval_df |>
 res_quantile |> 
   ungroup() |> 
   ggplot(aes(x = n_jellies - 0.5, y = proportion, 
-             group = d, color = d)) + 
-  geom_segment(aes(xend = n_jellies + 0.5), size = 0.05) + 
-  geom_segment(aes(x = n_jellies - 1, xend = n_jellies + 1), 
-               data = res_quantile |> 
-                 summarise(proportion = mean(proportion)), 
+             group = d)) + 
+  geom_segment(aes(x = n_jellies - 1, xend = n_jellies + 1, color = d), 
+               data = res_quantile |> summarise(proportion = mean(proportion)), 
                size = 2) + 
-  geom_line(aes(x = n_jellies), 
-            data = res_quantile |> 
-              summarise(proportion = mean(proportion)), 
-            alpha = 0.3) + 
-  scale_color_manual(values = palette.colors()[1:5], name = "Dimension") + 
+  geom_segment(aes(xend = n_jellies + 0.5, color = d), size = 0.05) + 
+  geom_line(aes(x = n_jellies, color = d),  
+            data = res_quantile |> summarise(proportion = mean(proportion)), 
+            alpha = 0.5, show.legend = FALSE) +
+  scale_color_manual(values = colorspace::sequential_hcl(5, "RdPu", c2 = 200),
+                     name = "Dimension", labels = seq(4, 12, 2)) + 
+  # scale_linetype_manual(values = c(1, 5,2,4,3), guide = "legend", 
+  #                       name = "Dimension", labels = seq(4, 12, 2)) + 
   scale_x_continuous(breaks = c(20, 50, 100), labels = c("20", "50", "100")) +
-  facet_wrap(vars(`max # of iteration`), 
-             labeller = "label_both") + 
+  facet_wrap(vars(`max # of iteration`), labeller = "label_both") + 
   theme_bw() +
   theme(panel.grid.minor = element_blank()) + 
   xlab("Number of jellyfish") + 
@@ -998,11 +1000,11 @@ mod5 <- glm(proportion ~ smoothness*d + squintability*d + n_jellies, data = sim_
 #| fig.height: 4
 #| fig.cap: "Five traces of index value against projection distance for each of the three indexes (TIC, spline, and skinny) on 6D sine wave data. The traces of the splines index are smooth, with a gradual change between noise and otimal projection. In contrast, the skinny index has a noisy trace that increases rapidly near the optimum. This illustrates the usefulness of the new measures for squintability and smoothness."
 sq_basis_df_6d_TIC_spline_skinny |>
-  ggplot(aes(x = dist, y = index, group = interaction(index_name, id), color = index_name)) +
+  ggplot(aes(x = dist, y = index, group = interaction(index_name, id), 
+             color = fct_relevel(index_name, c("skinny", "TIC", "splines")))) +
   geom_line() + 
-  scale_color_manual(values = palette.colors()[1:3],
-                     name = "Index function") + 
-  #scale_color_brewer(palette = "Dark2", name = "Index function") +
+  colorspace::scale_color_discrete_sequential(palette = "RdPu", name = "Index function", 
+                                              c2 = 100, rev = FALSE) + 
   xlab("Projection distance") + ylab("Index value") +
   theme_bw() + 
   theme(legend.position = "bottom")
