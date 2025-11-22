@@ -12,7 +12,12 @@ from sklearn.gaussian_process.kernels import Matern
 
 
 
-
+# RdPu, but I change the end chroma to 100
+YlRdPu = ["#490062", "#963E87", "#E775A8", "#FFAEAD", "#FFE08C"]
+from matplotlib.colors import LinearSegmentedColormap
+clist = sns.color_palette(YlRdPu)
+my_cmap = LinearSegmentedColormap.from_list('my_cmap',clist,80)
+sns.set_palette(YlRdPu)
 
 
 
@@ -21,9 +26,7 @@ nu_array = np.array([1.0,2.0,4.0])
 n_samples = 5
 x = np.linspace(0, 6, 2001)
 X = x.reshape(-1, 1)
-# RdPu, but I change the end chroma to 100
-palette = ["#490062", "#963E87", "#E775A8", "#FFAEAD", "#FFE08C"]
-sns.set_palette(palette)
+
 
 
 fig, axs = plt.subplots(ncols=np.size(nu_array), sharex=False, sharey=False, figsize=(12, 4))
@@ -68,7 +71,7 @@ for (i,nu) in enumerate(nu_array):
     for n in np.arange(nx):
         zv[n,:] = np.squeeze(z_samples[n*nx:(n+1)*nx])
     
-    surf = ax.plot_surface(xv, yv, zv, cmap=cm.RdPu,linewidth=0, antialiased=False)
+    surf = ax.plot_surface(xv, yv, zv, cmap=my_cmap,linewidth=0, antialiased=False)
     ax.zaxis.set_major_locator(LinearLocator(6))
     ax.zaxis.set_major_formatter('{x:.0f}')
     ax.set_xlim([0,5])
