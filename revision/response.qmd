@@ -41,7 +41,7 @@ We sincerely thank the reviewers and the editor for the time and care devoted to
 
 7. I was also wondering how the dependence of the smoothness on d can be explained, since it is not intuitive that this should change so much? (Note also that the last sentence in the caption for Table 1 seems to mix up squintability and smoothness.)
 
-\textcolor{blue}{Table 1 is a subset of the PP index estimated and it happens that the three chosen ones all decrease as $n$ goes larger. This is not necessary the case in the full table shown in the Appendix. The caption for Table 1 has been fixed.}
+\textcolor{blue}{Table 1 is a subset of the estimated PP index, from the full table in the appendix. It happens that the three chosen ones all decrease as $n$ goes larger. This is not generally a pattern so this has been dropped from the caption.}
 
 8. Finally, I appreciate the practical advice in section 7. Here, 7.1 should be somewhat extended in my opinion: does the planned tour then run through all the individual paths, should we follow the most successful jellyfish, or how would we pick?
 

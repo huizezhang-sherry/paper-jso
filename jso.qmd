@@ -953,7 +953,7 @@ res_quantile |>
 
 ```{r}
 #| label: tbl-smoothness-squintability
-#| tbl-cap: The columns $\nu$ and $\varsigma$ show the smoothness and squintability measures for three PP indexes for the sine wave data. The splines index has the largest squint angle and is the smoothest. The skinny index has low smoothness and smallest squint angle. As dimension increases the smoothness becomes smaller but squintability doesn't change much.
+#| tbl-cap: The columns $\nu$ and $\varsigma$ show the smoothness and squintability measures for PP indexes for the sine wave data. Only three are shown for illustration, and a full table can be found in Supplementary materials. The splines index has the largest squint angle and is the smoothest. The skinny index has low smoothness and smallest squint angle. 
 dt <- tibble(shape = c(rep("pipe", 5), rep("sine", 18)), smoothness) |>
   left_join(squintability) |> 
   rename(d = n,  smooth = smoothness) |> 
