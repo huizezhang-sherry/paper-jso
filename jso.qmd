@@ -161,6 +161,7 @@ projection.
 #| fig-height: 6
 #| out-width: 80%
 #| fig-cap: "Examples of PP indexes with large (top row) and small (bottom row) squint angles, shown with a Huber plot, and histogram of the projected data corresponding to the optimal projection. A Huber plot shows the PP index values for all 1D data projections in polar coordinates. The skewness index on the trimodal data is also smoother than the binned normality index on RANDU."
+#| fig-alt: "The figure contains four panels. Panels (a) and (c) are polar coordinate plots showing the values of projection pursuit (PP) indexes—skewness for trimodal data in (a) and binned normality for RANDU data in (c)—across all 1D projections of 2D datasets. The radius represents the index value for each projection angle, with a dashed circle indicating the average index and a straight line marking the optimal projection. Panel (a) displays a smooth but non-convex skewness index with three pronounced modes and a wide squint angle, while panel (c) shows a noisier, non-normality index with less smoothness and a narrow squint angle. Panels (b) and (d) are histograms representing data projected onto the optimal directions identified in (a) and (c), respectively; panel (b) reveals trimodality and panel (d) shows the discrete nature of the RANDU data, which is harder to discern except near the optimal projection."
 #proj <- animate_xy(flea[,1:6], guided_tour(lda_pp(flea$species)))
 best_proj <- matrix(c(-0.44157005,  0.80959831,
                       0.14622089, -0.08228193,
