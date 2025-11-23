@@ -496,7 +496,7 @@ mathematical definition of squintability, which matches the intuition
 behind this concept, while being amenable to numerical computation.
 
 \begin{defn}[squintability]\label{def:squintability}
-Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance $r(A, A^*)$ to the index value $f(XA)$, such that $g(r) = g(r(A, A^*)) = f(XA)$.  The squintability of an index function $f$ is defined by 
+Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that models the index value $f(XA)$ as a function of the projection distance $r(A, A^*)$, such that $g(r) = g(r(A, A^*)) \simeq f(XA)$.  The squintability of an index function $f$ is then defined by 
 
 \begin{equation}
 \varsigma(f) = \frac{g(r_{0}/2)-g(r_{0})}{g(0)-g(r_{0})} \in [0,1]
