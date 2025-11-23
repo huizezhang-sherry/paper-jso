@@ -249,7 +249,7 @@ Leung$\textsuperscript{2}$}
 \thanks{CONTACT: H. Sherry
 Zhang. Email: \href{mailto:huize.zhang@austin.utexas.edu}{\nolinkurl{huize.zhang@austin.utexas.edu}}. Dianne
 Cook. Email: \href{mailto:dicook@monash.edu}{\nolinkurl{dicook@monash.edu}}. Nicolas
-Langrené. Email: \href{mailto:nicolaslangrene@uic.edu.cn}{\nolinkurl{nicolaslangrene@uic.edu.cn}}. Jessica
+Langrené. Email: \href{mailto:nicolaslangrene@bnbu.edu.cn}{\nolinkurl{nicolaslangrene@bnbu.edu.cn}}. Jessica
 Wai Yin
 Leung. Email: \href{mailto:jessica.leung@monash.edu}{\nolinkurl{jessica.leung@monash.edu}}. }
 \begin{document}
@@ -261,8 +261,8 @@ States\\ \textsuperscript{2} Department of Econometrics and Business
 Statistics, Monash
 University, Melbourne, Australia\\ \textsuperscript{3} Department of
 Mathematical Sciences, Guangdong Provincial/Zhuhai Key Laboratory of
-Interdisciplinary Research and Application for Data Science,
-BNU-HKBU~United~International~College, Zhuhai, China
+Interdisciplinary Research and Application for Data Science, Beijing
+Normal-Hong Kong Baptist University, Zhuhai, China
 \begin{abstract}
 The projection pursuit (PP) guided tour optimizes a criterion function,
 known as the PP index, to gradually reveal projections of interest from
@@ -676,7 +676,7 @@ mathematical definition of squintability, which matches the intuition
 behind this concept, while being amenable to numerical computation.
 
 \begin{defn}[squintability]\label{def:squintability}
-Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that maps the projection distance $r(A, A^*)$ to the index value $f(XA)$, such that $g(r) = g(r(A, A^*)) = f(XA)$.  The squintability of an index function $f$ is defined by 
+Let $g: \mathbb{R} \mapsto  \mathbb{R}$ be a decreasing function that models the index value $f(XA)$ as a function of the projection distance $r(A, A^*)$, such that $g(r) = g(r(A, A^*)) \simeq f(XA)$.  The squintability of an index function $f$ is then defined by 
 
 \begin{equation}
 \varsigma(f) = \frac{g(r_{0}/2)-g(r_{0})}{g(0)-g(r_{0})} \in [0,1]
@@ -757,7 +757,7 @@ accepted if it is an improvement compared to the current one, rejected
 otherwise. This process continues and iteratively improves the
 projection, until the pre-specified maximum number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, colframe=quarto-callout-note-color-frame, toprule=.15mm, breakable, left=2mm, bottomtitle=1mm, coltitle=black, titlerule=0mm, leftrule=.75mm, colbacktitle=quarto-callout-note-color!10!white, colback=white, bottomrule=.15mm, toptitle=1mm, arc=.35mm, opacitybacktitle=0.6, title={Algorithm: Jellyfish Optimizer Pseudo Code}, rightrule=.15mm, opacityback=0]
+\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, toptitle=1mm, rightrule=.15mm, colback=white, coltitle=black, leftrule=.75mm, titlerule=0mm, opacitybacktitle=0.6, colbacktitle=quarto-callout-note-color!10!white, arc=.35mm, bottomrule=.15mm, opacityback=0, colframe=quarto-callout-note-color-frame, title={Algorithm: Jellyfish Optimizer Pseudo Code}, breakable, toprule=.15mm, left=2mm]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -1334,7 +1334,7 @@ this paper can be found at:
 data produced in Section 5 can be found at
 \url{https://figshare.com/articles/dataset/Simulated_raw_data/26039506}.
 Nicolas Langrené acknowledges the partial support of the Guangdong
-Provincial/Zhuhai Key Laboratory IRADS (2022B1212010006) and the UIC
+Provincial/Zhuhai Key Laboratory IRADS (2022B1212010006) and the BNBU
 Start-up Research Fund UICR0700041-22.
 
 The R packages used in this work include: \texttt{tidyr} (Wickham,
