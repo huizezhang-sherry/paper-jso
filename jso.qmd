@@ -22,10 +22,10 @@ author:
           country: Australia
           postal-code: 3800
   - name: Nicolas  Langrené
-    email: nicolaslangrene@uic.edu.cn
+    email: nicolaslangrene@bnbu.edu.cn
     affiliations:
         - id: 3
-          name: Guangdong Provincial/Zhuhai Key Laboratory of Interdisciplinary Research and Application for Data Science, BNU-HKBU United International College
+          name: Guangdong Provincial/Zhuhai Key Laboratory of Interdisciplinary Research and Application for Data Science, Beijing Normal-Hong Kong Baptist University
           department: Department of Mathematical Sciences
           city: Zhuhai
           country: China
@@ -1236,7 +1236,7 @@ can be found at: <https://github.com/huizezhang-sherry/paper-jso>. The
 simulation data produced in Section 5 can be found at
 <https://figshare.com/articles/dataset/Simulated_raw_data/26039506>.
 Nicolas Langrené acknowledges the partial support of the Guangdong
-Provincial/Zhuhai Key Laboratory IRADS (2022B1212010006) and the UIC
+Provincial/Zhuhai Key Laboratory IRADS (2022B1212010006) and the BNBU
 Start-up Research Fund UICR0700041-22.
 
 The R packages used in this work include: `tidyr` [@tidyr], `dplyr`
