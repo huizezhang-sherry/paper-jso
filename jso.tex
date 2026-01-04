@@ -247,11 +247,7 @@ Langrené$\textsuperscript{3}$, Jessica Wai Yin
 Leung$\textsuperscript{2}$}
 
 \thanks{CONTACT: H. Sherry
-Zhang. Email: \href{mailto:huize.zhang@austin.utexas.edu}{\nolinkurl{huize.zhang@austin.utexas.edu}}. Dianne
-Cook. Email: \href{mailto:dicook@monash.edu}{\nolinkurl{dicook@monash.edu}}. Nicolas
-Langrené. Email: \href{mailto:nicolaslangrene@bnbu.edu.cn}{\nolinkurl{nicolaslangrene@bnbu.edu.cn}}. Jessica
-Wai Yin
-Leung. Email: \href{mailto:jessica.leung@monash.edu}{\nolinkurl{jessica.leung@monash.edu}}. }
+Zhang. Email: \href{mailto:huize.zhang@austin.utexas.edu}{\nolinkurl{huize.zhang@austin.utexas.edu}}. }
 \begin{document}
 \captionsetup{labelsep=space}
 \maketitle
@@ -297,7 +293,7 @@ Jellyfish Search Optimizer (JSO)
 Projection pursuit (PP) (Kruskal 1969; Friedman and Tukey 1974; Huber
 1985) is a dimension reduction technique aimed at identifying
 informative linear projections of data. This is useful for exploring
-high-dimensional data, and creating plots of the data that reveal the
+high-dimensional data and creating plots of the data that reveal the
 main features to use for publication. The method involves optimizing an
 objective function known as the PP index (e.g., Hall 1989; Cook, Buja,
 and Cabrera 1993; Lee and Cook 2010; Loperfido 2018, 2020), which
@@ -307,12 +303,12 @@ projections. Let \(X \in \mathbb{R}^{n\times p}\) be the data matrix,
 manifold \(\mathcal{A} = V_d(\mathbb{R}^p)\). The projection \(Y = XA\)
 is a linear transformation of the \(p\)-dimensional data to a
 \(d\)-dimensional space. The index function
-\(f(XA): \mathbb{R}^{n \times d} \to \mathbb{R}\) defines a statistics
-to measure a pattern of interest in the projected data, such as
-deviation from normality, presence of clusters, or non-linear structure.
-For a fixed sample of data, PP finds the orthonormal matrix \(A\) (also
-called \emph{projection basis} in PP literature) that maximizes the
-index value of the projection:
+\(f(XA): \mathbb{R}^{n \times d} \to \mathbb{R}\) defines a statistic to
+measure a pattern of interest in the projected data, such as deviation
+from normality, presence of clusters, or non-linear structure. For a
+fixed sample of data, PP finds the orthonormal matrix \(A\) (also called
+\emph{projection basis} in PP literature) that maximizes the index value
+of the projection:
 
 \begin{equation}\phantomsection\label{eq-optimization}{
 \underset{A \in \mathcal{A}}{\max } \quad f(XA) \quad \text{subject to} \quad A'A = I_d
@@ -501,8 +497,8 @@ then the higher \(k\), the smoother \(f\). While this Sobolev index
 or even estimate in practice. For example, the loess and splines indexes
 are not differentiable due to the use of the \(\max\) operator in their
 definitions. Scagnostic indexes, such as skinny and stringy, are defined
-based on graph elements (area, diameter, perimeter, and length) of alph
-hull or minimal spanning tree).
+based on graph elements (area, diameter, perimeter, and length) of alpha
+hull or minimum spanning tree).
 
 To obtain a computable estimator of the smoothness of the index function
 \(f\), we propose an approach based on random fields. If a PP index
@@ -615,14 +611,14 @@ The squintability metric is inspired by the concept of squint angle in
 Definition \ref{def:squint-angle}, originally introduced in Tukey and
 Tukey (1981) and later discussed in Laa and Cook (2020). Consider the
 space of all projection bases: those near the optimal basis correspond
-to projections with interesting structure we're researching. The size of
-this neighborhood depends on the choice of the index function. For some
-indexes, projections resemble the target even when relatively far from
-the optimum, corresponding to a large squint angle, while for others,
-projections need to be close to the optimum to reveal structure we're
+to projections with structure of interest. The size of this neighborhood
+depends on the choice of the index function. For some indexes,
+projections resemble the target even when relatively far from the
+optimum, corresponding to a large squint angle, while for others,
+projections need to be close to the optimum to reveal structure we are
 interested, resulting in a small squint angle. For PP, a small squint
 angle is considered to be undesirable because it means that the
-optimizer needs to sample into a be very narrow region to be able to
+optimizer needs to sample into a very narrow region to be able to
 ``see'' the optimum, making it difficult for the optimizer to find the
 optimum.
 
@@ -697,10 +693,9 @@ To compute the squintability metric \eqref{eq-squintability} in
 practice, several approaches are possible. The first one is to propose a
 parametric model for \(g\), and use it to obtain an explicit formula for
 \(\varsigma\). Numerical experiments suggest a scaled sigmoid shape as
-described below. Define
-\begin{equation}\phantomsection\label{eq-logistic}{
+described below. Define \[
 \ell(x):=\frac{1}{1+\exp(\theta_{3}(x-\theta_{2}))}\ ,
-}\end{equation}
+\] \{\#eq-logistic\}f
 
 which is a decreasing logistic function depending on two parameters
 \(\theta_2\) and \(\theta_3\), such that
@@ -757,7 +752,7 @@ accepted if it is an improvement compared to the current one, rejected
 otherwise. This process continues and iteratively improves the
 projection, until the pre-specified maximum number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, toptitle=1mm, rightrule=.15mm, colback=white, coltitle=black, leftrule=.75mm, titlerule=0mm, opacitybacktitle=0.6, colbacktitle=quarto-callout-note-color!10!white, arc=.35mm, bottomrule=.15mm, opacityback=0, colframe=quarto-callout-note-color-frame, title={Algorithm: Jellyfish Optimizer Pseudo Code}, breakable, toprule=.15mm, left=2mm]
+\begin{tcolorbox}[enhanced jigsaw, bottomrule=.15mm, opacityback=0, colback=white, colbacktitle=quarto-callout-note-color!10!white, bottomtitle=1mm, rightrule=.15mm, left=2mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, toptitle=1mm, titlerule=0mm, colframe=quarto-callout-note-color-frame, opacitybacktitle=0.6, breakable, arc=.35mm, toprule=.15mm, leftrule=.75mm, coltitle=black]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -856,7 +851,7 @@ tour. Here the two optimizers are compared on the task of finding the 2D
 pipe structure using the \texttt{holes} index in data at dimensions 6,
 8, 10, and 12. Additional variables are Gaussian noise. JSO uses 100
 jellyfish with 100 iterations, while CRS allows up to 1000 trials per
-iteration terminates if no better projection is found within these
+iteration and terminates if no better projection is found within these
 trials. These choices enable fair comparison between CRS and JSO, that
 conforms to how they are used in practice. Each task is repeated 50
 times to evaluate the performance between the two optimizers.
@@ -884,7 +879,7 @@ random seed used.
 
 \caption{\label{fig-success-rate}How success rate is calculated,
 illustrated using the optimal projections from 50 optimizations of 8D
-pipe data, optimised by CRS, sorted by index value. The pipe shape is
+pipe data, optimized by CRS, sorted by index value. The pipe shape is
 recognizable in the projection index values between 0.933-0.969. Of the
 50 simulations, 43 achieved an index value within 0.05 of the best,
 resulting in a success rate of 0.86.}
@@ -911,7 +906,7 @@ and Cook (2020). (The supplementary material includes definitions of
 these PP indexes, and descriptions of the pipe and sine wave data
 simulation.) The JSO hyper-parameters, number of jellyfish and maximum
 iterations, are also included. This results in a total of 77 scenarios,
-comprising of 30 computed on the pipe data and 47 on the sine wave data.
+comprising 30 computed on the pipe data and 47 on the sine wave data.
 The choice of 4-12 dimensions covers the range of easy to relatively
 difficult for the optimizers to detect the structured projections. The
 same approach is used, that each experiment is repeated 50 times and
@@ -973,8 +968,8 @@ squintability. For each PP task, 50 random bases are generated and
 interpolated to the optimal basis with a step size of 0.005. The index
 values are averaged over the distance window of 0.005. Index values are
 calculated for all the interpolated bases and averaged over the distance
-bin of 0.005. The logisitic function in Equation (\ref{eq-logistic}) and
-(\ref{eq-parametric}) is fitted with non-linear least squares and
+bin of 0.005. The logistic function in Equation (\textbf{?@eq-logistic})
+and (\ref{eq-parametric}) is fitted with non-linear least squares and
 calculate the squintability measure using Equation
 (\ref{eq-squintability-parametric}).
 
@@ -988,7 +983,7 @@ nominal values, in the model.
 
 \section{Results}\label{sec-sim-res}
 
-This section summarises the findings from the simulations that compare
+This section summarizes the findings from the simulations that compare
 the JSO performance with the existing CRS optimizer, and the
 relationship between optimization success and hyper-parameter choices
 and PP index properties.
@@ -1242,9 +1237,9 @@ object (see Zhang et al. 2021 for more details on the data object).
 Users can then view the path of individual jellyfish through extracting
 the relevant bases recorded and construct it as a planned tour using the
 \texttt{planned\_tour()} function (see the examples via
-\texttt{?search\_jellyfish}). Users may wish to view the optimisation
+\texttt{?search\_jellyfish}). Users may wish to view the optimization
 path of the most successful jellyfish, or a random selection of
-jellyfish, or some specific runs that find local maximum.
+jellyfish, or some specific runs that find local maxima.
 
 \subsection{Computing the index properties for your new
 index}\label{computing-the-index-properties-for-your-new-index}
@@ -1350,12 +1345,12 @@ Hayes, and Couch 2024), \texttt{kableExtra} (Zhu 2024), \texttt{ferrn}
 
 The supplementary materials available at
 \url{https://github.com/huizezhang-sherry/paper-jso} include: 1) details
-of the indexes used in the simulation study, 2) the script to get
-started with using JSO in a PPGT and calculating smoothness and
-squintability, as explained in Section~\ref{sec-discussion}, (3) the
-table of the Gaussian process parameters and logistic function
-parameters for all 23 PP problems investigated, along with (4) the full
-code to reproduce the plots and summaries in this paper.
+of the indexes used in the simulation study, 2) the table of the
+Gaussian process parameters and logistic function parameters for all 23
+PP problems investigated, 3) the script to get started with using JSO in
+a PPGT and calculating smoothness and squintability, as explained in
+Section~\ref{sec-discussion}, along with 4) the full code to reproduce
+the plots and summaries in this paper.
 
 \section*{References}\label{references}
 \addcontentsline{toc}{section}{References}
