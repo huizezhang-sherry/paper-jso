@@ -515,7 +515,7 @@ parametric model for $g$, and use it to obtain an explicit formula for
 $\varsigma$. Numerical experiments suggest a scaled sigmoid shape as
 described below. Define $$
 \ell(x):=\frac{1}{1+\exp(\theta_{3}(x-\theta_{2}))}\ ,
-$$ {#eq-logistic}f
+$$ {#eq-logistic}
 
 which is a decreasing logistic function depending on two parameters
 $\theta_2$ and $\theta_3$, such that $\ell(\theta_{2})=\frac{1}{2}$.

@@ -693,9 +693,10 @@ To compute the squintability metric \eqref{eq-squintability} in
 practice, several approaches are possible. The first one is to propose a
 parametric model for \(g\), and use it to obtain an explicit formula for
 \(\varsigma\). Numerical experiments suggest a scaled sigmoid shape as
-described below. Define \[
+described below. Define
+\begin{equation}\phantomsection\label{eq-logistic}{
 \ell(x):=\frac{1}{1+\exp(\theta_{3}(x-\theta_{2}))}\ ,
-\] \{\#eq-logistic\}f
+}\end{equation}
 
 which is a decreasing logistic function depending on two parameters
 \(\theta_2\) and \(\theta_3\), such that
@@ -752,7 +753,7 @@ accepted if it is an improvement compared to the current one, rejected
 otherwise. This process continues and iteratively improves the
 projection, until the pre-specified maximum number of trials is reached.
 
-\begin{tcolorbox}[enhanced jigsaw, bottomrule=.15mm, opacityback=0, colback=white, colbacktitle=quarto-callout-note-color!10!white, bottomtitle=1mm, rightrule=.15mm, left=2mm, title={Algorithm: Jellyfish Optimizer Pseudo Code}, toptitle=1mm, titlerule=0mm, colframe=quarto-callout-note-color-frame, opacitybacktitle=0.6, breakable, arc=.35mm, toprule=.15mm, leftrule=.75mm, coltitle=black]
+\begin{tcolorbox}[enhanced jigsaw, bottomtitle=1mm, breakable, colbacktitle=quarto-callout-note-color!10!white, opacitybacktitle=0.6, title={Algorithm: Jellyfish Optimizer Pseudo Code}, left=2mm, arc=.35mm, rightrule=.15mm, colframe=quarto-callout-note-color-frame, colback=white, leftrule=.75mm, bottomrule=.15mm, toptitle=1mm, toprule=.15mm, titlerule=0mm, opacityback=0, coltitle=black]
 
 \textbf{Input}: \texttt{current\_projections}, \texttt{index\_function},
 \texttt{trial\_id}, \texttt{max\_trial}
@@ -968,8 +969,8 @@ squintability. For each PP task, 50 random bases are generated and
 interpolated to the optimal basis with a step size of 0.005. The index
 values are averaged over the distance window of 0.005. Index values are
 calculated for all the interpolated bases and averaged over the distance
-bin of 0.005. The logistic function in Equation (\textbf{?@eq-logistic})
-and (\ref{eq-parametric}) is fitted with non-linear least squares and
+bin of 0.005. The logistic function in Equation (\ref{eq-logistic}) and
+(\ref{eq-parametric}) is fitted with non-linear least squares and
 calculate the squintability measure using Equation
 (\ref{eq-squintability-parametric}).
 
